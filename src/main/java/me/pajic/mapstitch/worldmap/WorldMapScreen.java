@@ -29,6 +29,7 @@ import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import net.minecraft.world.level.saveddata.maps.MapDecorationTypes;
 import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+import net.minecraft.world.phys.Vec2;
 import org.apache.commons.lang3.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
@@ -41,7 +42,7 @@ import java.util.Map;
 public class WorldMapScreen extends Screen {
 	public static List<Identifier> dimensionIds = List.of();
 	public static final Map<Integer, MapRenderState> RENDER_STATES = new HashMap<>();
-	private static final Map<Vector2d, MapRenderState> RENDER_LIST = new HashMap<>();
+	private static final Map<Vec2, MapRenderState> RENDER_LIST = new HashMap<>();
 	private static final int WHITE = 0xffffffff;
 
 	private static Identifier dimensionId = Identifier.withDefaultNamespace("overworld");
@@ -59,6 +60,7 @@ public class WorldMapScreen extends Screen {
 
 	public WorldMapScreen() {
 		super(Component.translatable("mapstitch.gui.worldmap.title"));
+		centerMap();
 	}
 
 	@Override
@@ -81,12 +83,16 @@ public class WorldMapScreen extends Screen {
 			if (stack.is(ModItems.ATLAS)) {
 				BundleContents contents = stack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
 				for (ItemStackTemplate map : contents.items()) {
-					if (map.is(Items.FILLED_MAP)) prepareMap(map, z, screenX, screenY, compass, s);
+					if (map.is(Items.FILLED_MAP)) prepareMap(map, z, screenX, screenY, compass);
 				}
 			} else if (stack.is(Items.FILLED_MAP)) {
-				prepareMap(ItemStackTemplate.fromNonEmptyStack(stack), z, screenX, screenY, compass, s);
+				prepareMap(ItemStackTemplate.fromNonEmptyStack(stack), z, screenX, screenY, compass);
 			}
 		});
+		float invertedZoom = 1 / z;
+
+		int mapSize = Mth.floor(128 / invertedZoom);
+
 		// render prepared maps
 		Matrix3x2fStack pose = graphics.pose();
 		RENDER_LIST.forEach((pos, state) -> {
@@ -94,21 +100,17 @@ public class WorldMapScreen extends Screen {
 			pose.translate(screenX / 2F, screenY / 2F);
 			pose.scale(z);
 			pose.translate(
-					(float) (pos.x - screenX / 2F + mouseDragX),
-					(float) (pos.y - screenY / 2F + mouseDragY)
+					(pos.x - screenX / 2F + (float) mouseDragX) - 64,
+					(pos.y - screenY / 2F + (float) mouseDragY) - 64
 			);
 			graphics.map(state);
 			pose.popMatrix();
 		});
 		// render grid
 		if (grid) {
-			float invertedZoom = 1 / z;
-			int mapSize = Mth.floor(128 / invertedZoom);
 			int mapOffset = Mth.floor(mapSize / 2F);
 			int dragHorizontalOffset = Mth.floor(mouseDragY / invertedZoom);
-			int posZOffset = Mth.floor(-posZ * z) % mapSize;
 			int dragVerticalOffset = Mth.floor(mouseDragX / invertedZoom);
-			int posXOffset = Mth.floor(-posX * z) % mapSize;
 			int horizontalLineOffset = Mth.floor((float) dragHorizontalOffset / mapSize);
 			int verticalLineOffset = Mth.floor((float) dragVerticalOffset / mapSize);
 			int requiredHorizontalLinesStart = -Mth.floor((float) screenY / mapSize) + horizontalLineOffset;
@@ -116,17 +118,17 @@ public class WorldMapScreen extends Screen {
 			int requiredVerticalLinesStart = -Mth.floor((float) screenX / mapSize) + verticalLineOffset;
 			int requiredVerticalLinesEnd = Mth.floor((float) screenX / mapSize) + verticalLineOffset;
 			for (int i = requiredHorizontalLinesStart; i <= requiredHorizontalLinesEnd; i++) {
-				float y = (screenY / 2F) - (mapSize) * i + dragHorizontalOffset + posZOffset - mapOffset;
+				float y = (screenY / 2F) - (mapSize) * i + dragHorizontalOffset - mapOffset;
 				graphics.horizontalLine(0, screenX, Mth.floor(y), WHITE);
 				if (compass) graphics.text(
-						MC.font, String.valueOf(-(i + 1 + Math.round(-posZ * z) / mapSize) * (128 * s) + (64 * s)), 2,Mth.floor(y) + 5, WHITE
+						MC.font, String.valueOf(-64 - i * (128 * (Math.pow(2, scale)))), 2, Mth.floor(y) + 5, WHITE
 				);
 			}
 			for (int i = requiredVerticalLinesStart; i <= requiredVerticalLinesEnd; i++) {
-				float x = (screenX / 2F) - (mapSize) * i + dragVerticalOffset + posXOffset - mapOffset;
+				float x = (screenX / 2F) - (mapSize) * i + dragVerticalOffset - mapOffset;
 				graphics.verticalLine(Mth.floor(x), 0, screenY, WHITE);
 				if (compass) graphics.text(
-						MC.font, String.valueOf(-(i + 1 + Math.round(-posX * z) / mapSize) * (128 * s) + (64 * s)), Mth.floor(x) + 5,2, WHITE
+						MC.font, String.valueOf(-64 - i * (128 * (Math.pow(2, scale)))), Mth.floor(x) + 5, 2, WHITE
 				);
 			}
 		}
@@ -152,18 +154,25 @@ public class WorldMapScreen extends Screen {
 	}
 
 	@SuppressWarnings("DataFlowIssue")
-	private void prepareMap(ItemStackTemplate map, float zoomLevel, int screenX, int screenY, boolean compass, int s) {
+	private void prepareMap(ItemStackTemplate map, float zoomLevel, int screenX, int screenY, boolean compass) {
 		MapId mapId = map.get(DataComponents.MAP_ID);
 		MapItemSavedData data = MC.level.getMapData(mapId);
 		int i = mapId.id();
 		if (!data.isExplorationMap() && !data.locked && dimensionId.equals(data.dimension.identifier())) {
 			Vector2d mapCenter = map.get(ModDataComponents.MAP_ORIGIN);
+			int s = Math.powExact(2, scale);
 			int mapCenterX = (int) mapCenter.x;
 			int mapCenterY = (int) mapCenter.y;
-			float distX = (float) (Math.abs(mapCenterX - posX + mouseDragX) * zoomLevel);
-			float distY = (float) (Math.abs(mapCenterY - posZ + mouseDragY) * zoomLevel);
-			if (distX >= 0 && distX < screenX && distY >= 0 && distY < screenY) {
-				GridPos mapGridPos = GridPos.offset(GridPos.fromBlockPos(mapCenterX, mapCenterY, s), GridPos.fromBlockPos(posX, posZ, s));
+			float distX = (float) ((Math.abs(mapCenterX + mouseDragX))) * scale;
+			float distY = (float) ((Math.abs(mapCenterY + mouseDragY))) * scale;
+			float mapSize = 128F / 2;
+
+//			if (distX <= (float) screenX / 2 / zoomLevel + mapSize && distY <= (float) screenY / 2 / zoomLevel + mapSize) {
+
+				int mapSizeScaled = 128 * s;
+
+				float posScreenX = (screenX / 2F) + ((mapCenterX + 64) / mapSizeScaled) * 128;
+				float posScreenY = (screenY / 2F) + ((mapCenterY + 64) / mapSizeScaled) * 128;
 				MapRenderState state = RENDER_STATES.getOrDefault(i, new MapRenderState());
 				MC.getMapRenderer().extractRenderState(new MapId(i), data, state);
 				if (data.scale == scale) {
@@ -172,31 +181,14 @@ public class WorldMapScreen extends Screen {
 						if (type != MapDecorationTypes.PLAYER_OFF_LIMITS && type != MapDecorationTypes.PLAYER_OFF_MAP)
 							decor.renderOnFrame = true;
 					});
-					RENDER_LIST.put(mapGridPos.getPosOnScreen(screenX, screenY, posX, posZ, s), state);
+					RENDER_LIST.put(new Vec2(posScreenX, posScreenY), state);
 				}
 				if (!compass) state.decorations.forEach(decor -> {
 					Holder<MapDecorationType> type = ((MapDecorationRenderStateExtension) decor).mapstitch$getDecorationType();
 					if (type == MapDecorationTypes.PLAYER) decor.renderOnFrame = false;
 				});
 				if (!RENDER_STATES.containsKey(i)) RENDER_STATES.put(i, state);
-			}
-		}
-	}
-
-	private record GridPos(int x, int y) {
-		private static GridPos fromBlockPos(int blockX, int blockY, int s) {
-			return new GridPos(blockX / (128 * s), blockY / (128 * s));
-		}
-
-		private static GridPos offset(GridPos center, GridPos other) {
-			return new GridPos(center.x - other.x, center.y - other.y);
-		}
-
-		private Vector2d getPosOnScreen(int screenX, int screenY, int playerX, int playerY, int s) {
-			return new Vector2d(
-					(screenX / 2F) + (x * 128) - (((float) playerX / s) % 128F),
-					(screenY / 2F) + (y * 128) - (((float) playerY / s) % 128F)
-			);
+//			}
 		}
 	}
 
@@ -219,11 +211,18 @@ public class WorldMapScreen extends Screen {
 		return WordUtils.capitalize(dimensionId.getPath().replace("_", " "));
 	}
 
+	private void centerMap() {
+		int s = (int) Math.pow(2, (scale));
+		int s2 = (int) (Math.pow(2, -(scale)) * 64);
+		mouseDragX = -posX / s + 64 - s2;
+		mouseDragY = -posZ / s + 64 - s2;
+	}
+
 	@Override
 	public boolean mouseDragged(@NotNull MouseButtonEvent event, double dx, double dy) {
 		if (event.button() == 0) {
-			mouseDragX += dx / Math.pow(2, zoom);
-			mouseDragY += dy / Math.pow(2, zoom);
+			mouseDragX += dx / (Math.pow(2, zoom));
+			mouseDragY += dy / (Math.pow(2, zoom));
 			return true;
 		}
 		return false;
@@ -232,8 +231,7 @@ public class WorldMapScreen extends Screen {
 	@Override
 	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 		if (event.button() == 2) {
-			mouseDragX = 0;
-			mouseDragY = 0;
+			centerMap();
 		}
 		return super.mouseClicked(event, doubleClick);
 	}
@@ -248,10 +246,12 @@ public class WorldMapScreen extends Screen {
 	public boolean keyPressed(@NotNull KeyEvent event) {
 		if (event.isUp() && scale < 4) {
 			scale++;
+			centerMap();
 			return true;
 		}
 		if (event.isDown() && scale > 0) {
 			scale--;
+			centerMap();
 			return true;
 		}
 		if (event.isRight()) {
