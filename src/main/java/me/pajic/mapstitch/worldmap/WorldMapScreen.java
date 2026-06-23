@@ -100,8 +100,8 @@ public class WorldMapScreen extends Screen {
 			pose.translate(screenX / 2F, screenY / 2F);
 			pose.scale(z);
 			pose.translate(
-					(pos.x - screenX / 2F + (float) mouseDragX) - 64,
-					(pos.y - screenY / 2F + (float) mouseDragY) - 64
+					(pos.x - screenX / 2F + (float) mouseDragX) - 128,
+					(pos.y - screenY / 2F + (float) mouseDragY) - 128
 			);
 			graphics.map(state);
 			pose.popMatrix();
@@ -171,8 +171,8 @@ public class WorldMapScreen extends Screen {
 
 				int mapSizeScaled = 128 * s;
 
-				float posScreenX = (screenX / 2F) + ((mapCenterX + 64) / mapSizeScaled) * 128;
-				float posScreenY = (screenY / 2F) + ((mapCenterY + 64) / mapSizeScaled) * 128;
+				float posScreenX = (screenX / 2F) + ((float) (mapCenterX + 64) / mapSizeScaled) * 128;
+				float posScreenY = (screenY / 2F) + ((float) (mapCenterY + 64) / mapSizeScaled) * 128;
 				MapRenderState state = RENDER_STATES.getOrDefault(i, new MapRenderState());
 				MC.getMapRenderer().extractRenderState(new MapId(i), data, state);
 				if (data.scale == scale) {
@@ -214,8 +214,8 @@ public class WorldMapScreen extends Screen {
 	private void centerMap() {
 		int s = (int) Math.pow(2, (scale));
 		int s2 = (int) (Math.pow(2, -(scale)) * 64);
-		mouseDragX = -posX / s + 64 - s2;
-		mouseDragY = -posZ / s + 64 - s2;
+		mouseDragX = (double) -posX / s + 64 - s2;
+		mouseDragY = (double) -posZ / s + 64 - s2;
 	}
 
 	@Override
