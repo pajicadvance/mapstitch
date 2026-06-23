@@ -31,7 +31,7 @@ public class FabricEntrypoint implements ModInitializer {
 		Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, MapStitch.id("atlas_scale"), ModDataComponents.ATLAS_SCALE);
 		Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, MapStitch.id("atlas_fullness"), ModDataComponents.ATLAS_FULLNESS);
 		Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, MapStitch.id("atlas_active_map_index"), ModDataComponents.ATLAS_ACTIVE_MAP_ID);
-		Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, MapStitch.id("map_origin"), ModDataComponents.MAP_ORIGIN);
+		Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, MapStitch.id("map_center"), ModDataComponents.MAP_CENTER);
 		Registry.register(BuiltInRegistries.GAME_RULE, MapStitch.id("require_compass_for_pos"), ModGameRules.REQUIRE_COMPASS_FOR_POS);
 		Registry.register(BuiltInRegistries.ITEM, ModItems.ATLAS_KEY, ModItems.ATLAS);
 		Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, MapStitch.id("crafting_special_atlas"), ModRecipes.ATLAS);

@@ -22,7 +22,7 @@ public class ModDataComponents {
 	public static final DataComponentType<Integer> ATLAS_ACTIVE_MAP_ID = DataComponentType.<Integer>builder()
 			.persistent(ExtraCodecs.intRange(-1, Integer.MAX_VALUE)).networkSynchronized(ByteBufCodecs.VAR_INT).build();
 
-	public static final DataComponentType<Vector2d> MAP_ORIGIN = DataComponentType.<Vector2d>builder()
+	public static final DataComponentType<Vector2d> MAP_CENTER = DataComponentType.<Vector2d>builder()
 			.persistent(Codec.DOUBLE.listOf().comapFlatMap(
 					input -> Util.fixedSize(input, 2).map(floats -> new Vector2d(floats.getFirst(), floats.get(1))),
 					vec -> List.of(vec.x, vec.y))

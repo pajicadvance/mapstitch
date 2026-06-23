@@ -22,8 +22,8 @@ public class ServerPlayerMixin {
 			)
 	)
 	private void addMapOriginData(ItemStack itemStack, CallbackInfo ci, @Local(name = "data") MapItemSavedData data) {
-		if (!itemStack.has(ModDataComponents.MAP_ORIGIN)) {
-			itemStack.set(ModDataComponents.MAP_ORIGIN, new Vector2d(data.centerX, data.centerZ));
+		if (!itemStack.has(ModDataComponents.MAP_CENTER)) {
+			itemStack.set(ModDataComponents.MAP_CENTER, new Vector2d(data.centerX, data.centerZ));
 		}
 	}
 }

@@ -36,7 +36,7 @@ public class NeoforgeEntrypoint {
 			registry.register(MapStitch.id("atlas_scale"), ModDataComponents.ATLAS_SCALE);
 			registry.register(MapStitch.id("atlas_fullness"), ModDataComponents.ATLAS_FULLNESS);
 			registry.register(MapStitch.id("atlas_active_map_index"), ModDataComponents.ATLAS_ACTIVE_MAP_ID);
-			registry.register(MapStitch.id("map_origin"), ModDataComponents.MAP_ORIGIN);
+			registry.register(MapStitch.id("map_center"), ModDataComponents.MAP_CENTER);
 		});
 		event.register(Registries.GAME_RULE, registry ->
 				registry.register(MapStitch.id("require_compass_for_pos"), ModGameRules.REQUIRE_COMPASS_FOR_POS)
