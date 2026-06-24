@@ -40,27 +40,37 @@ import java.util.List;
 import java.util.Map;
 
 public class WorldMapScreen extends Screen {
-	public static List<Identifier> dimensionIds = List.of();
 	public static final Map<Integer, MapRenderState> RENDER_STATES = new HashMap<>();
 	private static final Map<Vec2, MapRenderState> RENDER_LIST = new HashMap<>();
 	private static final int WHITE = 0xffffffff;
 
+	public static List<Identifier> dimensionIds = List.of();
 	private static Identifier dimensionId = Identifier.withDefaultNamespace("overworld");
-	private static int scale = 0;
-	private static int zoom = 0;
 	private static int posX = 0;
 	private static int posY = 0;
 	private static int posZ = 0;
-	private static boolean help = false;
-	private static boolean grid = false;
 
 	private final Minecraft MC = Minecraft.getInstance();
+	private boolean compass;
+
+	private int scale;
+	private int zoom;
 	private double mouseDragX;
 	private double mouseDragZ;
+	private boolean help;
+	private boolean grid;
+	private boolean follow;
 
 	public WorldMapScreen() {
 		super(Component.translatable("mapstitch.gui.worldmap.title"));
-		centerMap();
+		WorldMapState state = WorldMapStateHolder.state();
+		scale = state.scale;
+		zoom = state.zoom;
+		mouseDragX = state.x;
+		mouseDragZ = state.z;
+		help = state.help;
+		grid = state.grid;
+		follow = state.follow;
 	}
 
 	@Override
@@ -72,11 +82,12 @@ public class WorldMapScreen extends Screen {
 		int screenY = MC.getWindow().getGuiScaledHeight();
 		float z = (float) Math.pow(2, zoom);
 		int s = Math.powExact(2, scale);
-		boolean compass = ModUtil.hasCompass(MC);
+		compass = ModUtil.hasCompass(MC);
 		if (compass) {
 			posX = MC.player.blockPosition().getX();
 			posY = MC.player.blockPosition().getY();
 			posZ = MC.player.blockPosition().getZ();
+			if (follow) centerMap();
 		}
 		// prepare maps
 		MC.player.getInventory().forEach(stack -> {
@@ -136,6 +147,7 @@ public class WorldMapScreen extends Screen {
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.dimension", getDimensionDisplayName()), true),
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.scale", s), true),
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.zoom", z), true),
+				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.following"), follow),
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.debug.rendered_maps", RENDER_LIST.size()), MapStitch.xplat().isDebug())
 		));
 		textStack(screenY - 12, true, graphics, List.of(
@@ -143,6 +155,7 @@ public class WorldMapScreen extends Screen {
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.help_control"), help),
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.exit_control", Component.keybind(ModKeybinds.OPEN_WORLD_MAP.getName()).withColor(0xffffff55)), help),
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.grid_control"), help),
+				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.follow_control"), help),
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.scale_control"), help),
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.dimension_control"), help),
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.center_control"), help),
@@ -205,10 +218,12 @@ public class WorldMapScreen extends Screen {
 	}
 
 	private void centerMap() {
-		int s = (int) Math.pow(2, (scale));
-		int s2 = (int) (Math.pow(2, -(scale)) * 64);
-		mouseDragX = (double) -posX / s + 64 - s2;
-		mouseDragZ = (double) -posZ / s + 64 - s2;
+		if (compass) {
+			int s = (int) Math.pow(2, (scale));
+			int s2 = (int) (Math.pow(2, -(scale)) * 64);
+			mouseDragX = (double) -posX / s + 64 - s2;
+			mouseDragZ = (double) -posZ / s + 64 - s2;
+		}
 	}
 
 	@Override
@@ -223,9 +238,7 @@ public class WorldMapScreen extends Screen {
 
 	@Override
 	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-		if (event.button() == 2) {
-			centerMap();
-		}
+		if (event.button() == 2) centerMap();
 		return super.mouseClicked(event, doubleClick);
 	}
 
@@ -261,6 +274,10 @@ public class WorldMapScreen extends Screen {
 			help = !help;
 			return true;
 		}
+		if (event.key() == InputConstants.KEY_F) {
+			follow = !follow;
+			return true;
+		}
 		if (event.key() == InputConstants.KEY_G) {
 			grid = !grid;
 			return true;
@@ -291,6 +308,15 @@ public class WorldMapScreen extends Screen {
 	@Override
 	public void onClose() {
 		RENDER_STATES.clear();
+		WorldMapState state = WorldMapStateHolder.state();
+		state.scale = scale;
+		state.zoom = zoom;
+		state.x = mouseDragX;
+		state.z = mouseDragZ;
+		state.help = help;
+		state.grid = grid;
+		state.follow = follow;
+		state.writeChanges();
 		super.onClose();
 	}
 }
