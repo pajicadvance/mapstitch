@@ -1,6 +1,7 @@
 {
   "mapstitch.gui.worldmap.title": "World Map",
   "mapstitch.gui.worldmap.position": "§8X§r %s §8Y§r %s §8Z§r %s",
+  "mapstitch.gui.worldmap.cursor_position": "§8X§r %s §8Z§r %s",
   "mapstitch.gui.worldmap.dimension": "%s",
   "mapstitch.gui.worldmap.scale": "§7Scale§r 1:%s",
   "mapstitch.gui.worldmap.zoom": "§7Zoom§r %sx",

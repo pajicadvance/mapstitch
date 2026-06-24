@@ -24,7 +24,10 @@ public class MinimapOverlay {
 	private static int noMapTextTimer = 100;
 
 	public static void render(GuiGraphicsExtractor graphics) {
-		if (MC.player != null && MC.level != null && !MC.options.hideGui && !MC.gui.getDebugOverlay().showDebugScreen() && ModUtil.hasCompass(MC)) {
+		if (
+				MC.player != null && MC.level != null && !MC.options.hideGui && MC.screen == null
+				&& !MC.gui.getDebugOverlay().showDebugScreen() && ModUtil.hasCompass(MC)
+		) {
 			ItemStack atlas = getAtlas();
 			if (!atlas.isEmpty()) {
 				int width = MC.getWindow().getGuiScaledWidth();
