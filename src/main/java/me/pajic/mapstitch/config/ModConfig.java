@@ -18,12 +18,12 @@ public class ModConfig {
 
 	public MinimapDisplayCondition minimapDisplayCondition = MinimapDisplayCondition.HOTBAR;
     public MinimapPosition minimapPosition = MinimapPosition.TOP_RIGHT;
-	public int minimapSize = 2;
+	public int minimapSize = 19;
 	public MinimapBackground minimapBackground = MinimapBackground.CLEAR;
-	public int minimapBackgroundOpacity = 35;
+	public int minimapBackgroundOpacity = 50;
 	public int minimapXOffset = 0;
 	public int minimapYOffset = 0;
-	public int worldMapTextBackgroundOpacity = 35;
+	public int worldMapTextBackgroundOpacity = 50;
 	public boolean worldMapHelp = true;
 
     public static ModConfig load(File file) {

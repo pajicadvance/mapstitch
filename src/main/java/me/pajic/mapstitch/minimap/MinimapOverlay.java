@@ -5,6 +5,7 @@ import me.pajic.mapstitch.component.ModDataComponents;
 import me.pajic.mapstitch.config.ModConfigHolder;
 import me.pajic.mapstitch.item.ModItems;
 import me.pajic.mapstitch.util.ModUtil;
+import me.pajic.mapstitch.worldmap.WorldMapScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -25,8 +26,8 @@ public class MinimapOverlay {
 
 	public static void render(GuiGraphicsExtractor graphics) {
 		if (
-				MC.player != null && MC.level != null && !MC.gui.hud.isHidden() && MC.gui.screen() == null
-				&& !MC.gui.hud.getDebugOverlay().showDebugScreen() && ModUtil.hasCompass(MC)
+				MC.player != null && MC.level != null && !MC.gui.hud.isHidden() && ModUtil.hasCompass(MC)
+				&& !MC.gui.hud.getDebugOverlay().showDebugScreen() && !(MC.gui.screen() instanceof WorldMapScreen)
 		) {
 			ItemStack atlas = getAtlas();
 			if (!atlas.isEmpty()) {
@@ -34,7 +35,7 @@ public class MinimapOverlay {
 				int height = MC.getWindow().getGuiScaledHeight();
 				int offsetX = ModConfigHolder.options().minimapXOffset;
 				int offsetY = ModConfigHolder.options().minimapYOffset;
-				float scale = 0.5F + (ModConfigHolder.options().minimapSize * 0.25F);
+				float scale = 0.05F + (ModConfigHolder.options().minimapSize * 0.05F);
 				int offset = Math.round(scale * switch (ModConfigHolder.options().minimapBackground) {
 					case TEXTURE -> 12;
 					case CLEAR -> 6;
@@ -102,26 +103,37 @@ public class MinimapOverlay {
 	@SuppressWarnings("DataFlowIssue")
 	private static ItemStack getAtlas() {
 		return switch (ModConfigHolder.options().minimapDisplayCondition) {
-			case HANDS -> {
-				ItemStack mainhand = MC.player.getMainHandItem();
-				ItemStack offhand = MC.player.getOffhandItem();
-				if (mainhand.is(ModItems.ATLAS)) yield mainhand;
-				if (offhand.is(ModItems.ATLAS)) yield offhand;
-				yield ItemStack.EMPTY;
-			}
+			case HANDS -> checkHands();
 			case HOTBAR -> {
-				for (int i = 0; i < 9; i++) {
-					ItemStack stack = MC.player.getInventory().getItem(i);
-					if (stack.is(ModItems.ATLAS)) yield stack;
-				}
-				yield ItemStack.EMPTY;
+				ItemStack handAtlas = checkHands();
+				yield handAtlas.isEmpty() ? checkHotbar() : handAtlas;
 			}
 			case INVENTORY -> {
-				for (ItemStack stack : MC.player.getInventory().getNonEquipmentItems()) {
+				ItemStack handAtlas = checkHands();
+				ItemStack atlas = handAtlas.isEmpty() ? checkHotbar() : handAtlas;
+				if (atlas.isEmpty()) for (ItemStack stack : MC.player.getInventory().getNonEquipmentItems()) {
 					if (stack.is(ModItems.ATLAS)) yield stack;
-				}
+				} else yield atlas;
 				yield ItemStack.EMPTY;
 			}
 		};
+	}
+
+	@SuppressWarnings("DataFlowIssue")
+	private static ItemStack checkHands() {
+		ItemStack mainhand = MC.player.getMainHandItem();
+		ItemStack offhand = MC.player.getOffhandItem();
+		if (mainhand.is(ModItems.ATLAS)) return mainhand;
+		if (offhand.is(ModItems.ATLAS)) return offhand;
+		return ItemStack.EMPTY;
+	}
+
+	@SuppressWarnings("DataFlowIssue")
+	private static ItemStack checkHotbar() {
+		for (int i = 0; i < 9; i++) {
+			ItemStack stack = MC.player.getInventory().getItem(i);
+			if (stack.is(ModItems.ATLAS)) return stack;
+		}
+		return ItemStack.EMPTY;
 	}
 }
