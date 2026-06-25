@@ -16,13 +16,13 @@ The grid overlay, player marker, and coordinate display require having a compass
 
 ![help](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/help.png)
 
-### Cheaper maps
+## Cheaper maps
 
 Making maps is now cheaper, requiring only 9 paper instead of 8 paper and a compass, but they won't show your position unless you have a compass in your inventory.
 
 ![emptymap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/emptymap.png)
 
-### Atlas
+## Atlas
 
 The inventory doesn't have much space for maps, but the brand-new Atlas item does! Create an atlas by combining a filled map and a book. The atlas can then be used like a bundle to store empty maps and filled maps matching the scale of the filled map used to create the atlas.
 
