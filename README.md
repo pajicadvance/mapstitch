@@ -62,7 +62,7 @@ These can be configured either through [Sodium](https://modrinth.com/mod/sodium)
   - Default is 50%
 - Minimap horizontal and vertical offsets
   - Defaults are 0 and 0
-- World map text background opacity (default 35%)
+- World map text background opacity
   - Default is 50%
 - World map help toggle
   - Controls whether to show the help toggle option
