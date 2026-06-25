@@ -5,7 +5,6 @@ import me.pajic.mapstitch.MapStitch;
 import me.pajic.mapstitch.worldmap.WorldMapScreen;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import org.lwjgl.glfw.GLFW;
 
 public class ModKeybinds {
@@ -20,8 +19,7 @@ public class ModKeybinds {
 	);
 
 	public static void onClientTick(Minecraft client) {
-		LocalPlayer player = client.player;
-		if (player != null && client.level != null && OPEN_WORLD_MAP.consumeClick()) {
+		if (client.player != null && client.level != null && OPEN_WORLD_MAP.consumeClick()) {
 			client.setScreenAndShow(new WorldMapScreen());
 		}
 	}

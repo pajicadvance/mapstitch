@@ -14,10 +14,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -66,6 +71,17 @@ public class NeoforgeEntrypoint {
 				false,
 				Pack.Position.BOTTOM
 		);
+	}
+
+	@SubscribeEvent
+	private static void initCreativeTabs(BuildCreativeModeTabContentsEvent event) {
+		if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+			for (int i = 4; i >= 0; i--) {
+				ItemStack atlas = new ItemStack(ModItems.ATLAS);
+				atlas.set(ModDataComponents.ATLAS_SCALE, i);
+				event.insertAfter(Items.MAP.getDefaultInstance(), atlas, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+			}
+		}
 	}
 }
 *///?}

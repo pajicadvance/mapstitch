@@ -11,6 +11,7 @@ import me.pajic.mapstitch.networking.S2CCompassGameRulePayload;
 import me.pajic.mapstitch.networking.S2CDimensionIdsPayload;
 import me.pajic.mapstitch.recipe.ModRecipes;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
@@ -18,6 +19,9 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 @Entrypoint("main")
 public class FabricEntrypoint implements ModInitializer {
@@ -45,6 +49,13 @@ public class FabricEntrypoint implements ModInitializer {
 						PackActivationType.DEFAULT_ENABLED
 				)
 		);
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(output -> {
+			for (int i = 4; i >= 0; i--) {
+				ItemStack atlas = new ItemStack(ModItems.ATLAS);
+				atlas.set(ModDataComponents.ATLAS_SCALE, i);
+				output.insertAfter(Items.MAP, atlas);
+			}
+		});
 	}
 }
 //?}

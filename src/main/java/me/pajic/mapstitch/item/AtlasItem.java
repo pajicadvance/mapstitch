@@ -5,7 +5,9 @@ import me.pajic.mapstitch.component.ModDataComponents;
 import me.pajic.mapstitch.extension.BundleContentsExtension;
 import me.pajic.mapstitch.extension.BundleContentsMutableExtension;
 import me.pajic.mapstitch.mixin.accessor.BundleItemAccessor;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -39,6 +41,8 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Semaphore;
 
@@ -258,6 +262,23 @@ public class AtlasItem extends Item {
 		}
 	}
 
+	public static List<Component> getTooltip(ItemStack atlas) {
+		List<Component> lines = new ArrayList<>();
+		int scale = atlas.getOrDefault(ModDataComponents.ATLAS_SCALE, -1);
+		if (scale != -1) lines.add(Component.translatable("mapstitch.gui.worldmap.scale", Math.powExact(2, scale)).withStyle(ChatFormatting.GRAY));
+		BundleContents contents = atlas.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
+		int filledMapCount = 0;
+		int emptyMapCount = 0;
+		for (ItemStackTemplate map : contents.items()) {
+			int count = map.count();
+			if (map.is(Items.FILLED_MAP)) filledMapCount += count;
+			if (map.is(Items.MAP)) emptyMapCount += count;
+		}
+		lines.add(Component.translatable("mapstitch.tooltip.atlas.filled_maps", filledMapCount).withStyle(ChatFormatting.GRAY));
+		lines.add(Component.translatable("mapstitch.tooltip.atlas.empty_maps", emptyMapCount).withStyle(ChatFormatting.GRAY));
+		return lines;
+	}
+
 	private void updateActiveMap(ItemStack atlas, BundleContents contents, int posX, int posZ, ServerLevel level, Entity owner) {
 		int emptyMapIndex = -1;
 		boolean hasAnyFilledMaps = false;
@@ -270,7 +291,7 @@ public class AtlasItem extends Item {
 				if (mapData != null) {
 					int distX = Math.abs(mapData.centerX - posX);
 					int distZ = Math.abs(mapData.centerZ - posZ);
-					int scale = Math.powExact(2,mapData.scale);
+					int scale = Math.powExact(2, mapData.scale);
 					if (distX < 64 * scale && distZ < 64 * scale) {
 						atlas.set(ModDataComponents.ATLAS_ACTIVE_MAP_ID, mapId.id());
 						return;
