@@ -8,6 +8,12 @@ MapStitch uses filled maps from your inventory to create a world map which you c
 
 ![worldmap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/worldmap.png)
 
+### Controls
+
+The world map can only show one dimension and scale at once. These can be switched using arrow keys. There are basic controls like panning and zooming using the mouse, and toggleable player following and map grid overlay. A keybind reference can be brought up at any time by pressing H.
+
+![help](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/help.png)
+
 ### Cheaper maps
 
 Making maps is now cheaper, requiring only 9 paper instead of 8 paper and a compass, but they won't show your position unless you have a compass in your inventory.
@@ -21,12 +27,6 @@ The inventory doesn't have much space for maps, but the brand-new Atlas item doe
 Maps from the atlas will be used to create the world map, and the atlas will automatically turn empty maps inside it into filled maps as you enter unmapped areas.
 
 ![atlas](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/atlas.png)
-
-### World map features
-
-The world map can only show one dimension and scale at once. These can be switched using arrow keys. There are basic controls like panning and zooming using the mouse, and toggleable player following and map grid overlay. A keybind reference can be brought up at any time by pressing H.
-
-![help](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/help.png)
 
 ## Minimap
 
