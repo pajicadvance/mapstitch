@@ -5,7 +5,7 @@ import me.pajic.mapstitch.component.ModDataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
-import org.joml.Vector2d;
+import org.joml.Vector2i;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,7 +23,7 @@ public class ServerPlayerMixin {
 	)
 	private void addMapOriginData(ItemStack itemStack, CallbackInfo ci, @Local(name = "data") MapItemSavedData data) {
 		if (!itemStack.has(ModDataComponents.MAP_CENTER)) {
-			itemStack.set(ModDataComponents.MAP_CENTER, new Vector2d(data.centerX, data.centerZ));
+			itemStack.set(ModDataComponents.MAP_CENTER, new Vector2i(data.centerX, data.centerZ));
 		}
 	}
 }

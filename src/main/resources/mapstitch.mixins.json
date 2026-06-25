@@ -2,6 +2,7 @@
   "package": "me.pajic.mapstitch.mixin",
   "required": true,
   "minVersion": "0.8.7",
+  "mixinextras": {"minVersion": "0.5.4"},
   "compatibilityLevel": "${java}",
   "injectors": {
     "defaultRequire": 1

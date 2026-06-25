@@ -36,7 +36,7 @@ import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import org.apache.commons.lang3.math.Fraction;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector2d;
+import org.joml.Vector2i;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
@@ -287,7 +287,7 @@ public class AtlasItem extends Item {
 				//noinspection DataFlowIssue
 				((BundleContentsMutableExtension) mutableContents).mapstitch$removeOneAtIndex(emptyMapIndex);
 				MapItemSavedData mapData = MapItem.getSavedData(newMap.get(DataComponents.MAP_ID), level);
-				newMap.set(ModDataComponents.MAP_CENTER, new Vector2d(mapData.centerX, mapData.centerZ));
+				newMap.set(ModDataComponents.MAP_CENTER, new Vector2i(mapData.centerX, mapData.centerZ));
 				newMap.inventoryTick(level, owner, EquipmentSlot.MAINHAND);
 				mutableContents.tryInsert(newMap);
 				atlas.set(DataComponents.BUNDLE_CONTENTS, mutableContents.toImmutable());

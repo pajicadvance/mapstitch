@@ -16,7 +16,9 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.state.MapRenderState;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -27,13 +29,12 @@ import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
-import net.minecraft.world.level.saveddata.maps.MapDecorationTypes;
 import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import org.apache.commons.lang3.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
-import org.joml.Vector2d;
+import org.joml.Vector2i;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,8 +44,8 @@ import java.util.function.Supplier;
 
 public class WorldMapScreen extends Screen {
 	private final Minecraft MC = Minecraft.getInstance();
-	private static final Map<MapId, MapRenderState> RENDER_STATES = new HashMap<>();
 	private static final Map<GridPos, MapDataWithId> MAPS = new HashMap<>();
+	private static final Identifier PLAYER_MARKER = Identifier.withDefaultNamespace("textures/map/decorations/player.png");
 
 	public static List<Identifier> dimensionIds = List.of();
 	private static Identifier dimensionId = Identifier.withDefaultNamespace("overworld");
@@ -55,6 +56,7 @@ public class WorldMapScreen extends Screen {
 
 	private boolean compass;
 	private int mapSize;
+	private double mapPixels;
 	private double camX, camZ;
 	private int zoomLevel;
 	private float zoom;
@@ -80,10 +82,10 @@ public class WorldMapScreen extends Screen {
 	private record MapDataWithId(MapId id, MapItemSavedData data) {}
 
 	private record GridPos(int gx, int gy, int s) {}
-	private GridPos worldToGrid(double worldX, double worldZ, int scale) {
+	private GridPos worldToGrid(int worldX, int worldZ, int scale) {
 		return new GridPos(
-				Math.floorDiv((int) worldX, 128 << scale),
-				Math.floorDiv((int) worldZ, 128 << scale),
+				Math.floorDiv(worldX, 128 << scale),
+				Math.floorDiv(worldZ, 128 << scale),
 				scale
 		);
 	}
@@ -99,11 +101,13 @@ public class WorldMapScreen extends Screen {
 	@Override
 	public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
 		mapSize = 128 << scale;
+		mapPixels = mapSize * zoom;
 		int xBoundMin = Math.floorDiv((int)(camX - (screenW/2d)/zoom), mapSize);
 		int xBoundMax = Math.floorDiv((int)(camX + (screenW/2d)/zoom), mapSize) + 1;
 		int zBoundMin = Math.floorDiv((int)(camZ - (screenH/2d)/zoom), mapSize);
 		int zBoundMax = Math.floorDiv((int)(camZ + (screenH/2d)/zoom), mapSize) + 1;
 		renderMaps(graphics, xBoundMin, xBoundMax, zBoundMin, zBoundMax);
+		if (compass) renderPlayerMarker(graphics);
 		if (grid) {
 			renderGrid(graphics, xBoundMin, xBoundMax, zBoundMin, zBoundMax);
 			if (compass) renderPosAtCursor(graphics, mouseX, mouseY);
@@ -136,29 +140,24 @@ public class WorldMapScreen extends Screen {
 		});
 		screenW = MC.getWindow().getGuiScaledWidth();
 		screenH = MC.getWindow().getGuiScaledHeight();
-		double mapPixels = mapSize * zoom;
 		for (int gy = zBoundMin; gy <= zBoundMax; gy++) {
 			for (int gx = xBoundMin; gx <= xBoundMax; gx++) {
 				MapDataWithId map = MAPS.get(new GridPos(gx, gy, scale));
-				if (map != null) {
+				if (map != null && map.data.scale == scale) {
 					double px = worldToScreenX(gridOriginX(gx));
 					double py = worldToScreenZ(gridOriginZ(gy));
 					Matrix3x2fStack pose = graphics.pose();
 					pose.pushMatrix();
 					pose.translate((float) px, (float) py);
 					pose.scale((float) (mapPixels / 128.0), (float) (mapPixels / 128.0));
-					MapRenderState state = RENDER_STATES.getOrDefault(map.id, new MapRenderState());
+					MapRenderState state = new MapRenderState();
 					MC.getMapRenderer().extractRenderState(map.id, map.data, state);
-					if (map.data.scale == scale) {
-						state.decorations.forEach(decor -> {
-							Holder<MapDecorationType> type = ((MapDecorationRenderStateExtension) decor).mapstitch$getDecorationType();
-							if (type != MapDecorationTypes.PLAYER_OFF_LIMITS && type != MapDecorationTypes.PLAYER_OFF_MAP) decor.renderOnFrame = true;
-							if (!compass && type == MapDecorationTypes.PLAYER) decor.renderOnFrame = false;
-						});
-						graphics.map(state);
-						mapsRendered++;
-					}
-					RENDER_STATES.putIfAbsent(map.id, state);
+					state.decorations.forEach(decor -> {
+						Holder<MapDecorationType> type = ((MapDecorationRenderStateExtension) decor).mapstitch$getDecorationType();
+						if (!ModUtil.DECORS_REQUIRING_COMPASS.contains(type)) decor.renderOnFrame = true;
+					});
+					graphics.map(state);
+					mapsRendered++;
 					pose.popMatrix();
 				}
 			}
@@ -168,7 +167,7 @@ public class WorldMapScreen extends Screen {
 	@SuppressWarnings("DataFlowIssue")
 	private void prepareMap(ItemStackTemplate map) {
 		MapId id = map.get(DataComponents.MAP_ID);
-		Vector2d mapCenter = map.get(ModDataComponents.MAP_CENTER);
+		Vector2i mapCenter = map.get(ModDataComponents.MAP_CENTER);
 		if (id != null && mapCenter != null ) {
 			MapItemSavedData data = MC.level.getMapData(id);
 			if (!data.isExplorationMap() && !data.locked && dimensionId.equals(data.dimension.identifier())){
@@ -176,6 +175,29 @@ public class WorldMapScreen extends Screen {
 				MAPS.put(gridPos, new MapDataWithId(id, data));
 			}
 		}
+	}
+
+	@SuppressWarnings("DataFlowIssue")
+	private void renderPlayerMarker(GuiGraphicsExtractor graphics) {
+		double sx = worldToScreenX(posX);
+		double sz = worldToScreenZ(posZ);
+		int topInset  = (grid && compass) ? 12 : 0;
+		int leftInset = (grid && compass) ? getVerticalGridBarWidth(MC.font) : 0;
+		float px = (float) Mth.clamp(sx, leftInset + 4, screenW - 4);
+		float py = (float) Mth.clamp(sz, topInset  + 4, screenH - 4);
+		Matrix3x2fStack pose = graphics.pose();
+		pose.pushMatrix();
+		pose.translate(px, py);
+		pose.rotate(Mth.DEG_TO_RAD * (MC.player.getYRot() + 180.0F));
+		graphics.blit(
+				RenderPipelines.GUI_TEXTURED,
+				PLAYER_MARKER,
+				-4, -4,
+				0, 0,
+				8, 8,
+				8, 8
+		);
+		pose.popMatrix();
 	}
 
 	private void renderText(GuiGraphicsExtractor graphics) {
@@ -217,7 +239,6 @@ public class WorldMapScreen extends Screen {
 
 	private void renderGrid(GuiGraphicsExtractor graphics, int xBoundMin, int xBoundMax, int zBoundMin, int zBoundMax) {
 		Font font = minecraft.font;
-		double mapPixels = mapSize * zoom;
 		int verticalBarWidth = getVerticalGridBarWidth(font);
 		int step = Math.max(1, (int) Math.ceil(48 / mapPixels));
 		List<Supplier<TextRenderData>> textRenderCalls = new ArrayList<>();
@@ -284,6 +305,10 @@ public class WorldMapScreen extends Screen {
 		if (compass) {
 			camX = posX;
 			camZ = posZ;
+		} else if (MC.level != null) {
+			BlockPos spawn = MC.level.getRespawnData().pos();
+			camX = spawn.getX();
+			camZ = spawn.getZ();
 		}
 	}
 
@@ -359,14 +384,7 @@ public class WorldMapScreen extends Screen {
 	}
 
 	@Override
-	public void resize(int width, int height) {
-		RENDER_STATES.clear();
-		super.resize(width, height);
-	}
-
-	@Override
 	public void onClose() {
-		RENDER_STATES.clear();
 		WorldMapState state = WorldMapStateHolder.state();
 		state.scale = scale;
 		state.zoom = zoomLevel;

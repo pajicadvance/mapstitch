@@ -1,18 +1,26 @@
 package me.pajic.mapstitch.util;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.level.saveddata.maps.MapDecorationType;
+import net.minecraft.world.level.saveddata.maps.MapDecorationTypes;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class ModUtil {
 	public static boolean compassRequired = true;
+	public static final Set<Holder<MapDecorationType>> DECORS_REQUIRING_COMPASS = Set.of(
+			MapDecorationTypes.PLAYER,
+			MapDecorationTypes.PLAYER_OFF_MAP,
+			MapDecorationTypes.PLAYER_OFF_LIMITS
+	);
 
 	@SuppressWarnings("DataFlowIssue")
 	public static boolean hasCompass(Minecraft mc) {
