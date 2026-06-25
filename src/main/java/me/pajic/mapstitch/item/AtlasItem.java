@@ -43,7 +43,7 @@ import java.util.Optional;
 import java.util.concurrent.Semaphore;
 
 public class AtlasItem extends Item {
-	public static final Fraction MAX_SIZE = Fraction.getFraction(16, 1);
+	public static final Fraction MAX_SIZE = Fraction.getFraction(256, 1);
 	private static final Semaphore MUTEX = new Semaphore(1);
 
 	public AtlasItem() {
@@ -155,7 +155,7 @@ public class AtlasItem extends Item {
 	@Override
 	public int getBarWidth(final ItemStack stack) {
 		BundleContents contents = stack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
-		return Mth.clamp(getAtlasItemCount(contents) / (MAX_SIZE.intValue() * 64), 1, 13);
+		return Math.round(Mth.clampedLerp(getAtlasItemCount(contents) / (MAX_SIZE.intValue() * 64F), 0, 13));
 	}
 
 	@Override

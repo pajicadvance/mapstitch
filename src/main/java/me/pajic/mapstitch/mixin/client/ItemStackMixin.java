@@ -3,7 +3,6 @@ package me.pajic.mapstitch.mixin.client;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import me.pajic.mapstitch.component.ModDataComponents;
-import me.pajic.mapstitch.item.AtlasItem;
 import me.pajic.mapstitch.item.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
@@ -39,16 +38,13 @@ public class ItemStackMixin {
 			int scale = self.getOrDefault(ModDataComponents.ATLAS_SCALE, -1);
 			if (scale != -1) lines.add(Component.translatable("mapstitch.gui.worldmap.scale", Math.powExact(2, scale)).withStyle(ChatFormatting.GRAY));
 			BundleContents contents = self.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
-			int itemCount = 0;
 			int filledMapCount = 0;
 			int emptyMapCount = 0;
 			for (ItemStackTemplate map : contents.items()) {
 				int count = map.count();
-				itemCount += count;
 				if (map.is(Items.FILLED_MAP)) filledMapCount += count;
 				if (map.is(Items.MAP)) emptyMapCount += count;
 			}
-			lines.add(Component.translatable("mapstitch.tooltip.atlas.capacity", itemCount, AtlasItem.MAX_SIZE.intValue() * 64).withStyle(ChatFormatting.GRAY));
 			lines.add(Component.translatable("mapstitch.tooltip.atlas.filled_maps", filledMapCount).withStyle(ChatFormatting.GRAY));
 			lines.add(Component.translatable("mapstitch.tooltip.atlas.empty_maps", emptyMapCount).withStyle(ChatFormatting.GRAY));
 		}

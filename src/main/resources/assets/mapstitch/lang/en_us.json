@@ -21,7 +21,6 @@
 
   "mapstitch.gui.worldmap.debug.rendered_maps": "[Debug] Rendered maps: %s",
 
-  "mapstitch.tooltip.atlas.capacity": "%s/%s items",
   "mapstitch.tooltip.atlas.filled_maps": "%s filled maps",
   "mapstitch.tooltip.atlas.empty_maps": "%s empty maps",
 
