@@ -22,7 +22,7 @@ public class ModKeybinds {
 	public static void onClientTick(Minecraft client) {
 		LocalPlayer player = client.player;
 		if (player != null && client.level != null && OPEN_WORLD_MAP.consumeClick()) {
-			client.setScreen(new WorldMapScreen());
+			client.setScreenAndShow(new WorldMapScreen());
 		}
 	}
 }

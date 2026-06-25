@@ -25,8 +25,8 @@ public class MinimapOverlay {
 
 	public static void render(GuiGraphicsExtractor graphics) {
 		if (
-				MC.player != null && MC.level != null && !MC.options.hideGui && MC.screen == null
-				&& !MC.gui.getDebugOverlay().showDebugScreen() && ModUtil.hasCompass(MC)
+				MC.player != null && MC.level != null && !MC.gui.hud.isHidden() && MC.gui.screen() == null
+				&& !MC.gui.hud.getDebugOverlay().showDebugScreen() && ModUtil.hasCompass(MC)
 		) {
 			ItemStack atlas = getAtlas();
 			if (!atlas.isEmpty()) {

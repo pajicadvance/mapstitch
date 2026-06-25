@@ -47,6 +47,8 @@ stonecutter parameters {
 			replace("MC.options.hideGui", "MC.gui.hud.isHidden()")
 			replace("MC.gui.getDebugOverlay().showDebugScreen()", "MC.gui.hud.getDebugOverlay().showDebugScreen()")
 			replace("MC.gameRenderer.getGameRenderState()", "MC.gameRenderer.gameRenderState()")
+			replace("MC.screen", "MC.gui.screen()")
+			replace("client.setScreen", "client.setScreenAndShow")
 		}
 	}
 }

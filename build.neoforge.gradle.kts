@@ -17,9 +17,6 @@ platform {
 
 neoForge {
 	version = property("deps.neoforge") as String
-	accessTransformers.from(rootProject.file("src/main/resources/aw/${stonecutter.current.version}.cfg"))
-	validateAccessTransformers = true
-
 	runs {
 		register("client") {
 			client()

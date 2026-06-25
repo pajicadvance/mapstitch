@@ -19,6 +19,4 @@ description = '''${description}'''
 [[mixins]]
 config = "${id}.mixins.json"
 behaviorVersion = "0.17.1"
-[[accessTransformers]]
-file = "aw/${minecraft}.cfg"
 ${dependencies}
