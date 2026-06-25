@@ -6,28 +6,35 @@ This mod adds a world map and a minimap using vanilla maps and makes vanilla map
 
 MapStitch uses filled maps from your inventory to create a world map which you can open at any time by pressing M.
 
+![worldmap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/worldmap.png)
+
+### Cheaper maps
+
 Making maps is now cheaper, requiring only 9 paper instead of 8 paper and a compass, but they won't show your position unless you have a compass in your inventory.
+
+![emptymap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/emptymap.png)
+
+### Atlas
 
 The inventory doesn't have much space for maps, but the brand-new Atlas item does! Create an atlas by combining a filled map and a book. The atlas can then be used like a bundle to store empty maps and filled maps matching the scale of the filled map used to create the atlas.
 
 Maps from the atlas will be used to create the world map, and the atlas will automatically turn empty maps inside it into filled maps as you enter unmapped areas.
 
+![atlas](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/atlas.png)
+
+### World map features
+
 The world map can only show one dimension and scale at once. These can be switched using arrow keys. There are basic controls like panning and zooming using the mouse, and toggleable player following and map grid overlay. A keybind reference can be brought up at any time by pressing H.
 
-- Left click drag: Move
-- Scroll wheel: Zoom in/out
-- Middle click: Center to player
-- Left/right arrow key: Switch dimension
-- Up/down arrow key: Switch scale
-- F: Toggle player following
-- G: Toggle grid overlay
-- Esc or M: Exit
+![help](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/help.png)
 
 ## Minimap
 
 Having an atlas in the hotbar and a compass anywhere in your inventory will display a minimap showing the map where you're currently located.
 
 If multiple atlases are present, the minimap will prioritize the atlas in your hands, otherwise the first atlas will be used.
+
+![minimap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/minimap.png)
 
 ## Configuration
 
