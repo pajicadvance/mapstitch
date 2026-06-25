@@ -2,7 +2,6 @@ package me.pajic.mapstitch.item;
 
 import me.pajic.mapstitch.MapStitch;
 import me.pajic.mapstitch.component.ModDataComponents;
-import me.pajic.mapstitch.extension.BundleContentsExtension;
 import me.pajic.mapstitch.extension.BundleContentsMutableExtension;
 import me.pajic.mapstitch.mixin.accessor.BundleItemAccessor;
 import net.minecraft.ChatFormatting;
@@ -50,15 +49,8 @@ public class AtlasItem extends Item {
 	public static final Fraction MAX_SIZE = Fraction.getFraction(256, 1);
 	private static final Semaphore MUTEX = new Semaphore(1);
 
-	public AtlasItem() {
-		BundleContents contents = BundleContents.EMPTY;
-		((BundleContentsExtension) (Object) contents).mapstitch$setIsAtlas();
-		super(new Item.Properties()
-				.component(DataComponents.BUNDLE_CONTENTS, contents)
-				.component(ModDataComponents.ATLAS_FULLNESS, 0)
-				.component(ModDataComponents.ATLAS_ACTIVE_MAP_ID, -1)
-				.stacksTo(1)
-				.setId(ModItems.ATLAS_KEY));
+	public AtlasItem(Properties properties) {
+		super(properties);
 	}
 
 	@Override

@@ -4,11 +4,14 @@ import com.mojang.blaze3d.platform.InputConstants;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectBooleanImmutablePair;
 import me.pajic.mapstitch.MapStitch;
+import me.pajic.mapstitch.compat.OhmegaCompat;
+import me.pajic.mapstitch.compat.TrinketsCompat;
 import me.pajic.mapstitch.component.ModDataComponents;
 import me.pajic.mapstitch.config.ModConfigHolder;
 import me.pajic.mapstitch.extension.MapDecorationRenderStateExtension;
 import me.pajic.mapstitch.item.ModItems;
 import me.pajic.mapstitch.keybind.ModKeybinds;
+import me.pajic.mapstitch.util.CompatFlags;
 import me.pajic.mapstitch.util.ModUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -25,6 +28,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.BundleContents;
@@ -128,7 +132,10 @@ public class WorldMapScreen extends Screen {
 			if (follow) centerMap();
 		}
 		zoom = (float) Math.pow(2, zoomLevel) / Math.powExact(2, scale);
-		MC.player.getInventory().forEach(stack -> {
+		List<ItemStack> items = new ArrayList<>(MC.player.getInventory().getNonEquipmentItems());
+		if (CompatFlags.TRINKETS_LOADED) items.addAll(TrinketsCompat.getTrinketAtlases(MC.player));
+		if (CompatFlags.OHMEGA_LOADED) items.addAll(OhmegaCompat.getOhmegaAtlases(MC.player));
+		items.forEach(stack -> {
 			if (stack.is(ModItems.ATLAS)) {
 				BundleContents contents = stack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
 				for (ItemStackTemplate map : contents.items()) {

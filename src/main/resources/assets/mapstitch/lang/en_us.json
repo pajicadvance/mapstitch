@@ -34,6 +34,8 @@
   "key.category.mapstitch.keys": "MapStitch",
   "mapstitch.key.open_world_map": "Open world map",
 
+  "trinkets.slot.mapstitch.atlas": "Atlas",
+
   "config.mapstitch.minimap": "Minimap",
   "config.mapstitch.minimap.position": "Position",
   "config.mapstitch.minimap.position.desc": "The corner of the screen where the minimap will be displayed.",

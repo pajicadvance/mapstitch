@@ -1,9 +1,12 @@
 package me.pajic.mapstitch.minimap;
 
 import it.unimi.dsi.fastutil.ints.IntIntImmutablePair;
+import me.pajic.mapstitch.compat.OhmegaCompat;
+import me.pajic.mapstitch.compat.TrinketsCompat;
 import me.pajic.mapstitch.component.ModDataComponents;
 import me.pajic.mapstitch.config.ModConfigHolder;
 import me.pajic.mapstitch.item.ModItems;
+import me.pajic.mapstitch.util.CompatFlags;
 import me.pajic.mapstitch.util.ModUtil;
 import me.pajic.mapstitch.worldmap.WorldMapScreen;
 import net.minecraft.client.Minecraft;
@@ -17,6 +20,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+
+import java.util.List;
 
 public class MinimapOverlay {
 	private static final Minecraft MC = Minecraft.getInstance();
@@ -102,7 +107,16 @@ public class MinimapOverlay {
 
 	@SuppressWarnings("DataFlowIssue")
 	private static ItemStack getAtlas() {
-		return switch (ModConfigHolder.options().minimapDisplayCondition) {
+		ItemStack trinketAtlas = ItemStack.EMPTY;
+		if (CompatFlags.TRINKETS_LOADED) {
+			List<ItemStack> list = TrinketsCompat.getTrinketAtlases(MC.player);
+			if (!list.isEmpty()) trinketAtlas = list.getFirst();
+		}
+		else if (CompatFlags.OHMEGA_LOADED) {
+			List<ItemStack> list = OhmegaCompat.getOhmegaAtlases(MC.player);
+			if (!list.isEmpty()) trinketAtlas = list.getFirst();
+		}
+		return !trinketAtlas.isEmpty() ? trinketAtlas : switch (ModConfigHolder.options().minimapDisplayCondition) {
 			case HANDS -> checkHands();
 			case HOTBAR -> {
 				ItemStack handAtlas = checkHands();

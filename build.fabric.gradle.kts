@@ -41,6 +41,7 @@ repositories {
 	mavenCentral()
 	strictMaven("https://api.modrinth.com/maven", "maven.modrinth") { name = "Modrinth" }
 	strictMaven("https://maven.caffeinemc.net/releases") { name = "CaffeineMC" }
+	strictMaven("https://maven.nucleoid.xyz/releases") { name = "Nucleoid" }
 }
 
 dependencies {
@@ -49,4 +50,9 @@ dependencies {
 	implementation("net.fabricmc.fabric-api:fabric-api:${prop("deps.fabric-api")}")
 	compileOnlyApi("net.caffeinemc:sodium-fabric-api:${prop("deps.sodium")}")
 	runtimeOnly("net.caffeinemc:sodium-fabric:${prop("deps.sodium")}")
+	compileOnlyApi("eu.pb4:trinkets:${prop("deps.trinkets")}")
+	//runtimeOnly("eu.pb4:trinkets:${prop("deps.trinkets")}")
+	compileOnly("io.github.swackyy:ohmega-fabric:${prop("deps.ohmega")}")
+	//runtimeOnly("io.github.swackyy:ohmega-fabric:${prop("deps.ohmega")}")
+	runtimeOnly("maven.modrinth:forge-config-api-port:26.2.1-fabric")
 }
