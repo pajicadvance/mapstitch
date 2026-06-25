@@ -8,9 +8,11 @@ MapStitch uses filled maps from your inventory to create a world map which you c
 
 ![worldmap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/worldmap.png)
 
-### Controls
+### World map features
 
 The world map can only show one dimension and scale at once. These can be switched using arrow keys. There are basic controls like panning and zooming using the mouse, and toggleable player following and map grid overlay. A keybind reference can be brought up at any time by pressing H.
+
+The grid overlay, player marker, and coordinate display require having a compass anywhere in the inventory.
 
 ![help](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/help.png)
 
