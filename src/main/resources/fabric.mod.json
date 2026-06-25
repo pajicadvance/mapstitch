@@ -30,6 +30,9 @@
     ],
     "sodium:config_api_user": [
       "${group}.${id}.config.ModSodiumConfig"
+    ],
+    "modmenu": [
+      "${group}.${id}.config.ModMenuIntegration"
     ]
   },
   "mixins": [

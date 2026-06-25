@@ -8,7 +8,7 @@ MapStitch uses filled maps from your inventory to create a world map which you c
 
 Making maps is now cheaper, requiring only 9 paper instead of 8 paper and a compass, but they won't show your position unless you have a compass in your inventory.
 
-The inventory doesn't have much space for maps, but the brand-new Atlas item does! Create an atlas by combining a filled map and a book. The atlas can then be used like a bundle to store up to 1024 empty maps and filled maps matching the scale of the filled map used to create the atlas.
+The inventory doesn't have much space for maps, but the brand-new Atlas item does! Create an atlas by combining a filled map and a book. The atlas can then be used like a bundle to store empty maps and filled maps matching the scale of the filled map used to create the atlas.
 
 Maps from the atlas will be used to create the world map, and the atlas will automatically turn empty maps inside it into filled maps as you enter unmapped areas.
 
@@ -37,7 +37,7 @@ If multiple atlases are present, the minimap will prioritize the atlas in your h
 
 ### Client settings
 
-These can be configured either through Sodium video settings or by editing `mapstitch.json` in the config folder.
+These can be configured either through [Sodium](https://modrinth.com/mod/sodium) video settings or in the config screen provided by [YACL](https://modrinth.com/mod/yacl). Both mods are optional and the config can be edited manually through `mapstitch.json` in the config folder, but it's highly recommended to use one of the two config screens instead.
 
 - Minimap display condition (`HANDS`, `HOTBAR`, `INVENTORY`)
   - Controls where the atlas item has to be located in order to display the minimap
@@ -58,3 +58,7 @@ These can be configured either through Sodium video settings or by editing `maps
 - World map help toggle
   - Controls whether to show the help toggle option
   - Default is true
+
+## Mod integration
+
+- [Trinkets (Updated)](https://modrinth.com/mod/trinkets-updated) or [Ohmega](https://modrinth.com/mod/ohmega): Allows equipping one atlas in the accessory slot, from where it will function as usual and be prioritized for the minimap display

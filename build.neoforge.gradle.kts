@@ -46,6 +46,7 @@ repositories {
 }
 
 dependencies {
+	compileOnlyApi("maven.modrinth:yacl:${prop("deps.yacl")}-neoforge")
 	compileOnlyApi("net.caffeinemc:sodium-neoforge-api:${prop("deps.sodium")}")
 	runtimeOnly("net.caffeinemc:sodium-neoforge:${prop("deps.sodium")}")
 	compileOnlyApi("eu.pb4:trinkets:${prop("deps.trinkets")}")

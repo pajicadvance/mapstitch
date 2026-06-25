@@ -36,6 +36,7 @@
 
   "trinkets.slot.mapstitch.atlas": "Atlas",
 
+  "config.mapstitch.title": "MapStitch Configuration",
   "config.mapstitch.minimap": "Minimap",
   "config.mapstitch.minimap.position": "Position",
   "config.mapstitch.minimap.position.desc": "The corner of the screen where the minimap will be displayed.",
