@@ -53,6 +53,6 @@ dependencies {
 	compileOnlyApi("eu.pb4:trinkets:${prop("deps.trinkets")}")
 	//runtimeOnly("eu.pb4:trinkets:${prop("deps.trinkets")}")
 	compileOnly("io.github.swackyy:ohmega-fabric:${prop("deps.ohmega")}")
-	//runtimeOnly("io.github.swackyy:ohmega-fabric:${prop("deps.ohmega")}")
-	runtimeOnly("maven.modrinth:forge-config-api-port:26.2.1-fabric")
+	/*runtimeOnly("io.github.swackyy:ohmega-fabric:${prop("deps.ohmega")}")
+	runtimeOnly("maven.modrinth:forge-config-api-port:26.2.1-fabric")*/
 }
