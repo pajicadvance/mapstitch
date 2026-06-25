@@ -37,7 +37,7 @@ If multiple atlases are present, the minimap will prioritize the atlas in your h
 
 ### Client settings
 
-These can be configured either through [Sodium](https://modrinth.com/mod/sodium) video settings or in the config screen provided by [YACL](https://modrinth.com/mod/yacl). Both mods are optional and the config can be edited manually through `mapstitch.json` in the config folder, but it's highly recommended to use one of the two config screens instead.
+These can be configured either through [Sodium](https://modrinth.com/mod/sodium) video settings or in a config screen provided by [YACL](https://modrinth.com/mod/yacl). Both mods are optional and the config can be edited manually through `mapstitch.json` in the config folder, but it's highly recommended to use one of the two config screens instead.
 
 - Minimap display condition (`HANDS`, `HOTBAR`, `INVENTORY`)
   - Controls where the atlas item has to be located in order to display the minimap
@@ -61,4 +61,8 @@ These can be configured either through [Sodium](https://modrinth.com/mod/sodium)
 
 ## Mod integration
 
-- [Trinkets (Updated)](https://modrinth.com/mod/trinkets-updated) or [Ohmega](https://modrinth.com/mod/ohmega): Allows equipping one atlas in the accessory slot, from where it will function as usual and be prioritized for the minimap display
+- [Trinkets (Updated)](https://modrinth.com/mod/trinkets-updated) or [Ohmega](https://modrinth.com/mod/ohmega): Allows equipping one atlas as an accessory, from where it will function as usual and be prioritized for the minimap
+
+## Recommended mods
+
+- [Better Nether Map](https://modrinth.com/mod/better-nether-map): Makes maps made in the Nether display at a certain height instead of displaying the Nether roof
