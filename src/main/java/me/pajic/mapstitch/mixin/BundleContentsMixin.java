@@ -43,8 +43,7 @@ public class BundleContentsMixin implements BundleContentsExtension {
 		@Shadow @Final private List<ItemStack> items;
 		@Shadow public abstract @Nullable ItemStack removeOne();
 
-		@Shadow
-		private Fraction weight;
+		@Shadow private Fraction weight;
 		@Unique private boolean mapstitch$isAtlas = false;
 
 		@Override
@@ -64,7 +63,7 @@ public class BundleContentsMixin implements BundleContentsExtension {
 				int emptyMapIndex = -1;
 				for (int i = 0; i < items.size(); i++) {
 					ItemStack stack = items.get(i);
-					if (stack.is(Items.MAP)){
+					if (stack.is(Items.MAP)) {
 						emptyMapIndex = i;
 						break;
 					}

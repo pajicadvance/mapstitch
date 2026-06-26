@@ -12,7 +12,7 @@ MapStitch uses filled maps from your inventory to create a world map which you c
 
 The world map can only show one dimension and scale at once. These can be switched using arrow keys. There are basic controls like panning and zooming using the mouse, and toggleable player following and map grid overlay. A keybind reference can be brought up at any time by pressing H.
 
-The grid overlay, player marker, and coordinate display require having a compass anywhere in the inventory.
+The player marker, coordinates, and grid overlay require having a compass anywhere in the inventory.
 
 ![help](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/help.png)
 
@@ -24,7 +24,7 @@ Making maps is now cheaper, requiring only 9 paper instead of 8 paper and a comp
 
 ## Atlas
 
-The inventory doesn't have much space for maps, but the brand-new Atlas item does! Create an atlas by combining a filled map and a book. The atlas can then be used like a bundle to store empty maps and filled maps matching the scale of the filled map used to create the atlas.
+The inventory doesn't have much space for maps, but the brand-new Atlas item does! Create an atlas by combining a filled map and a book. The atlas can then be used like a bundle to store empty maps and filled maps matching the scale of the filled map used to create the atlas (up to 16384 items in total).
 
 Maps from the atlas will be used to create the world map, and the atlas will automatically turn empty maps inside it into filled maps as you enter unmapped areas.
 
@@ -42,7 +42,7 @@ If multiple atlases are present, the minimap will prioritize the atlas in your h
 
 ### Game rules
 
-- `mapstitch:require_compass_for_pos`: Whether a compass is required to display the minimap and the player position and coordinates in the world map (default true)
+- `mapstitch:require_compass_for_pos`: Whether a compass is required to display the minimap and the player marker, coordinates, and grid overlay in the world map (default true)
 
 ### Client settings
 
