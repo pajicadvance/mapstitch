@@ -30,6 +30,8 @@ Maps from the atlas will be used to create the world map, and the atlas will aut
 
 Scrolling while hovering over an atlas will switch between ejecting filled or empty maps first.
 
+Right-clicking with an atlas in hand when targeting a banner will create a banner marker on the currently active map, just like regular maps do.
+
 ![atlas](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/atlas.png)
 
 ## Minimap
