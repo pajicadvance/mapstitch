@@ -28,6 +28,8 @@ The inventory doesn't have much space for maps, but the brand-new Atlas item doe
 
 Maps from the atlas will be used to create the world map, and the atlas will automatically turn empty maps inside it into filled maps as you enter unmapped areas.
 
+Scrolling while hovering over an atlas will switch between ejecting filled or empty maps first.
+
 ![atlas](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/atlas.png)
 
 ## Minimap

@@ -23,6 +23,8 @@
 
   "mapstitch.tooltip.atlas.filled_maps": "%s filled maps",
   "mapstitch.tooltip.atlas.empty_maps": "%s empty maps",
+  "mapstitch.tooltip.atlas.filled_maps_first": "Ejects filled maps first",
+  "mapstitch.tooltip.atlas.empty_maps_first": "Ejects empty maps first",
 
   "mapstitch.pack.cheaper_maps": "Cheaper Maps",
 

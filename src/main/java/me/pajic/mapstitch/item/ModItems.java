@@ -23,6 +23,7 @@ public class ModItems {
 				.component(DataComponents.BUNDLE_CONTENTS, contents)
 				.component(ModDataComponents.ATLAS_FULLNESS, 0)
 				.component(ModDataComponents.ATLAS_ACTIVE_MAP_ID, -1)
+				.component(ModDataComponents.ATLAS_EJECT_FILLED_MAPS_FIRST, true)
 				.stacksTo(1)
 				.setId(ModItems.ATLAS_KEY);
 	}

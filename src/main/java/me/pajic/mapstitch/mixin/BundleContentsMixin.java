@@ -47,7 +47,7 @@ public class BundleContentsMixin implements BundleContentsExtension {
 		@Unique private boolean mapstitch$isAtlas = false;
 
 		@Override
-		public void mapstitch$removeOneAtIndex(int index) {
+		public void mapstitch$removeOneItemAtIndex(int index) {
 			if (!items.isEmpty()) {
 				ItemStack stack = items.get(index).copy();
 				stack.shrink(1);
@@ -58,21 +58,38 @@ public class BundleContentsMixin implements BundleContentsExtension {
 		}
 
 		@Override
-		public ItemStack mapstitch$removeOneOrdered() {
+		public ItemStack mapstitch$removeOneStackOrdered(boolean filledMapsFirst) {
 			if (!items.isEmpty()) {
-				int emptyMapIndex = -1;
-				for (int i = 0; i < items.size(); i++) {
-					ItemStack stack = items.get(i);
-					if (stack.is(Items.MAP)) {
-						emptyMapIndex = i;
-						break;
+				if (filledMapsFirst) {
+					int filledMapIndex = -1;
+					for (int i = 0; i < items.size(); i++) {
+						ItemStack stack = items.get(i);
+						if (stack.is(Items.FILLED_MAP)) {
+							filledMapIndex = i;
+							break;
+						}
 					}
-				}
-				if (emptyMapIndex == -1) return removeOne();
-				else {
-					ItemStack stack = items.remove(emptyMapIndex).copy();
-					weight = weight.subtract(BundleContentsAccessor.getWeight(stack).getOrThrow().multiplyBy(Fraction.getFraction(stack.getCount(), 1)));
-					return stack;
+					if (filledMapIndex == -1) return removeOne();
+					else {
+						ItemStack stack = items.remove(filledMapIndex).copy();
+						weight = weight.subtract(BundleContentsAccessor.getWeight(stack).getOrThrow().multiplyBy(Fraction.getFraction(stack.getCount(), 1)));
+						return stack;
+					}
+				} else {
+					int emptyMapIndex = -1;
+					for (int i = 0; i < items.size(); i++) {
+						ItemStack stack = items.get(i);
+						if (stack.is(Items.MAP)) {
+							emptyMapIndex = i;
+							break;
+						}
+					}
+					if (emptyMapIndex == -1) return removeOne();
+					else {
+						ItemStack stack = items.remove(emptyMapIndex).copy();
+						weight = weight.subtract(BundleContentsAccessor.getWeight(stack).getOrThrow().multiplyBy(Fraction.getFraction(stack.getCount(), 1)));
+						return stack;
+					}
 				}
 			}
 			return ItemStack.EMPTY;

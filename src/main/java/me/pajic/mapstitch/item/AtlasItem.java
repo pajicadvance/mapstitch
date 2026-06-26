@@ -74,7 +74,8 @@ public class AtlasItem extends Item {
 				broadcastChangesOnContainerMenu(player);
 				return true;
 			} else if (clickAction == ClickAction.SECONDARY && other.isEmpty()) {
-				ItemStack itemStack = ((BundleContentsMutableExtension) contents).mapstitch$removeOneOrdered();
+				boolean filledMapsFirst = self.getOrDefault(ModDataComponents.ATLAS_EJECT_FILLED_MAPS_FIRST, true);
+				ItemStack itemStack = ((BundleContentsMutableExtension) contents).mapstitch$removeOneStackOrdered(filledMapsFirst);
 				if (itemStack != null) {
 					ItemStack remainder = slot.safeInsert(itemStack);
 					if (remainder.getCount() > 0 && isValidItemForAtlas(remainder, self, player.level())) {
@@ -119,7 +120,8 @@ public class AtlasItem extends Item {
 					return true;
 				} else if (clickAction == ClickAction.SECONDARY && other.isEmpty()) {
 					if (slot.allowModification(player)) {
-						ItemStack removed = ((BundleContentsMutableExtension) contents).mapstitch$removeOneOrdered();
+						boolean filledMapsFirst = self.getOrDefault(ModDataComponents.ATLAS_EJECT_FILLED_MAPS_FIRST, true);
+						ItemStack removed = ((BundleContentsMutableExtension) contents).mapstitch$removeOneStackOrdered(filledMapsFirst);
 						if (removed != null) {
 							BundleItemAccessor.mapstitch$callPlayRemoveOneSound(player);
 							carriedItem.set(removed);
@@ -268,6 +270,11 @@ public class AtlasItem extends Item {
 		}
 		lines.add(Component.translatable("mapstitch.tooltip.atlas.filled_maps", filledMapCount).withStyle(ChatFormatting.GRAY));
 		lines.add(Component.translatable("mapstitch.tooltip.atlas.empty_maps", emptyMapCount).withStyle(ChatFormatting.GRAY));
+		boolean filledMapsFirst = atlas.getOrDefault(ModDataComponents.ATLAS_EJECT_FILLED_MAPS_FIRST, true);
+		lines.add(Component.translatable(filledMapsFirst ?
+				"mapstitch.tooltip.atlas.filled_maps_first" :
+				"mapstitch.tooltip.atlas.empty_maps_first")
+				.withStyle(ChatFormatting.GRAY));
 		return lines;
 	}
 
@@ -298,7 +305,7 @@ public class AtlasItem extends Item {
 				ItemStack newMap = MapItem.create(level, posX, posZ, atlas.getOrDefault(ModDataComponents.ATLAS_SCALE, 0).byteValue(), true, false);
 				BundleContents.Mutable mutableContents = new BundleContents.Mutable(contents);
 				//noinspection DataFlowIssue
-				((BundleContentsMutableExtension) mutableContents).mapstitch$removeOneAtIndex(emptyMapIndex);
+				((BundleContentsMutableExtension) mutableContents).mapstitch$removeOneItemAtIndex(emptyMapIndex);
 				MapItemSavedData mapData = MapItem.getSavedData(newMap.get(DataComponents.MAP_ID), level);
 				newMap.set(ModDataComponents.MAP_CENTER, new Vector2i(mapData.centerX, mapData.centerZ));
 				newMap.inventoryTick(level, owner, EquipmentSlot.MAINHAND);
