@@ -14,6 +14,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -32,13 +33,15 @@ import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.item.component.BundleContents;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import org.apache.commons.lang3.math.Fraction;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
-import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,6 +151,23 @@ public class AtlasItem extends Item {
 		return InteractionResult.SUCCESS;
 	}
 
+	@Override @NotNull
+	public InteractionResult useOn(@NotNull UseOnContext context) {
+		BlockState clicked = context.getLevel().getBlockState(context.getClickedPos());
+		if (clicked.is(BlockTags.BANNERS)) {
+			if (!context.getLevel().isClientSide()) {
+				int activeMapId = context.getItemInHand().getOrDefault(ModDataComponents.ATLAS_ACTIVE_MAP_ID, -1);
+				MapItemSavedData data = context.getLevel().getMapData(new MapId(activeMapId));
+				if (data != null && !data.toggleBanner(context.getLevel(), context.getClickedPos())) {
+					return InteractionResult.FAIL;
+				}
+			}
+			return InteractionResult.SUCCESS;
+		} else {
+			return super.useOn(context);
+		}
+	}
+
 	@Override
 	public boolean isBarVisible(final ItemStack stack) {
 		return !stack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY).items().isEmpty();
@@ -174,7 +194,7 @@ public class AtlasItem extends Item {
 			@Nullable EquipmentSlot slot
 	) {
 		BundleContents contents = atlas.get(DataComponents.BUNDLE_CONTENTS);
-		int activeMapIndex = atlas.getOrDefault(ModDataComponents.ATLAS_ACTIVE_MAP_ID, -1);
+		int activeMapId = atlas.getOrDefault(ModDataComponents.ATLAS_ACTIVE_MAP_ID, -1);
 		if (contents != null && !contents.isEmpty()) {
 			for (ItemStackTemplate stack : contents.items()) {
 				if (stack.is(Items.FILLED_MAP)) {
@@ -194,14 +214,14 @@ public class AtlasItem extends Item {
 			}
 			int posX = owner.getBlockX();
 			int posZ = owner.getBlockZ();
-			if (activeMapIndex == -1) {
+			if (activeMapId == -1) {
 				updateActiveMap(atlas, contents, posX, posZ, level, owner);
 			} else {
 				MapId mapId = null;
 				for (ItemStackTemplate stack : contents.items()) {
 					if (stack.is(Items.FILLED_MAP)) {
 						MapId id = stack.get(DataComponents.MAP_ID);
-						if (id != null && id.equals(new MapId(activeMapIndex))) {
+						if (id != null && id.equals(new MapId(activeMapId))) {
 							mapId = id;
 							break;
 						}

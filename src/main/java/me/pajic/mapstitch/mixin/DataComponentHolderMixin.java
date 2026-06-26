@@ -6,7 +6,7 @@ import me.pajic.mapstitch.item.ModItems;
 import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.BundleContents;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 

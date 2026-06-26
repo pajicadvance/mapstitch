@@ -4,7 +4,6 @@ import com.swacky.ohmega.api.IAccessory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.NonNull;
 
 public class AtlasOhmegaItem extends AtlasItem implements IAccessory {
 	public AtlasOhmegaItem(Properties properties) {
@@ -12,7 +11,7 @@ public class AtlasOhmegaItem extends AtlasItem implements IAccessory {
 	}
 
 	@Override
-	public void tick(@NonNull Player player, @NonNull ItemStack stack) {
+	public void tick(@NotNull Player player, @NotNull ItemStack stack) {
 		stack.inventoryTick(player.level(), player, null);
 	}
 
