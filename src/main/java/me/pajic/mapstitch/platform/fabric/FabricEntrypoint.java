@@ -7,12 +7,15 @@ import dev.kikugie.fletching_table.annotation.fabric.Entrypoint;
 import me.pajic.mapstitch.component.ModDataComponents;
 import me.pajic.mapstitch.gamerule.ModGameRules;
 import me.pajic.mapstitch.item.ModItems;
+import me.pajic.mapstitch.networking.C2SPlaySoundPayload;
 import me.pajic.mapstitch.networking.S2CCompassGameRulePayload;
 import me.pajic.mapstitch.networking.S2CDimensionIdsPayload;
+import me.pajic.mapstitch.networking.S2COpenWorldMapScreenSignal;
 import me.pajic.mapstitch.recipe.ModRecipes;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
@@ -42,6 +45,11 @@ public class FabricEntrypoint implements ModInitializer {
 		Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, MapStitch.id("crafting_special_atlas"), ModRecipes.ATLAS);
 		PayloadTypeRegistry.clientboundPlay().register(S2CDimensionIdsPayload.TYPE, S2CDimensionIdsPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(S2CCompassGameRulePayload.TYPE, S2CCompassGameRulePayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(S2COpenWorldMapScreenSignal.TYPE, S2COpenWorldMapScreenSignal.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(C2SPlaySoundPayload.TYPE, C2SPlaySoundPayload.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(C2SPlaySoundPayload.TYPE, (payload, context) ->
+				context.player().playSound(payload.sound().value())
+		);
 		FabricLoader.getInstance().getModContainer(MapStitch.MOD_ID).ifPresent(container ->
 				ResourceLoader.registerBuiltinPack(
 						MapStitch.id("cheaper_maps"),

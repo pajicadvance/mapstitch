@@ -25,7 +25,7 @@ public class AtlasMouseActions implements ItemSlotMouseAction {
 	@SuppressWarnings("DataFlowIssue")
 	@Override
 	public boolean onMouseScrolled(double scrollX, double scrollY, int slotIndex, @NotNull ItemStack itemStack) {
-		Vector2i wheelXY = this.scrollWheelHandler.onMouseScroll(scrollX, scrollY);
+		Vector2i wheelXY = scrollWheelHandler.onMouseScroll(scrollX, scrollY);
 		int wheel = wheelXY.y == 0 ? -wheelXY.x : wheelXY.y;
 		if (wheel != 0 && itemStack.has(ModDataComponents.ATLAS_EJECT_FILLED_MAPS_FIRST)) {
 			boolean current = itemStack.get(ModDataComponents.ATLAS_EJECT_FILLED_MAPS_FIRST);

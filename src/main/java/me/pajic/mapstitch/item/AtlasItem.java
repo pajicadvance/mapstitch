@@ -4,6 +4,8 @@ import me.pajic.mapstitch.MapStitch;
 import me.pajic.mapstitch.component.ModDataComponents;
 import me.pajic.mapstitch.extension.BundleContentsMutableExtension;
 import me.pajic.mapstitch.mixin.accessor.BundleItemAccessor;
+import me.pajic.mapstitch.networking.NetworkingUtil;
+import me.pajic.mapstitch.networking.S2COpenWorldMapScreenSignal;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -17,7 +19,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -27,7 +28,6 @@ import net.minecraft.world.item.BundleItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
-import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MapItem;
@@ -42,7 +42,6 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.Semaphore;
 
 public class AtlasItem extends Item {
@@ -142,6 +141,10 @@ public class AtlasItem extends Item {
 	@Override @NotNull
 	public InteractionResult use(final @NotNull Level level, final Player player, final @NotNull InteractionHand hand) {
 		player.startUsingItem(hand);
+		if (player instanceof ServerPlayer serverPlayer) {
+			serverPlayer.playSound(SoundEvents.BOOK_PAGE_TURN);
+			NetworkingUtil.s2c(serverPlayer, new S2COpenWorldMapScreenSignal());
+		}
 		return InteractionResult.SUCCESS;
 	}
 
@@ -161,22 +164,6 @@ public class AtlasItem extends Item {
 		BundleContents contents = stack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
 		return getAtlasItemCount(contents) == MAX_SIZE.intValue() * 64 ?
 				BundleItemAccessor.mapstitch$getFullBarColor() : BundleItemAccessor.mapstitch$getBarColor();
-	}
-
-	@Override
-	public void onUseTick(
-			final @NotNull Level level,
-			final @NotNull LivingEntity livingEntity,
-			final @NotNull ItemStack itemStack,
-			final int ticksRemaining
-	) {
-		if (livingEntity instanceof Player player) {
-			int useDuration = this.getUseDuration(itemStack, livingEntity);
-			boolean isFirstTick = ticksRemaining == useDuration;
-			if (isFirstTick || ticksRemaining < useDuration - 10 && ticksRemaining % 2 == 0) {
-				this.dropContent(level, player, itemStack);
-			}
-		}
 	}
 
 	@Override
@@ -233,16 +220,6 @@ public class AtlasItem extends Item {
 				}
 			}
 		}
-	}
-
-	@Override
-	public int getUseDuration(final @NotNull ItemStack itemStack, final @NotNull LivingEntity entity) {
-		return 200;
-	}
-
-	@Override @NotNull
-	public ItemUseAnimation getUseAnimation(final @NotNull ItemStack itemStack) {
-		return ItemUseAnimation.BUNDLE;
 	}
 
 	@Override
@@ -335,26 +312,6 @@ public class AtlasItem extends Item {
 		int itemCount = 0;
 		for (ItemStackTemplate item : contents.items()) itemCount += item.count();
 		return itemCount;
-	}
-
-	private void dropContent(final Level level, final Player player, final ItemStack itemStack) {
-		if (this.dropContent(itemStack, player)) {
-			BundleItemAccessor.mapstitch$callPlayDropContentsSound(level, player);
-			player.awardStat(Stats.ITEM_USED.get(this));
-		}
-	}
-
-	private boolean dropContent(final ItemStack bundle, final Player player) {
-		BundleContents contents = bundle.get(DataComponents.BUNDLE_CONTENTS);
-		if (contents != null && !contents.isEmpty()) {
-			Optional<ItemStack> itemStack = BundleItemAccessor.mapstitch$callRemoveOneItemFromBundle(bundle, player, contents);
-			if (itemStack.isPresent()) {
-				player.drop(itemStack.get(), true);
-				return true;
-			}
-			return false;
-		}
-		return false;
 	}
 
 	private boolean isValidItemForAtlas(ItemStack map, ItemStack atlas, Level level) {

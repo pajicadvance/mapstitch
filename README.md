@@ -4,7 +4,7 @@ This mod adds a world map and a minimap using vanilla maps and makes vanilla map
 
 ## World map
 
-MapStitch uses filled maps from your inventory to create a world map which you can open at any time by pressing M.
+MapStitch uses filled maps from your inventory to create a world map which you can open at any time by pressing M or right-clicking while holding an atlas.
 
 ![worldmap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/worldmap.png)
 

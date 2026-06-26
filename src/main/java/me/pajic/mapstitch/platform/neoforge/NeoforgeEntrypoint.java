@@ -6,8 +6,10 @@ package me.pajic.mapstitch.platform.neoforge;
 import me.pajic.mapstitch.component.ModDataComponents;
 import me.pajic.mapstitch.gamerule.ModGameRules;
 import me.pajic.mapstitch.item.ModItems;
+import me.pajic.mapstitch.networking.C2SPlaySoundPayload;
 import me.pajic.mapstitch.networking.S2CCompassGameRulePayload;
 import me.pajic.mapstitch.networking.S2CDimensionIdsPayload;
+import me.pajic.mapstitch.networking.S2COpenWorldMapScreenSignal;
 import me.pajic.mapstitch.recipe.ModRecipes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -60,6 +62,10 @@ public class NeoforgeEntrypoint {
 		PayloadRegistrar registrar = event.registrar("1");
 		registrar.playToClient(S2CDimensionIdsPayload.TYPE, S2CDimensionIdsPayload.CODEC);
 		registrar.playToClient(S2CCompassGameRulePayload.TYPE, S2CCompassGameRulePayload.CODEC);
+		registrar.playToClient(S2COpenWorldMapScreenSignal.TYPE, S2COpenWorldMapScreenSignal.CODEC);
+		registrar.playToServer(C2SPlaySoundPayload.TYPE, C2SPlaySoundPayload.CODEC, (payload, context) ->
+				context.player().playSound(payload.sound().value())
+		);
 	}
 
 	@SubscribeEvent
