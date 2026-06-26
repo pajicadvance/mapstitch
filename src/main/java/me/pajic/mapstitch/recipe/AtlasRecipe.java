@@ -12,10 +12,17 @@ import net.minecraft.world.item.MapItem;
 import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.display.RecipeDisplay;
+import net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class AtlasRecipe extends CustomRecipe {
 	private static final AtlasRecipe INSTANCE = new AtlasRecipe();
@@ -62,6 +69,28 @@ public class AtlasRecipe extends CustomRecipe {
 			itemStack.set(DataComponents.BUNDLE_CONTENTS, contents.toImmutable());
 		}
 		return itemStack;
+	}
+
+	@Override @NotNull
+	public List<RecipeDisplay> display() {
+		return List.of(new ShapelessCraftingRecipeDisplay(
+				List.of(
+						new SlotDisplay.ItemSlotDisplay(Items.BOOK),
+						new SlotDisplay.ItemSlotDisplay(Items.FILLED_MAP)
+				),
+				new SlotDisplay.ItemSlotDisplay(ModItems.ATLAS),
+				new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)
+		));
+	}
+
+	@Override @NotNull
+	public PlacementInfo placementInfo() {
+		return PlacementInfo.create(List.of(Ingredient.of(Items.BOOK), Ingredient.of(Items.FILLED_MAP)));
+	}
+
+	@Override
+	public boolean isSpecial() {
+		return false;
 	}
 
 	@Override @NotNull
