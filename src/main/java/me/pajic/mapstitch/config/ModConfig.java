@@ -24,7 +24,7 @@ public class ModConfig {
 	public int minimapBackgroundOpacity = 50;
 	public int minimapXOffset = 0;
 	public int minimapYOffset = 0;
-	public TextHighlightColor worldmapTextHighlightColor = TextHighlightColor.YELLOW;
+	public TextHighlightColor worldMapTextHighlightColor = TextHighlightColor.YELLOW;
 	public int worldMapTextBackgroundOpacity = 50;
 	public boolean worldMapHelp = true;
 

@@ -90,7 +90,7 @@ public class ModSodiumConfig implements ConfigEntryPoint {
 								.setTooltip(Component.translatable("config.mapstitch.worldmap.text_highlight_color.desc"))
 								.setDefaultValue(TextHighlightColor.YELLOW)
 								.setElementNameProvider(TextHighlightColor::getName)
-								.setBinding(e -> ModConfigHolder.options().worldmapTextHighlightColor = e, () -> ModConfigHolder.options().worldmapTextHighlightColor)
+								.setBinding(e -> ModConfigHolder.options().worldMapTextHighlightColor = e, () -> ModConfigHolder.options().worldMapTextHighlightColor)
 								.setStorageHandler(() -> ModConfigHolder.options().writeChanges()))
 						.addOption(builder.createIntegerOption(MapStitch.id("worldmap_text_background_opacity"))
 								.setName(Component.translatable("config.mapstitch.worldmap.text_background_opacity"))

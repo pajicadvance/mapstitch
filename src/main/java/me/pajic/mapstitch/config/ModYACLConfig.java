@@ -98,9 +98,9 @@ public class ModYACLConfig {
 						.option(Option.<TextHighlightColor>createBuilder()
 								.name(Component.translatable("config.mapstitch.worldmap.text_highlight_color"))
 								.description(OptionDescription.of(Component.translatable("config.mapstitch.worldmap.text_highlight_color.desc")))
-								.binding(ModConfigHolder.options().worldmapTextHighlightColor,
-										() -> ModConfigHolder.options().worldmapTextHighlightColor,
-										newValue -> ModConfigHolder.options().worldmapTextHighlightColor = newValue)
+								.binding(ModConfigHolder.options().worldMapTextHighlightColor,
+										() -> ModConfigHolder.options().worldMapTextHighlightColor,
+										newValue -> ModConfigHolder.options().worldMapTextHighlightColor = newValue)
 								.controller(opt -> EnumControllerBuilder.create(opt)
 										.enumClass(TextHighlightColor.class)
 										.formatValue(TextHighlightColor::getName))

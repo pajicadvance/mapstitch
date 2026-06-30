@@ -106,7 +106,7 @@ public class WorldMapScreen extends Screen {
 	public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
 		mapSize = 128 << scale;
 		mapPixels = mapSize * zoom;
-		int highlightColor = ModConfigHolder.options().worldmapTextHighlightColor.color;
+		int highlightColor = ModConfigHolder.options().worldMapTextHighlightColor.color;
 		int xBoundMin = Math.floorDiv((int)(camX - (screenW/2d)/zoom), mapSize);
 		int xBoundMax = Math.floorDiv((int)(camX + (screenW/2d)/zoom), mapSize) + 1;
 		int zBoundMin = Math.floorDiv((int)(camZ - (screenH/2d)/zoom), mapSize);
