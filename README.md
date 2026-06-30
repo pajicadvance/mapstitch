@@ -66,6 +66,8 @@ These can be configured either through [Sodium](https://modrinth.com/mod/sodium)
   - Default is 50%
 - Minimap horizontal and vertical offsets
   - Defaults are 0 and 0
+- World map text highlight color
+  - Default is Yellow
 - World map text background opacity
   - Default is 50%
 - World map help toggle
