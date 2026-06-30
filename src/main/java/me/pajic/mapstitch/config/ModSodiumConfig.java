@@ -4,6 +4,7 @@ import me.pajic.mapstitch.MapStitch;
 import me.pajic.mapstitch.minimap.MinimapBackground;
 import me.pajic.mapstitch.minimap.MinimapDisplayCondition;
 import me.pajic.mapstitch.minimap.MinimapPosition;
+import me.pajic.mapstitch.worldmap.TextHighlightColor;
 import net.caffeinemc.mods.sodium.api.config.ConfigEntryPoint;
 import net.caffeinemc.mods.sodium.api.config.ConfigState;
 import net.caffeinemc.mods.sodium.api.config.option.Range;
@@ -84,6 +85,13 @@ public class ModSodiumConfig implements ConfigEntryPoint {
 								.setStorageHandler(() -> ModConfigHolder.options().writeChanges())))
 				.addPage(builder.createOptionPage()
 						.setName(Component.translatable("config.mapstitch.worldmap"))
+						.addOption(builder.createEnumOption(MapStitch.id("worldmap_text_highlight_color"), TextHighlightColor.class)
+								.setName(Component.translatable("config.mapstitch.worldmap.text_highlight_color"))
+								.setTooltip(Component.translatable("config.mapstitch.worldmap.text_highlight_color.desc"))
+								.setDefaultValue(TextHighlightColor.YELLOW)
+								.setElementNameProvider(TextHighlightColor::getName)
+								.setBinding(e -> ModConfigHolder.options().worldmapTextHighlightColor = e, () -> ModConfigHolder.options().worldmapTextHighlightColor)
+								.setStorageHandler(() -> ModConfigHolder.options().writeChanges()))
 						.addOption(builder.createIntegerOption(MapStitch.id("worldmap_text_background_opacity"))
 								.setName(Component.translatable("config.mapstitch.worldmap.text_background_opacity"))
 								.setTooltip(Component.translatable("config.mapstitch.worldmap.text_background_opacity.desc"))

@@ -2,13 +2,13 @@
 
 This mod adds a world map and a minimap using vanilla maps and makes vanilla maps cheaper and easier to manage by using the new Atlas item.
 
+Unlike other world map/minimap mods which ignore vanilla maps and make them obsolete, MapStitch makes them much more enjoyable to use and turns them into a core part of the world map and minimap.
+
 ## World map
 
 MapStitch uses filled maps from your inventory to create a world map which you can open at any time by pressing M or right-clicking while holding an atlas.
 
 ![worldmap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/worldmap.png)
-
-### World map features
 
 The world map can only show one dimension and scale at once. These can be switched using arrow keys. There are basic controls like panning and zooming using the mouse, and toggleable player following and map grid overlay. A keybind reference can be brought up at any time by pressing H.
 

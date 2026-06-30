@@ -10,6 +10,7 @@ import dev.isxander.yacl3.api.controller.TickBoxControllerBuilder;
 import me.pajic.mapstitch.minimap.MinimapBackground;
 import me.pajic.mapstitch.minimap.MinimapDisplayCondition;
 import me.pajic.mapstitch.minimap.MinimapPosition;
+import me.pajic.mapstitch.worldmap.TextHighlightColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -94,6 +95,16 @@ public class ModYACLConfig {
 						.build())
 				.category(ConfigCategory.createBuilder()
 						.name(Component.translatable("config.mapstitch.worldmap"))
+						.option(Option.<TextHighlightColor>createBuilder()
+								.name(Component.translatable("config.mapstitch.worldmap.text_highlight_color"))
+								.description(OptionDescription.of(Component.translatable("config.mapstitch.worldmap.text_highlight_color.desc")))
+								.binding(ModConfigHolder.options().worldmapTextHighlightColor,
+										() -> ModConfigHolder.options().worldmapTextHighlightColor,
+										newValue -> ModConfigHolder.options().worldmapTextHighlightColor = newValue)
+								.controller(opt -> EnumControllerBuilder.create(opt)
+										.enumClass(TextHighlightColor.class)
+										.formatValue(TextHighlightColor::getName))
+								.build())
 						.option(Option.<Integer>createBuilder()
 								.name(Component.translatable("config.mapstitch.worldmap.text_background_opacity"))
 								.description(OptionDescription.of(Component.translatable("config.mapstitch.worldmap")))

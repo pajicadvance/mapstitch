@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import me.pajic.mapstitch.minimap.MinimapBackground;
 import me.pajic.mapstitch.minimap.MinimapDisplayCondition;
 import me.pajic.mapstitch.minimap.MinimapPosition;
+import me.pajic.mapstitch.worldmap.TextHighlightColor;
 
 import java.io.File;
 import java.io.FileReader;
@@ -23,6 +24,7 @@ public class ModConfig {
 	public int minimapBackgroundOpacity = 50;
 	public int minimapXOffset = 0;
 	public int minimapYOffset = 0;
+	public TextHighlightColor worldmapTextHighlightColor = TextHighlightColor.YELLOW;
 	public int worldMapTextBackgroundOpacity = 50;
 	public boolean worldMapHelp = true;
 
