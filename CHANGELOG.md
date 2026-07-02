@@ -1,1 +1,2 @@
-- Initial release.
+- Added mod icon.
+- Updated atlas item textures.
