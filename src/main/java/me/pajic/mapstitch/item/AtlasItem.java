@@ -256,7 +256,7 @@ public class AtlasItem extends Item {
 	public static List<Component> getTooltip(ItemStack atlas) {
 		List<Component> lines = new ArrayList<>();
 		int scale = atlas.getOrDefault(ModDataComponents.ATLAS_SCALE, -1);
-		if (scale != -1) lines.add(Component.translatable("mapstitch.gui.worldmap.scale", Math.powExact(2, scale)).withStyle(ChatFormatting.GRAY));
+		if (scale != -1) lines.add(Component.translatable("mapstitch.gui.worldmap.scale", "1:" + Math.powExact(2, scale)).withStyle(ChatFormatting.GRAY));
 		BundleContents contents = atlas.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
 		int filledMapCount = 0;
 		int emptyMapCount = 0;

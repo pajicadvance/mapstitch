@@ -1,2 +1,1 @@
-- Added mod icon.
-- Updated atlas item textures.
+- Fixed map scale text in the atlas tooltip.
