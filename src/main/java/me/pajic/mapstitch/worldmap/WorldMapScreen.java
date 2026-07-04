@@ -178,7 +178,7 @@ public class WorldMapScreen extends Screen {
 		Vector2i mapCenter = map.get(ModDataComponents.MAP_CENTER);
 		if (id != null && mapCenter != null ) {
 			MapItemSavedData data = MC.level.getMapData(id);
-			if (!data.isExplorationMap() && !data.locked && dimensionId.equals(data.dimension.identifier())){
+			if (data != null && !data.isExplorationMap() && !data.locked && dimensionId.equals(data.dimension.identifier())){
 				GridPos gridPos = worldToGrid(mapCenter.x, mapCenter.y, data.scale);
 				MAPS.put(gridPos, new MapDataWithId(id, data));
 			}

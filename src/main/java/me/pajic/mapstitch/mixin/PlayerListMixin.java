@@ -1,6 +1,7 @@
 package me.pajic.mapstitch.mixin;
 
 import me.pajic.mapstitch.gamerule.ModGameRules;
+import me.pajic.mapstitch.item.AtlasItem;
 import me.pajic.mapstitch.networking.NetworkingUtil;
 import me.pajic.mapstitch.networking.S2CCompassGameRulePayload;
 import me.pajic.mapstitch.networking.S2CDimensionIdsPayload;
@@ -28,5 +29,13 @@ public class PlayerListMixin {
 		NetworkingUtil.s2c(player, new S2CCompassGameRulePayload(
 				player.level().getGameRules().get(ModGameRules.REQUIRE_COMPASS_FOR_POS)
 		));
+	}
+
+	@Inject(
+			method = "remove",
+			at = @At("HEAD")
+	)
+	private void removeModDataFromPlayers(ServerPlayer player, CallbackInfo ci) {
+		AtlasItem.clearInitializedMapsForPlayer(player);
 	}
 }

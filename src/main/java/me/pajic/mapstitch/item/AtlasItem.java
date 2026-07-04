@@ -44,11 +44,17 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Semaphore;
 
 public class AtlasItem extends Item {
 	public static final Fraction MAX_SIZE = Fraction.getFraction(256, 1);
+	private static final Map<UUID, Set<MapId>> INITIALIZED = new HashMap<>();
 	private static final Semaphore MUTEX = new Semaphore(1);
 
 	public AtlasItem(Properties properties) {
@@ -195,50 +201,35 @@ public class AtlasItem extends Item {
 	) {
 		BundleContents contents = atlas.get(DataComponents.BUNDLE_CONTENTS);
 		int activeMapId = atlas.getOrDefault(ModDataComponents.ATLAS_ACTIVE_MAP_ID, -1);
-		if (contents != null && !contents.isEmpty()) {
+		if (contents != null && !contents.isEmpty() && owner instanceof ServerPlayer player) {
+			int posX = player.getBlockX();
+			int posZ = player.getBlockZ();
 			for (ItemStackTemplate stack : contents.items()) {
 				if (stack.is(Items.FILLED_MAP)) {
-					MapId id = stack.get(DataComponents.MAP_ID);
-					MapItemSavedData data = MapItem.getSavedData(id, level);
-					if (data != null) {
-						if (owner instanceof Player player) data.tickCarriedBy(player, atlas, null);
-						if (!data.locked) {
-							((MapItem) stack.item().value()).update(level, owner, data);
-							if (owner instanceof ServerPlayer serverPlayer) {
-								Packet<?> packet = data.getUpdatePacket(id, serverPlayer);
-								if (packet != null) serverPlayer.connection.send(packet);
+					MapId mapId = stack.get(DataComponents.MAP_ID);
+					UUID uuid = player.getUUID();
+					INITIALIZED.putIfAbsent(uuid, new HashSet<>());
+					if (mapId != null && (!INITIALIZED.get(uuid).contains(mapId) || activeMapId == mapId.id())) {
+						MapItemSavedData data = MapItem.getSavedData(mapId, level);
+						if (data != null) {
+							data.tickCarriedBy(player, atlas, null);
+							if (!data.locked) {
+								((MapItem) stack.item().value()).update(level, player, data);
+								Packet<?> packet = data.getUpdatePacket(mapId, player);
+								if (packet != null) player.connection.send(packet);
+							}
+							int distX = Math.abs(data.centerX - posX);
+							int distZ = Math.abs(data.centerZ - posZ);
+							int scale = data.scale + 1;
+							if (distX > 64 * scale || distZ > 64 * scale) {
+								updateActiveMap(atlas, contents, posX, posZ, level, player);
 							}
 						}
+						INITIALIZED.get(uuid).add(mapId);
 					}
 				}
 			}
-			int posX = owner.getBlockX();
-			int posZ = owner.getBlockZ();
-			if (activeMapId == -1) {
-				updateActiveMap(atlas, contents, posX, posZ, level, owner);
-			} else {
-				MapId mapId = null;
-				for (ItemStackTemplate stack : contents.items()) {
-					if (stack.is(Items.FILLED_MAP)) {
-						MapId id = stack.get(DataComponents.MAP_ID);
-						if (id != null && id.equals(new MapId(activeMapId))) {
-							mapId = id;
-							break;
-						}
-					}
-				}
-				if (mapId != null) {
-					MapItemSavedData mapData = MapItem.getSavedData(mapId, level);
-					if (mapData != null) {
-						int distX = Math.abs(mapData.centerX - posX);
-						int distZ = Math.abs(mapData.centerZ - posZ);
-						int scale = mapData.scale + 1;
-						if (distX > 64 * scale || distZ > 64 * scale) {
-							updateActiveMap(atlas, contents, posX, posZ, level, owner);
-						}
-					}
-				}
-			}
+			if (activeMapId == -1) updateActiveMap(atlas, contents, posX, posZ, level, player);
 		}
 	}
 
@@ -346,5 +337,9 @@ public class AtlasItem extends Item {
 
 	private void broadcastChangesOnContainerMenu(final Player player) {
 		player.containerMenu.slotsChanged(player.getInventory());
+	}
+
+	public static void clearInitializedMapsForPlayer(ServerPlayer player) {
+		INITIALIZED.remove(player.getUUID());
 	}
 }

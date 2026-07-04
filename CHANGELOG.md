@@ -1,1 +1,2 @@
-- Fixed map scale text in the atlas tooltip.
+- TPS performance improvements for updating atlases in inventories, especially when carrying more than one atlas.
+- Inventories can now only update up to 5 atlases at once.
