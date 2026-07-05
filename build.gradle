@@ -1,0 +1,99 @@
+plugins {
+    id 'java-library'
+    id 'idea'
+    id 'net.neoforged.moddev' version '2.0.141'
+    id "me.modmuss50.mod-publish-plugin" version "2.1.1"
+}
+
+version = mod_version + "+" + minecraft_version + "-neoforge"
+group = mod_group_id
+
+base {
+    archivesName = mod_id
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+repositories {
+    mavenLocal()
+    maven {url = "https://maven.caffeinemc.net/releases"}
+    maven {url "https://maven.sinytra.org"}
+    maven {url = "https://maven.theillusivec4.top/"}
+    maven {url = "https://maven.terraformersmc.com/"}
+    maven {url = "https://api.modrinth.com/maven"}
+}
+
+dependencies {
+    compileOnly "maven.modrinth:yacl:${yacl_version}-neoforge"
+    compileOnly "net.caffeinemc:sodium-neoforge-api:${sodium_version}"
+    compileOnly "dev.emi:emi-neoforge:${emi_version}:api"
+    compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
+
+    runtimeOnly "maven.modrinth:yacl:${yacl_version}-neoforge"
+    runtimeOnly "net.caffeinemc:sodium-neoforge:${sodium_version}"
+    runtimeOnly "dev.emi:emi-neoforge:${emi_version}"
+    runtimeOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+}
+
+neoForge {
+    version = project.neo_version
+    validateAccessTransformers = true
+
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
+
+    runs {
+        client {
+            client()
+        }
+
+        server {
+            server()
+            programArgument '--nogui'
+        }
+
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
+
+publishMods {
+    file = tasks.jar.archiveFile
+    changelog = file(getRootDir().path + "/CHANGELOG.md").text
+    type = STABLE
+    modLoaders.add("neoforge")
+    displayName = mod_version + " for NeoForge " + minecraft_version
+
+    modrinth {
+        accessToken = providers.environmentVariable("MR_KEY")
+        projectId = "etdHQJ0B"
+        minecraftVersions.add(minecraft_version)
+        environment = CLIENT_AND_SERVER
+    }
+
+    curseforge {
+        accessToken = providers.environmentVariable("CF_KEY")
+        projectId = "1595069"
+        minecraftVersions.add(minecraft_version)
+        javaVersions.add(JavaVersion.VERSION_21)
+        client = true
+        server = true
+    }
+}

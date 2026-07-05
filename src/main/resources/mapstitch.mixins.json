@@ -1,0 +1,28 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "mixinextras": {"minVersion": "0.5.3"},
+  "package": "me.pajic.mapstitch.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "BundleContentsMixin",
+    "BundleContentsMixin$MutableMixin",
+    "DataComponentHolderMixin",
+    "InventoryMixin",
+    "MapItemMixin",
+    "PlayerListMixin",
+    "accessor.BundleContentsAccessor",
+    "accessor.BundleItemAccessor",
+    "client.ItemStackMixin"
+  ],
+  "client": [
+    "client.ContainerEventHandlerMixin",
+    "client.MapRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

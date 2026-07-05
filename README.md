@@ -1,0 +1,87 @@
+# MapStitch
+
+This mod adds a world map and a minimap using vanilla maps and makes vanilla maps cheaper and easier to manage by using the new Atlas item.
+
+Unlike other world map/minimap mods which ignore vanilla maps and make them obsolete, MapStitch makes them much more enjoyable to use and turns them into a core part of the world map and minimap.
+
+## World map
+
+MapStitch uses filled maps from your inventory to create a world map which you can open at any time by pressing M or right-clicking while holding an atlas.
+
+![worldmap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/worldmap.png)
+
+The world map can only show one dimension and scale at once. These can be switched using arrow keys. There are basic controls like panning and zooming using the mouse, and toggleable player following and map grid overlay. A keybind reference can be brought up at any time by pressing H.
+
+The player marker, coordinates, and grid overlay require having a compass anywhere in the inventory.
+
+![help](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/help.png)
+
+## Cheaper maps
+
+Making maps is now cheaper, requiring only 9 paper instead of 8 paper and a compass, but they won't show your position unless you have a compass in your inventory.
+
+![emptymap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/emptymap.png)
+
+## Atlas
+
+The inventory doesn't have much space for maps, but the brand-new Atlas item does! Create an atlas by combining a filled map and a book. The atlas can then be used like a bundle to store empty maps and filled maps matching the scale of the filled map used to create the atlas (up to 16384 items in total).
+
+Maps from the atlas will be used to create the world map, and the atlas will automatically turn empty maps inside it into filled maps as you enter unmapped areas.
+
+Scrolling while hovering over an atlas will switch between ejecting filled or empty maps first.
+
+Right-clicking with an atlas in hand when targeting a banner will create a banner marker on the currently active map, just like regular maps do.
+
+![atlas](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/atlas.png)
+
+## Minimap
+
+Having an atlas in the hotbar and a compass anywhere in your inventory will display a minimap showing the map where you're currently located.
+
+If multiple atlases are present, the minimap will prioritize the atlas in your hands, otherwise the first atlas will be used.
+
+![minimap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/minimap.png)
+
+## Configuration
+
+### Game rules
+
+- `mapstitch:require_compass_for_pos`: Whether a compass is required to display the minimap and the player marker, coordinates, and grid overlay in the world map (default true)
+
+### Client settings
+
+These can be configured either through [Sodium](https://modrinth.com/mod/sodium) video settings or in a config screen provided by [YACL](https://modrinth.com/mod/yacl). Both mods are optional and the config can be edited manually through `mapstitch.json` in the config folder, but it's highly recommended to use one of the two config screens instead.
+
+- Minimap display condition (`HANDS`, `HOTBAR`, `INVENTORY`)
+  - Controls where the atlas item has to be located in order to display the minimap
+  - Default is `HOTBAR`
+- Minimap position (`TOP_LEFT`, `TOP_RIGHT`, `BOTTOM_LEFT`, `BOTTOM_RIGHT`)
+  - Default is `TOP_RIGHT`
+- Minimap size (0.05x to 2.0x)
+  - Default is 1.0x
+- Minimap background (`CLEAR`, `TEXTURE`, `NONE`)
+  - Clear is a transparent rectangle, Texture is the map texture from the cartography table
+  - Default is `CLEAR`
+- Minimap background opacity (if Clear is set as the background)
+  - Default is 50%
+- Minimap effect overlay prevention
+  - Automatically moves the minimap when player has active effects to prevent overlap
+  - Works only if position is set to `TOP_RIGHT`
+  - Default is true
+- Minimap horizontal and vertical offsets
+  - Defaults are 0 and 0
+- World map text highlight color
+  - Default is Yellow
+- World map text background opacity
+  - Default is 50%
+- World map help toggle
+  - Controls whether to show the help toggle option
+  - Default is true
+
+## Mod integration
+
+- [Trinkets (Updated)](https://modrinth.com/mod/trinkets-updated) or [Ohmega](https://modrinth.com/mod/ohmega) (Fabric + NeoForge 26.1+), [Curios API](https://modrinth.com/mod/curios) (NeoForge 1.21.1): Allows equipping one atlas as an accessory, from where it will function as usual and be prioritized for the minimap
+
+## Recommended mods
+
+- [Better Nether Map](https://modrinth.com/mod/better-nether-map): Makes maps made in the Nether display at a certain height instead of displaying the Nether roof

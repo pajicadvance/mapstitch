@@ -1,0 +1,32 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+
+[[mods]]
+modId = "mapstitch"
+version = "1.0.4"
+displayName = "MapStitch"
+logoFile = "icon.png"
+authors = "pajic"
+credits = "Lufurrius, MerryDreambound"
+description = "World map and minimap using vanilla maps"
+
+[[mixins]]
+config = "mapstitch.mixins.json"
+
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"
+
+[[dependencies."mapstitch"]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies."mapstitch"]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1]"
+ordering = "NONE"
+side = "BOTH"
