@@ -1,2 +1,4 @@
-- TPS performance improvements for updating atlases in inventories, especially when carrying more than one atlas.
-- Inventories can now only update up to 5 atlases at once.
+- Added NeoForge 1.21.1 version.
+- Added client option to move the minimap automatically when the player has active effects to prevent overlap.
+- Fixed "Cheaper maps" datapack not loading correctly on NeoForge.
+- Fixed some incorrect translation strings in config screens.

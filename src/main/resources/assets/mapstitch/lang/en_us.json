@@ -73,6 +73,8 @@
   "config.mapstitch.minimap.x_offset.desc": "Moves the minimap horizontally.",
   "config.mapstitch.minimap.y_offset": "Vertical offset",
   "config.mapstitch.minimap.y_offset.desc": "Moves the minimap vertically.",
+  "config.mapstitch.minimap.prevent_effect_overlap": "Prevent effect overlay overlap",
+  "config.mapstitch.minimap.prevent_effect_overlap.desc": "Moves the minimap under the effect HUD when minimap position is top right and the player has active effects to prevent overlap.",
   "config.mapstitch.worldmap": "World Map",
   "config.mapstitch.worldmap.text_highlight_color": "Text highlight color",
   "config.mapstitch.worldmap.text_highlight_color.desc": "Controls the color of highlighted text in the world map.",

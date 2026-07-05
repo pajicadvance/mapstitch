@@ -64,6 +64,10 @@ These can be configured either through [Sodium](https://modrinth.com/mod/sodium)
   - Default is `CLEAR`
 - Minimap background opacity (if Clear is set as the background)
   - Default is 50%
+- Minimap effect overlay prevention
+  - Automatically moves the minimap when player has active effects to prevent overlap
+  - Works only if position is set to `TOP_RIGHT`
+  - Default is true
 - Minimap horizontal and vertical offsets
   - Defaults are 0 and 0
 - World map text highlight color
@@ -76,7 +80,7 @@ These can be configured either through [Sodium](https://modrinth.com/mod/sodium)
 
 ## Mod integration
 
-- [Trinkets (Updated)](https://modrinth.com/mod/trinkets-updated) or [Ohmega](https://modrinth.com/mod/ohmega): Allows equipping one atlas as an accessory, from where it will function as usual and be prioritized for the minimap
+- [Trinkets (Updated)](https://modrinth.com/mod/trinkets-updated) or [Ohmega](https://modrinth.com/mod/ohmega) (Fabric + NeoForge 26.1+), [Curios API](https://modrinth.com/mod/curios) (NeoForge 1.21.1): Allows equipping one atlas as an accessory, from where it will function as usual and be prioritized for the minimap
 
 ## Recommended mods
 

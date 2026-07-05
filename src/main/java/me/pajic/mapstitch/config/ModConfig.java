@@ -22,6 +22,7 @@ public class ModConfig {
 	public int minimapSize = 19;
 	public MinimapBackground minimapBackground = MinimapBackground.CLEAR;
 	public int minimapBackgroundOpacity = 50;
+	public boolean minimapPreventEffectOverlap = true;
 	public int minimapXOffset = 0;
 	public int minimapYOffset = 0;
 	public TextHighlightColor worldMapTextHighlightColor = TextHighlightColor.YELLOW;

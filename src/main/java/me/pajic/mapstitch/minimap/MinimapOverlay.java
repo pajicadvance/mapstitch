@@ -51,7 +51,7 @@ public class MinimapOverlay {
 				switch (ModConfigHolder.options().minimapPosition) {
 					case TOP_RIGHT -> position = new IntIntImmutablePair(
 							width - offset - scaleOffset - offsetX,
-							offset + offsetY + (MC.player.getActiveEffects().isEmpty() ? 0 : 51)
+							offset + offsetY + (!MC.player.getActiveEffects().isEmpty() && ModConfigHolder.options().minimapPreventEffectOverlap ? 51 : 0)
 					);
 					case BOTTOM_LEFT -> position = new IntIntImmutablePair(
 							offset + offsetX,

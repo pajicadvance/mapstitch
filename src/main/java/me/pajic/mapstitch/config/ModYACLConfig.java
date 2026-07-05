@@ -74,6 +74,14 @@ public class ModYACLConfig {
 										.formatValue(i -> Component.literal(i + "%")))
 								.available(ModConfigHolder.options().minimapBackground == MinimapBackground.CLEAR)
 								.build())
+						.option(Option.<Boolean>createBuilder()
+								.name(Component.translatable("config.mapstitch.minimap.prevent_effect_overlap"))
+								.description(OptionDescription.of(Component.translatable("config.mapstitch.minimap.prevent_effect_overlap.desc")))
+								.binding(ModConfigHolder.options().minimapPreventEffectOverlap,
+										() -> ModConfigHolder.options().minimapPreventEffectOverlap,
+										newValue -> ModConfigHolder.options().minimapPreventEffectOverlap = newValue)
+								.controller(TickBoxControllerBuilder::create)
+								.build())
 						.option(Option.<Integer>createBuilder()
 								.name(Component.translatable("config.mapstitch.minimap.x_offset"))
 								.description(OptionDescription.of(Component.translatable("config.mapstitch.minimap.x_offset.desc")))
@@ -107,7 +115,7 @@ public class ModYACLConfig {
 								.build())
 						.option(Option.<Integer>createBuilder()
 								.name(Component.translatable("config.mapstitch.worldmap.text_background_opacity"))
-								.description(OptionDescription.of(Component.translatable("config.mapstitch.worldmap")))
+								.description(OptionDescription.of(Component.translatable("config.mapstitch.worldmap.text_background_opacity.desc")))
 								.binding(ModConfigHolder.options().worldMapTextBackgroundOpacity,
 										() -> ModConfigHolder.options().worldMapTextBackgroundOpacity,
 										newValue -> ModConfigHolder.options().worldMapTextBackgroundOpacity = newValue)

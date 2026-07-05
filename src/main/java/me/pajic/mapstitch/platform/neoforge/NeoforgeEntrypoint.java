@@ -76,7 +76,7 @@ public class NeoforgeEntrypoint {
 				Component.translatable("mapstitch.pack.cheaper_maps"),
 				PackSource.BUILT_IN,
 				false,
-				Pack.Position.BOTTOM
+				Pack.Position.TOP
 		);
 	}
 
