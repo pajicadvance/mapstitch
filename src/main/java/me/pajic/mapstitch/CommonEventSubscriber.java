@@ -63,6 +63,7 @@ public class CommonEventSubscriber {
 		);
 		registrar.playToServer(C2SPlaySound.TYPE, C2SPlaySound.CODEC, ServerNetworkEvents::playSound);
 		registrar.playToServer(C2SSetEjectMode.TYPE, C2SSetEjectMode.CODEC, ServerNetworkEvents::setEjectMode);
+		registrar.playToServer(C2SEjectMap.TYPE, C2SEjectMap.CODEC, ServerNetworkEvents::ejectMap);
 	}
 
 	@SubscribeEvent

@@ -289,7 +289,7 @@ public class AtlasItem extends Item {
 		}
 	}
 
-	private void updateAtlas(BundleContents.Mutable contents, ItemStack atlas) {
+	public void updateAtlas(BundleContents.Mutable contents, ItemStack atlas) {
 		BundleContents immutableContents = contents.toImmutable();
 		atlas.set(DataComponents.BUNDLE_CONTENTS, immutableContents);
 		int itemCount = getAtlasItemCount(immutableContents);

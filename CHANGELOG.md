@@ -1,2 +1,2 @@
-- The mod now checks for compasses in accessory slots (Trinkets Updated, Ohmega, Curios).
-- Fixed a bug where the compass check wasn't affecting the grid overlay.
+- Pressing Ctrl + Q when hovering over a map in the world map will now drop it. If the map is inside an atlas, it will be ejected from it before being dropped.
+- Picking up an atlas no longer resets the eject mode it's set to.

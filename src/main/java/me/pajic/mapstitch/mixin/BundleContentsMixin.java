@@ -47,14 +47,16 @@ public class BundleContentsMixin implements BundleContentsExtension {
 		@Unique private boolean mapstitch$isAtlas = false;
 
 		@Override
-		public void mapstitch$removeOneItemAtIndex(int index) {
+		public ItemStack mapstitch$removeOneItemAtIndex(int index) {
 			if (!items.isEmpty()) {
 				ItemStack stack = items.get(index).copy();
-				stack.shrink(1);
+				ItemStack removed = stack.split(1);
 				weight = weight.subtract(BundleContentsAccessor.getWeight(stack).multiplyBy(Fraction.getFraction(stack.getCount(), 1)));
 				if (stack.isEmpty()) items.remove(index);
 				else items.set(index, stack);
+				return removed;
 			}
+			return ItemStack.EMPTY;
 		}
 
 		@Override
