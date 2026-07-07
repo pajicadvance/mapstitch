@@ -1,4 +1,2 @@
-- Added NeoForge 1.21.1 version.
-- Added client option to move the minimap automatically when the player has active effects to prevent overlap.
-- Fixed "Cheaper maps" datapack not loading correctly on NeoForge.
-- Fixed some incorrect translation strings in config screens.
+- The mod now checks for compasses in accessory slots (Trinkets Updated, Ohmega, Curios).
+- Fixed a bug where the compass check wasn't affecting the grid overlay.

@@ -1,5 +1,6 @@
 package me.pajic.mapstitch.util;
 
+import me.pajic.mapstitch.compat.CuriosCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -25,6 +26,7 @@ public class ModUtil {
 	@SuppressWarnings("DataFlowIssue")
 	public static boolean hasCompass(Minecraft mc) {
 		if (!compassRequired) return true;
+		if (CompatFlags.CURIOS_LOADED && CuriosCompat.hasCompassInCurioSlot(mc.player)) return true;
 		Set<BundleContents> bundles = new HashSet<>();
 		Set<ItemContainerContents> containers = new HashSet<>();
 		for (int i = 0; i < mc.player.getInventory().getContainerSize(); i++) {
