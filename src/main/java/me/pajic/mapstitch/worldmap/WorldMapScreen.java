@@ -112,10 +112,12 @@ public class WorldMapScreen extends Screen {
 		int zBoundMin = Math.floorDiv((int)(camZ - (screenH/2d)/zoom), mapSize);
 		int zBoundMax = Math.floorDiv((int)(camZ + (screenH/2d)/zoom), mapSize) + 1;
 		renderMaps(graphics, xBoundMin, xBoundMax, zBoundMin, zBoundMax);
-		if (compass) renderPlayerMarker(graphics);
-		if (grid) {
-			renderGrid(graphics, xBoundMin, xBoundMax, zBoundMin, zBoundMax);
-			if (compass) renderPosAtCursor(graphics, mouseX, mouseY, highlightColor);
+		if (compass) {
+			renderPlayerMarker(graphics);
+			if (grid) {
+				renderGrid(graphics, xBoundMin, xBoundMax, zBoundMin, zBoundMax);
+				renderPosAtCursor(graphics, mouseX, mouseY, highlightColor);
+			}
 		}
 		renderText(graphics, highlightColor);
 		mapsRendered = 0;
