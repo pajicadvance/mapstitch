@@ -4,8 +4,7 @@ import me.pajic.mapstitch.MapStitch;
 import me.pajic.mapstitch.component.ModDataComponents;
 import me.pajic.mapstitch.extension.BundleContentsMutableExtension;
 import me.pajic.mapstitch.mixin.accessor.BundleItemAccessor;
-import me.pajic.mapstitch.networking.NetworkingUtil;
-import me.pajic.mapstitch.networking.S2COpenWorldMapScreenSignal;
+import me.pajic.mapstitch.networking.payload.S2COpenWorldMapScreen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -152,7 +151,7 @@ public class AtlasItem extends Item {
 		player.startUsingItem(hand);
 		if (player instanceof ServerPlayer serverPlayer) {
 			serverPlayer.playSound(SoundEvents.BOOK_PAGE_TURN);
-			NetworkingUtil.s2c(serverPlayer, new S2COpenWorldMapScreenSignal());
+			MapStitch.xplat().s2c(serverPlayer, new S2COpenWorldMapScreen());
 		}
 		return InteractionResult.SUCCESS;
 	}

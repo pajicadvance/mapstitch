@@ -1,8 +1,8 @@
 package me.pajic.mapstitch.mixin;
 
+import me.pajic.mapstitch.MapStitch;
 import me.pajic.mapstitch.gamerule.ModGameRules;
-import me.pajic.mapstitch.networking.NetworkingUtil;
-import me.pajic.mapstitch.networking.S2CCompassGameRulePayload;
+import me.pajic.mapstitch.networking.payload.S2CCompassGameRule;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.level.gamerules.GameRule;
@@ -23,7 +23,7 @@ public abstract class MinecraftServerMixin {
 	)
 	private <T> void sendModGameRuleUpdatesToPlayers(GameRule<T> rule, T value, CallbackInfo ci) {
 		if (rule == ModGameRules.REQUIRE_COMPASS_FOR_POS) getPlayerList().getPlayers().forEach(player ->
-				NetworkingUtil.s2c(player, new S2CCompassGameRulePayload((boolean) value))
+				MapStitch.xplat().s2c(player, new S2CCompassGameRule((boolean) value))
 		);
 	}
 }

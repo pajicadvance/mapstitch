@@ -2,8 +2,7 @@ package me.pajic.mapstitch.keybind;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import me.pajic.mapstitch.MapStitch;
-import me.pajic.mapstitch.networking.C2SPlaySoundPayload;
-import me.pajic.mapstitch.networking.NetworkingUtil;
+import me.pajic.mapstitch.networking.payload.C2SPlaySound;
 import me.pajic.mapstitch.worldmap.WorldMapScreen;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -25,7 +24,7 @@ public class ModKeybinds {
 	public static void onClientTick(Minecraft client) {
 		if (client.player != null && client.level != null && OPEN_WORLD_MAP.consumeClick()) {
 			client.player.playSound(SoundEvents.BOOK_PAGE_TURN);
-			NetworkingUtil.c2s(new C2SPlaySoundPayload(BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.BOOK_PAGE_TURN)));
+			MapStitch.xplat().c2s(new C2SPlaySound(BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.BOOK_PAGE_TURN)));
 			client.setScreenAndShow(new WorldMapScreen());
 		}
 	}

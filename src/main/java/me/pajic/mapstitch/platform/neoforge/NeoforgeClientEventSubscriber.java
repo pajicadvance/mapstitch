@@ -6,14 +6,12 @@ package me.pajic.mapstitch.platform.neoforge;
 import me.pajic.mapstitch.config.ModYACLConfig;
 import me.pajic.mapstitch.keybind.ModKeybinds;
 import me.pajic.mapstitch.minimap.MinimapOverlay;
-import me.pajic.mapstitch.networking.S2CCompassGameRulePayload;
-import me.pajic.mapstitch.networking.S2CDimensionIdsPayload;
-import me.pajic.mapstitch.networking.S2COpenWorldMapScreenSignal;
+import me.pajic.mapstitch.networking.ClientNetworkEvents;
+import me.pajic.mapstitch.networking.payload.S2CCompassGameRule;
+import me.pajic.mapstitch.networking.payload.S2CDimensionIds;
+import me.pajic.mapstitch.networking.payload.S2COpenWorldMapScreen;
 import me.pajic.mapstitch.util.CompatFlags;
-import me.pajic.mapstitch.util.ModUtil;
-import me.pajic.mapstitch.worldmap.WorldMapScreen;
 import net.minecraft.client.Minecraft;
-import net.minecraft.sounds.SoundEvents;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
@@ -50,16 +48,15 @@ public class NeoforgeClientEventSubscriber {
 
 	@SubscribeEvent
 	private static void initNetworking(RegisterClientPayloadHandlersEvent event) {
-		event.register(S2CDimensionIdsPayload.TYPE, (payload, _) ->
-				WorldMapScreen.dimensionIds = payload.dimensionIds()
+		event.register(S2CDimensionIds.TYPE, (payload, _) ->
+				ClientNetworkEvents.setDimensionIds(payload)
 		);
-		event.register(S2CCompassGameRulePayload.TYPE, (payload, _) ->
-				ModUtil.compassRequired = payload.required()
+		event.register(S2CCompassGameRule.TYPE, (payload, _) ->
+				ClientNetworkEvents.setCompassRequired(payload)
 		);
-		event.register(S2COpenWorldMapScreenSignal.TYPE, (_, context) -> {
-			context.player().playSound(SoundEvents.BOOK_PAGE_TURN);
-			Minecraft.getInstance().setScreenAndShow(new WorldMapScreen());
-		});
+		event.register(S2COpenWorldMapScreen.TYPE, (_, context) ->
+				ClientNetworkEvents.openWorldMapScreen(context.player())
+		);
 	}
 
 	@SubscribeEvent

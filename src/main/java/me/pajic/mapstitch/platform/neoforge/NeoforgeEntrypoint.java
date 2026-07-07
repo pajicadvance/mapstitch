@@ -6,10 +6,12 @@ package me.pajic.mapstitch.platform.neoforge;
 import me.pajic.mapstitch.component.ModDataComponents;
 import me.pajic.mapstitch.gamerule.ModGameRules;
 import me.pajic.mapstitch.item.ModItems;
-import me.pajic.mapstitch.networking.C2SPlaySoundPayload;
-import me.pajic.mapstitch.networking.S2CCompassGameRulePayload;
-import me.pajic.mapstitch.networking.S2CDimensionIdsPayload;
-import me.pajic.mapstitch.networking.S2COpenWorldMapScreenSignal;
+import me.pajic.mapstitch.networking.ServerNetworkEvents;
+import me.pajic.mapstitch.networking.payload.C2SPlaySound;
+import me.pajic.mapstitch.networking.payload.C2SSetEjectMode;
+import me.pajic.mapstitch.networking.payload.S2CCompassGameRule;
+import me.pajic.mapstitch.networking.payload.S2CDimensionIds;
+import me.pajic.mapstitch.networking.payload.S2COpenWorldMapScreen;
 import me.pajic.mapstitch.recipe.ModRecipes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -60,11 +62,14 @@ public class NeoforgeEntrypoint {
 	@SubscribeEvent
 	private static void initNetworking(RegisterPayloadHandlersEvent event) {
 		PayloadRegistrar registrar = event.registrar("1");
-		registrar.playToClient(S2CDimensionIdsPayload.TYPE, S2CDimensionIdsPayload.CODEC);
-		registrar.playToClient(S2CCompassGameRulePayload.TYPE, S2CCompassGameRulePayload.CODEC);
-		registrar.playToClient(S2COpenWorldMapScreenSignal.TYPE, S2COpenWorldMapScreenSignal.CODEC);
-		registrar.playToServer(C2SPlaySoundPayload.TYPE, C2SPlaySoundPayload.CODEC, (payload, context) ->
-				context.player().playSound(payload.sound().value())
+		registrar.playToClient(S2CDimensionIds.TYPE, S2CDimensionIds.CODEC);
+		registrar.playToClient(S2CCompassGameRule.TYPE, S2CCompassGameRule.CODEC);
+		registrar.playToClient(S2COpenWorldMapScreen.TYPE, S2COpenWorldMapScreen.CODEC);
+		registrar.playToServer(C2SPlaySound.TYPE, C2SPlaySound.CODEC, (payload, context) ->
+				ServerNetworkEvents.playSound(payload, context.player())
+		);
+		registrar.playToServer(C2SSetEjectMode.TYPE, C2SSetEjectMode.CODEC, (payload, context) ->
+				ServerNetworkEvents.setEjectMode(payload, context.player())
 		);
 	}
 

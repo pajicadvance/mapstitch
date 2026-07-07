@@ -7,10 +7,12 @@ import dev.kikugie.fletching_table.annotation.fabric.Entrypoint;
 import me.pajic.mapstitch.component.ModDataComponents;
 import me.pajic.mapstitch.gamerule.ModGameRules;
 import me.pajic.mapstitch.item.ModItems;
-import me.pajic.mapstitch.networking.C2SPlaySoundPayload;
-import me.pajic.mapstitch.networking.S2CCompassGameRulePayload;
-import me.pajic.mapstitch.networking.S2CDimensionIdsPayload;
-import me.pajic.mapstitch.networking.S2COpenWorldMapScreenSignal;
+import me.pajic.mapstitch.networking.ServerNetworkEvents;
+import me.pajic.mapstitch.networking.payload.C2SPlaySound;
+import me.pajic.mapstitch.networking.payload.C2SSetEjectMode;
+import me.pajic.mapstitch.networking.payload.S2CCompassGameRule;
+import me.pajic.mapstitch.networking.payload.S2CDimensionIds;
+import me.pajic.mapstitch.networking.payload.S2COpenWorldMapScreen;
 import me.pajic.mapstitch.recipe.ModRecipes;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
@@ -43,12 +45,16 @@ public class FabricEntrypoint implements ModInitializer {
 		Registry.register(BuiltInRegistries.GAME_RULE, MapStitch.id("require_compass_for_pos"), ModGameRules.REQUIRE_COMPASS_FOR_POS);
 		Registry.register(BuiltInRegistries.ITEM, ModItems.ATLAS_KEY, ModItems.ATLAS);
 		Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, MapStitch.id("crafting_special_atlas"), ModRecipes.ATLAS);
-		PayloadTypeRegistry.clientboundPlay().register(S2CDimensionIdsPayload.TYPE, S2CDimensionIdsPayload.CODEC);
-		PayloadTypeRegistry.clientboundPlay().register(S2CCompassGameRulePayload.TYPE, S2CCompassGameRulePayload.CODEC);
-		PayloadTypeRegistry.clientboundPlay().register(S2COpenWorldMapScreenSignal.TYPE, S2COpenWorldMapScreenSignal.CODEC);
-		PayloadTypeRegistry.serverboundPlay().register(C2SPlaySoundPayload.TYPE, C2SPlaySoundPayload.CODEC);
-		ServerPlayNetworking.registerGlobalReceiver(C2SPlaySoundPayload.TYPE, (payload, context) ->
-				context.player().playSound(payload.sound().value())
+		PayloadTypeRegistry.clientboundPlay().register(S2CDimensionIds.TYPE, S2CDimensionIds.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(S2CCompassGameRule.TYPE, S2CCompassGameRule.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(S2COpenWorldMapScreen.TYPE, S2COpenWorldMapScreen.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(C2SPlaySound.TYPE, C2SPlaySound.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(C2SSetEjectMode.TYPE, C2SSetEjectMode.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(C2SPlaySound.TYPE, (payload, context) ->
+				ServerNetworkEvents.playSound(payload, context.player())
+		);
+		ServerPlayNetworking.registerGlobalReceiver(C2SSetEjectMode.TYPE, (payload, context) ->
+				ServerNetworkEvents.setEjectMode(payload, context.player())
 		);
 		FabricLoader.getInstance().getModContainer(MapStitch.MOD_ID).ifPresent(container ->
 				ResourceLoader.registerBuiltinPack(
