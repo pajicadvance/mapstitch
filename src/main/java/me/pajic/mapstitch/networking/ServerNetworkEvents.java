@@ -1,6 +1,7 @@
 package me.pajic.mapstitch.networking;
 
 import me.pajic.mapstitch.component.ModDataComponents;
+import me.pajic.mapstitch.item.ModItems;
 import me.pajic.mapstitch.networking.payload.C2SPlaySound;
 import me.pajic.mapstitch.networking.payload.C2SSetEjectMode;
 import net.minecraft.world.item.ItemStack;
@@ -14,7 +15,9 @@ public class ServerNetworkEvents {
 
     public static void setEjectMode(C2SSetEjectMode payload, IPayloadContext context) {
         ItemStack stack = context.player().containerMenu.getSlot(payload.slotId()).getItem();
-        boolean current = stack.getOrDefault(ModDataComponents.ATLAS_EJECT_FILLED_MAPS_FIRST, true);
-        stack.set(ModDataComponents.ATLAS_EJECT_FILLED_MAPS_FIRST, !current);
+        if (stack.is(ModItems.ATLAS)) {
+            boolean current = stack.getOrDefault(ModDataComponents.ATLAS_EJECT_FILLED_MAPS_FIRST, true);
+            stack.set(ModDataComponents.ATLAS_EJECT_FILLED_MAPS_FIRST, !current);
+        }
     }
 }

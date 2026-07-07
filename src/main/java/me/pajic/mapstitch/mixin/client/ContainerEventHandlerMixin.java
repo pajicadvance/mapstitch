@@ -2,7 +2,6 @@ package me.pajic.mapstitch.mixin.client;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import me.pajic.mapstitch.component.ModDataComponents;
 import me.pajic.mapstitch.item.ModItems;
 import me.pajic.mapstitch.networking.payload.C2SSetEjectMode;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
@@ -23,7 +22,7 @@ public interface ContainerEventHandlerMixin {
             Slot slot = screen.getSlotUnderMouse();
             if (slot != null) {
                 ItemStack stack = slot.getItem();
-                if (stack.is(ModItems.ATLAS) && scrollY != 0 && stack.has(ModDataComponents.ATLAS_EJECT_FILLED_MAPS_FIRST)) {
+                if (stack.is(ModItems.ATLAS) && scrollY != 0) {
                     PacketDistributor.sendToServer(new C2SSetEjectMode(slot.index));
                     return true;
                 }
