@@ -8,6 +8,7 @@ import me.pajic.mapstitch.component.ModDataComponents;
 import me.pajic.mapstitch.gamerule.ModGameRules;
 import me.pajic.mapstitch.item.ModItems;
 import me.pajic.mapstitch.networking.ServerNetworkEvents;
+import me.pajic.mapstitch.networking.payload.C2SEjectMap;
 import me.pajic.mapstitch.networking.payload.C2SPlaySound;
 import me.pajic.mapstitch.networking.payload.C2SSetEjectMode;
 import me.pajic.mapstitch.networking.payload.S2CCompassGameRule;
@@ -50,12 +51,16 @@ public class FabricEntrypoint implements ModInitializer {
 		PayloadTypeRegistry.clientboundPlay().register(S2COpenWorldMapScreen.TYPE, S2COpenWorldMapScreen.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(C2SPlaySound.TYPE, C2SPlaySound.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(C2SSetEjectMode.TYPE, C2SSetEjectMode.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(C2SEjectMap.TYPE, C2SEjectMap.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(C2SPlaySound.TYPE, (payload, context) ->
 				ServerNetworkEvents.playSound(payload, context.player())
 		);
 		ServerPlayNetworking.registerGlobalReceiver(C2SSetEjectMode.TYPE, (payload, context) ->
 				ServerNetworkEvents.setEjectMode(payload, context.player())
 		);
+		ServerPlayNetworking.registerGlobalReceiver(C2SEjectMap.TYPE, (payload, context) ->
+				ServerNetworkEvents.ejectMap(payload, context.player()))
+		;
 		FabricLoader.getInstance().getModContainer(MapStitch.MOD_ID).ifPresent(container ->
 				ResourceLoader.registerBuiltinPack(
 						MapStitch.id("cheaper_maps"),

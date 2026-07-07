@@ -11,6 +11,7 @@ import me.pajic.mapstitch.config.ModConfigHolder;
 import me.pajic.mapstitch.extension.MapDecorationRenderStateExtension;
 import me.pajic.mapstitch.item.ModItems;
 import me.pajic.mapstitch.keybind.ModKeybinds;
+import me.pajic.mapstitch.networking.payload.C2SEjectMap;
 import me.pajic.mapstitch.util.CompatFlags;
 import me.pajic.mapstitch.util.ModUtil;
 import net.minecraft.client.Minecraft;
@@ -26,6 +27,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
@@ -62,6 +64,7 @@ public class WorldMapScreen extends Screen {
 	private int mapSize;
 	private double mapPixels;
 	private double camX, camZ;
+	private int mouseX, mouseY;
 	private int zoomLevel;
 	private float zoom;
 	private int screenW, screenH;
@@ -86,10 +89,18 @@ public class WorldMapScreen extends Screen {
 	private record MapDataWithId(MapId id, MapItemSavedData data) {}
 
 	private record GridPos(int gx, int gy, int s) {}
+
 	private GridPos worldToGrid(int worldX, int worldZ, int scale) {
 		return new GridPos(
 				Math.floorDiv(worldX, 128 << scale),
 				Math.floorDiv(worldZ, 128 << scale),
+				scale
+		);
+	}
+	private GridPos screenToGrid(double screenX, double screenY, int scale) {
+		return new GridPos(
+				Math.floorDiv(Mth.floor(screenToWorldX(screenX)) + 64, 128 << scale),
+				Math.floorDiv(Mth.floor(screenToWorldZ(screenY)) + 64, 128 << scale),
 				scale
 		);
 	}
@@ -100,12 +111,14 @@ public class WorldMapScreen extends Screen {
 	private double worldToScreenX(double worldX) { return (worldX - camX) * zoom + screenW / 2.0; }
 	private double worldToScreenZ(double worldZ) { return (worldZ - camZ) * zoom + screenH / 2.0; }
 	private double screenToWorldX(double screenX) { return (screenX - screenW / 2.0) / zoom + camX; }
-	private double screenToWorldZ(double screenZ) { return (screenZ - screenH / 2.0) / zoom + camZ; }
+	private double screenToWorldZ(double screenY) { return (screenY - screenH / 2.0) / zoom + camZ; }
 
 	@Override
 	public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
 		mapSize = 128 << scale;
 		mapPixels = mapSize * zoom;
+		this.mouseX = mouseX;
+		this.mouseY = mouseY;
 		int highlightColor = ModConfigHolder.options().worldMapTextHighlightColor.color;
 		int xBoundMin = Math.floorDiv((int)(camX - (screenW/2d)/zoom), mapSize);
 		int xBoundMax = Math.floorDiv((int)(camX + (screenW/2d)/zoom), mapSize) + 1;
@@ -223,6 +236,7 @@ public class WorldMapScreen extends Screen {
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.help", Component.translatable("mapstitch.gui.worldmap.help_key").withColor(c)), ModConfigHolder.options().worldMapHelp && !help),
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.help_control", Component.translatable("mapstitch.gui.worldmap.help_key").withColor(c)), help),
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.exit_control", Component.translatable("mapstitch.gui.worldmap.exit_key").withColor(c), Component.keybind(ModKeybinds.OPEN_WORLD_MAP.getName()).withColor(c)), help),
+				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.eject_control", Component.translatable("mapstitch.gui.worldmap.eject_key").withColor(c)), help),
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.grid_control", Component.translatable("mapstitch.gui.worldmap.grid_key").withColor(c)), help),
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.follow_control", Component.translatable("mapstitch.gui.worldmap.follow_key").withColor(c)), help),
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.scale_control", Component.translatable("mapstitch.gui.worldmap.scale_key").withColor(c)), help),
@@ -326,6 +340,15 @@ public class WorldMapScreen extends Screen {
 		}
 	}
 
+	@SuppressWarnings("DataFlowIssue")
+	private void ejectMapAtCursor() {
+		MapDataWithId mapDataWithId = MAPS.get(screenToGrid(mouseX, mouseY, scale));
+		if (mapDataWithId != null) {
+			MapStitch.xplat().c2s(new C2SEjectMap(mapDataWithId.id));
+			MC.player.playSound(SoundEvents.BUNDLE_REMOVE_ONE);
+		}
+	}
+
 	@Override
 	public boolean mouseDragged(@NotNull MouseButtonEvent event, double dx, double dy) {
 		if (event.button() == 0) {
@@ -382,6 +405,10 @@ public class WorldMapScreen extends Screen {
 		}
 		if (ModKeybinds.OPEN_WORLD_MAP.matches(event)) {
 			onClose();
+			return true;
+		}
+		if (event.hasControlDown() && event.key() == InputConstants.KEY_Q) {
+			ejectMapAtCursor();
 			return true;
 		}
 		return super.keyPressed(event);

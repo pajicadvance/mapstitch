@@ -7,6 +7,7 @@ import me.pajic.mapstitch.component.ModDataComponents;
 import me.pajic.mapstitch.gamerule.ModGameRules;
 import me.pajic.mapstitch.item.ModItems;
 import me.pajic.mapstitch.networking.ServerNetworkEvents;
+import me.pajic.mapstitch.networking.payload.C2SEjectMap;
 import me.pajic.mapstitch.networking.payload.C2SPlaySound;
 import me.pajic.mapstitch.networking.payload.C2SSetEjectMode;
 import me.pajic.mapstitch.networking.payload.S2CCompassGameRule;
@@ -70,6 +71,9 @@ public class NeoforgeEntrypoint {
 		);
 		registrar.playToServer(C2SSetEjectMode.TYPE, C2SSetEjectMode.CODEC, (payload, context) ->
 				ServerNetworkEvents.setEjectMode(payload, context.player())
+		);
+		registrar.playToServer(C2SEjectMap.TYPE, C2SEjectMap.CODEC, (payload, context) ->
+				ServerNetworkEvents.ejectMap(payload, context.player())
 		);
 	}
 
