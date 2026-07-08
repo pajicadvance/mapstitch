@@ -24,7 +24,16 @@ public class FabricClientEntrypoint implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		KeyMapping.Category.register(MapStitch.id("keys"));
+		KeyMapping.Category.register(MapStitch.id("keys_world_map"));
 		KeyMappingHelper.registerKeyMapping(ModKeybinds.OPEN_WORLD_MAP);
+		KeyMappingHelper.registerKeyMapping(ModKeybinds.SCALE_UP);
+		KeyMappingHelper.registerKeyMapping(ModKeybinds.SCALE_DOWN);
+		KeyMappingHelper.registerKeyMapping(ModKeybinds.DIMENSION_UP);
+		KeyMappingHelper.registerKeyMapping(ModKeybinds.DIMENSION_DOWN);
+		KeyMappingHelper.registerKeyMapping(ModKeybinds.FOLLOW_PLAYER);
+		KeyMappingHelper.registerKeyMapping(ModKeybinds.TOGGLE_GRID);
+		KeyMappingHelper.registerKeyMapping(ModKeybinds.EJECT_MAP);
+		KeyMappingHelper.registerKeyMapping(ModKeybinds.TOGGLE_HELP);
 		ClientTickEvents.END_CLIENT_TICK.register(ModKeybinds::onClientTick);
 		ClientPlayNetworking.registerGlobalReceiver(S2CDimensionIds.TYPE, (payload, _) ->
 				ClientNetworkEvents.setDimensionIds(payload)

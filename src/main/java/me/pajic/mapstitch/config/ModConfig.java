@@ -27,6 +27,7 @@ public class ModConfig {
 	public int minimapYOffset = 0;
 	public TextHighlightColor worldMapTextHighlightColor = TextHighlightColor.YELLOW;
 	public int worldMapTextBackgroundOpacity = 50;
+	public boolean worldMapButtons = true;
 	public boolean worldMapHelp = true;
 
     public static ModConfig load(File file) {

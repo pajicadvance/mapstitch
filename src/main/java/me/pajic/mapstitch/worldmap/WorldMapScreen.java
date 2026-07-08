@@ -1,6 +1,5 @@
 package me.pajic.mapstitch.worldmap;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectBooleanImmutablePair;
 import me.pajic.mapstitch.MapStitch;
@@ -14,9 +13,12 @@ import me.pajic.mapstitch.keybind.ModKeybinds;
 import me.pajic.mapstitch.networking.payload.C2SEjectMap;
 import me.pajic.mapstitch.util.CompatFlags;
 import me.pajic.mapstitch.util.ModUtil;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -26,6 +28,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.ARGB;
@@ -86,6 +89,72 @@ public class WorldMapScreen extends Screen {
 		follow = state.follow;
 	}
 
+	@Override
+	protected void init() {
+		if (ModConfigHolder.options().worldMapButtons) {
+			addRenderableWidget(Button.builder(
+					Component.translatable("mapstitch.gui.worldmap.button.zoom_in"),
+					_ -> zoomLevel = Mth.clamp(zoomLevel + 1, -2, 1)
+			).pos(width - 20, height / 2 - 72).size(16, 16).tooltip(
+					Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.zoom_in.tooltip"))
+			).build());
+
+			addRenderableWidget(Button.builder(
+					Component.translatable("mapstitch.gui.worldmap.button.zoom_out"),
+					_ -> zoomLevel = Mth.clamp(zoomLevel - 1, -2, 1)
+			).pos(width - 20, height / 2 - 54).size(16, 16).tooltip(
+					Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.zoom_out.tooltip"))
+			).build());
+
+			addRenderableWidget(Button.builder(
+					Component.translatable("mapstitch.gui.worldmap.button.dimension"), _ -> {
+						int i = dimensionIds.indexOf(dimensionId);
+						dimensionId = i + 1 > dimensionIds.size() - 1 ? dimensionIds.getFirst() : dimensionIds.get(i + 1);
+					}
+			).pos(width - 20, height / 2 - 36).size(16, 16).tooltip(
+					Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.dimension.tooltip"))
+			).build());
+
+			addRenderableWidget(Button.builder(
+					Component.translatable("mapstitch.gui.worldmap.button.scale"),
+					_ -> {
+						if (scale < 4) scale++;
+						else scale = 0;
+					}
+			).pos(width - 20, height / 2 - 18).size(16, 16).tooltip(
+					Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.scale.tooltip"))
+			).build());
+
+			addRenderableWidget(Button.builder(
+					Component.translatable("mapstitch.gui.worldmap.button.center"),
+					_ -> centerMap()
+			).pos(width - 20, height / 2).size(16, 16).tooltip(
+					Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.center.tooltip"))
+			).build());
+
+			addRenderableWidget(Button.builder(
+					Component.translatable("mapstitch.gui.worldmap.button.grid"),
+					_ -> grid = !grid
+			).pos(width - 20, height / 2 + 18).size(16, 16).tooltip(
+					Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.grid.tooltip"))
+			).build());
+
+			addRenderableWidget(Button.builder(
+					Component.translatable("mapstitch.gui.worldmap.button.follow"),
+					_ -> follow = !follow
+			).pos(width - 20, height / 2 + 36).size(16, 16).tooltip(
+					Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.follow.tooltip"))
+			).build());
+
+			addRenderableWidget(Button.builder(
+					Component.translatable("mapstitch.gui.worldmap.button.help"),
+					_ -> help = !help
+			).pos(width - 20, height / 2 + 54).size(16, 16).tooltip(
+					Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.help.tooltip"))
+			).build());
+		}
+	}
+
 	private record MapDataWithId(MapId id, MapItemSavedData data) {}
 
 	private record GridPos(int gx, int gy, int s) {}
@@ -134,6 +203,7 @@ public class WorldMapScreen extends Screen {
 		}
 		renderText(graphics, highlightColor);
 		mapsRendered = 0;
+		super.extractRenderState(graphics, mouseX, mouseY, a);
 	}
 
 	private void renderMaps(GuiGraphicsExtractor graphics, int xBoundMin, int xBoundMax, int zBoundMin, int zBoundMax) {
@@ -233,18 +303,32 @@ public class WorldMapScreen extends Screen {
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.debug.rendered_maps", mapsRendered), MapStitch.xplat().isDebug())
 		));
 		textStack(screenH - 12, grid & compass ? getVerticalGridBarWidth(MC.font) : 0, true, graphics, List.of(
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.help", Component.translatable("mapstitch.gui.worldmap.help_key").withColor(c)), ModConfigHolder.options().worldMapHelp && !help),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.help_control", Component.translatable("mapstitch.gui.worldmap.help_key").withColor(c)), help),
+				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.help", Component.keybind(ModKeybinds.TOGGLE_HELP.getName()).withColor(c)), ModConfigHolder.options().worldMapHelp && !help),
+				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.help_control", Component.keybind(ModKeybinds.TOGGLE_HELP.getName()).withColor(c)), help),
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.exit_control", Component.translatable("mapstitch.gui.worldmap.exit_key").withColor(c), Component.keybind(ModKeybinds.OPEN_WORLD_MAP.getName()).withColor(c)), help),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.eject_control", Component.translatable("mapstitch.gui.worldmap.eject_key").withColor(c)), help),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.grid_control", Component.translatable("mapstitch.gui.worldmap.grid_key").withColor(c)), help),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.follow_control", Component.translatable("mapstitch.gui.worldmap.follow_key").withColor(c)), help),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.scale_control", Component.translatable("mapstitch.gui.worldmap.scale_key").withColor(c)), help),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.dimension_control", Component.translatable("mapstitch.gui.worldmap.dimension_key").withColor(c)), help),
+				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.eject_control", Component.translatable("mapstitch.gui.worldmap.eject_key", Component.keybind(ModKeybinds.EJECT_MAP.getName())).withColor(c)), help),
+				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.grid_control", Component.keybind(ModKeybinds.TOGGLE_GRID.getName()).withColor(c)), help),
+				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.follow_control", Component.keybind(ModKeybinds.FOLLOW_PLAYER.getName()).withColor(c)), help),
+				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.scale_control", getMultiKeyTranslation(ModKeybinds.SCALE_UP, ModKeybinds.SCALE_DOWN, c)), help),
+				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.dimension_control", getMultiKeyTranslation(ModKeybinds.DIMENSION_UP, ModKeybinds.DIMENSION_DOWN, c)), help),
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.center_control", Component.translatable("mapstitch.gui.worldmap.center_key").withColor(c)), help),
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.zoom_control", Component.translatable("mapstitch.gui.worldmap.zoom_key").withColor(c)), help),
 				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.move_control", Component.translatable("mapstitch.gui.worldmap.move_key").withColor(c)), help)
 		));
+	}
+
+	private MutableComponent getMultiKeyTranslation(KeyMapping k1, KeyMapping k2, int c) {
+		boolean bl1 = !k1.isUnbound();
+		boolean bl2 = !k2.isUnbound();
+		MutableComponent key;
+		if (bl1 && bl2) {
+			key = Component.translatable("mapstitch.gui.worldmap.key_multi", Component.keybind(k1.getName()), Component.keybind(k2.getName()));
+		} else if (bl1) {
+			key = Component.translatable("mapstitch.gui.worldmap.key_single", Component.keybind(k1.getName()));
+		} else {
+			key = Component.translatable("mapstitch.gui.worldmap.key_single", Component.keybind(k2.getName()));
+		}
+		return key.withColor(c);
 	}
 
 	private void textStack(int startY, int x, boolean flipped, GuiGraphicsExtractor graphics, List<Pair<Component, Boolean>> lines) {
@@ -373,33 +457,35 @@ public class WorldMapScreen extends Screen {
 
 	@Override
 	public boolean keyPressed(@NotNull KeyEvent event) {
-		if (event.isUp() && scale < 4) {
-			scale++;
+		if (ModKeybinds.SCALE_UP.matches(event)) {
+			if (scale < 4) scale++;
+			else scale = 0;
 			return true;
 		}
-		if (event.isDown() && scale > 0) {
-			scale--;
+		if (ModKeybinds.SCALE_DOWN.matches(event)) {
+			if (scale > 0) scale--;
+			else scale = 4;
 			return true;
 		}
-		if (event.isRight()) {
+		if (ModKeybinds.DIMENSION_UP.matches(event)) {
 			int i = dimensionIds.indexOf(dimensionId);
 			dimensionId = i + 1 > dimensionIds.size() - 1 ? dimensionIds.getFirst() : dimensionIds.get(i + 1);
 			return true;
 		}
-		if (event.isLeft()) {
+		if (ModKeybinds.DIMENSION_DOWN.matches(event)) {
 			int i = dimensionIds.indexOf(dimensionId);
 			dimensionId = i - 1 < 0 ? dimensionIds.getLast() : dimensionIds.get(i - 1);
 			return true;
 		}
-		if (ModConfigHolder.options().worldMapHelp && event.key() == InputConstants.KEY_H) {
+		if (ModConfigHolder.options().worldMapHelp && ModKeybinds.TOGGLE_HELP.matches(event)) {
 			help = !help;
 			return true;
 		}
-		if (event.key() == InputConstants.KEY_F) {
+		if (ModKeybinds.FOLLOW_PLAYER.matches(event)) {
 			follow = !follow;
 			return true;
 		}
-		if (event.key() == InputConstants.KEY_G) {
+		if (ModKeybinds.TOGGLE_GRID.matches(event)) {
 			grid = !grid;
 			return true;
 		}
@@ -407,7 +493,7 @@ public class WorldMapScreen extends Screen {
 			onClose();
 			return true;
 		}
-		if (event.hasControlDown() && event.key() == InputConstants.KEY_Q) {
+		if (event.hasControlDown() && ModKeybinds.EJECT_MAP.matches(event)) {
 			ejectMapAtCursor();
 			return true;
 		}
