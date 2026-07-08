@@ -257,7 +257,7 @@ public class AtlasItem extends Item {
 					int distX = Math.abs(mapData.centerX - posX);
 					int distZ = Math.abs(mapData.centerZ - posZ);
 					int scale = Math.toIntExact(Math.round(Math.pow(2, mapData.scale)));
-					if (distX < 64 * scale && distZ < 64 * scale) {
+					if (distX <= 64 * scale && distZ <= 64 * scale) {
 						atlas.set(ModDataComponents.ATLAS_ACTIVE_MAP_ID, mapId.id());
 						return;
 					}

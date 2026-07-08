@@ -10,7 +10,7 @@ MapStitch uses filled maps from your inventory to create a world map which you c
 
 ![worldmap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v2/images/worldmap.png)
 
-The world map can only show one dimension and scale at once. These can be switched using arrow keys. There are basic controls like panning and zooming using the mouse, and toggleable player following and map grid overlay. A keybind reference can be brought up at any time by pressing H.
+The world map can only show one dimension and scale at once. These can be switched in the world map itself. There are basic controls like panning and zooming using the mouse, and toggleable player following and map grid overlay. A keybind reference can be brought up at any time by pressing H. Most of the keybinds can be rebound in the vanilla Controls menu.
 
 The player marker, coordinates, and grid overlay require having a compass anywhere in the inventory.
 
@@ -74,6 +74,9 @@ These can be configured either through [Sodium](https://modrinth.com/mod/sodium)
   - Default is Yellow
 - World map text background opacity
   - Default is 50%
+- World map buttons
+  - Controls whether to show the row of buttons on the right
+  - Default is true
 - World map help toggle
   - Controls whether to show the help toggle option
   - Default is true

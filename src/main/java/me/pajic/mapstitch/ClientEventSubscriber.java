@@ -38,6 +38,14 @@ public class ClientEventSubscriber {
 	@SubscribeEvent
 	private static void initKeybinds(RegisterKeyMappingsEvent event) {
 		event.register(ModKeybinds.OPEN_WORLD_MAP);
+		event.register(ModKeybinds.SCALE_UP);
+		event.register(ModKeybinds.SCALE_DOWN);
+		event.register(ModKeybinds.DIMENSION_UP);
+		event.register(ModKeybinds.DIMENSION_DOWN);
+		event.register(ModKeybinds.FOLLOW_PLAYER);
+		event.register(ModKeybinds.TOGGLE_GRID);
+		event.register(ModKeybinds.EJECT_MAP);
+		event.register(ModKeybinds.TOGGLE_HELP);
 	}
 
 	@SubscribeEvent

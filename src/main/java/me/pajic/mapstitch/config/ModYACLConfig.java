@@ -124,6 +124,14 @@ public class ModYACLConfig {
 										.formatValue(i -> Component.literal(i + "%")))
 								.build())
 						.option(Option.<Boolean>createBuilder()
+								.name(Component.translatable("config.mapstitch.show_buttons"))
+								.description(OptionDescription.of(Component.translatable("config.mapstitch.show_buttons.desc")))
+								.binding(ModConfigHolder.options().worldMapButtons,
+										() -> ModConfigHolder.options().worldMapButtons,
+										newValue -> ModConfigHolder.options().worldMapButtons = newValue)
+								.controller(TickBoxControllerBuilder::create)
+								.build())
+						.option(Option.<Boolean>createBuilder()
 								.name(Component.translatable("config.mapstitch.show_help"))
 								.description(OptionDescription.of(Component.translatable("config.mapstitch.show_help.desc")))
 								.binding(ModConfigHolder.options().worldMapHelp,
