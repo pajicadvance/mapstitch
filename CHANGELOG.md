@@ -1,7 +1,1 @@
-- Added a row of control buttons to the world map screen as an alternative to using keybinds. The buttons can be turned off in the config.
-- Most world map controls can now be rebound in the vanilla Controls menu.
-- Changed default keybinds to not use the arrow keys, in order to allow navigating the buttons using arrow keys:
-    - Next scale: Up arrow key → S
-    - Previous scale: Down arrow key → Unbound
-    - Next dimension: Right arrow key → D
-    - Previous scale: Left arrow key → Unbound
+- Fixed a bug that sometimes caused multiple copies of the same map to be created in the atlas while exploring.
