@@ -1,5 +1,6 @@
 package me.pajic.mapstitch.item;
 
+import it.unimi.dsi.fastutil.Pair;
 import me.pajic.mapstitch.MapStitch;
 import me.pajic.mapstitch.component.ModDataComponents;
 import me.pajic.mapstitch.extension.BundleContentsMutableExtension;
@@ -9,6 +10,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -268,6 +270,7 @@ public class AtlasItem extends Item {
 	private void updateActiveMap(ItemStack atlas, BundleContents contents, int posX, int posZ, ServerLevel level, Entity owner) {
 		int emptyMapIndex = -1;
 		boolean hasAnyFilledMaps = false;
+		Set<Pair<Vector2i, Identifier>> cachedCenters = new HashSet<>();
 		for (int i = 0; i < contents.size(); i++) {
 			ItemStackTemplate map = contents.items().get(i);
 			if (map.is(Items.FILLED_MAP)) {
@@ -275,8 +278,11 @@ public class AtlasItem extends Item {
 				MapId mapId = map.get(DataComponents.MAP_ID);
 				MapItemSavedData mapData = MapItem.getSavedData(mapId, level);
 				if (mapData != null) {
-					int distX = Math.abs(mapData.centerX - posX);
-					int distZ = Math.abs(mapData.centerZ - posZ);
+					int centerX = mapData.centerX;
+					int centerZ = mapData.centerZ;
+					cachedCenters.add(Pair.of(new Vector2i(centerX, centerZ), mapData.dimension.identifier()));
+					int distX = Math.abs(centerX - posX);
+					int distZ = Math.abs(centerZ - posZ);
 					int scale = Math.powExact(2, mapData.scale);
 					if (distX <= 64 * scale && distZ <= 64 * scale) {
 						atlas.set(ModDataComponents.ATLAS_ACTIVE_MAP_ID, mapId.id());
@@ -290,17 +296,24 @@ public class AtlasItem extends Item {
 			try {
 				MUTEX.acquire();
 				ItemStack newMap = MapItem.create(level, posX, posZ, atlas.getOrDefault(ModDataComponents.ATLAS_SCALE, 0).byteValue(), true, false);
-				BundleContents.Mutable mutableContents = new BundleContents.Mutable(contents);
-				//noinspection DataFlowIssue
-				((BundleContentsMutableExtension) mutableContents).mapstitch$removeOneItemAtIndex(emptyMapIndex);
 				MapItemSavedData mapData = MapItem.getSavedData(newMap.get(DataComponents.MAP_ID), level);
-				newMap.set(ModDataComponents.MAP_CENTER, new Vector2i(mapData.centerX, mapData.centerZ));
-				newMap.inventoryTick(level, owner, EquipmentSlot.MAINHAND);
-				mutableContents.tryInsert(newMap);
-				atlas.set(DataComponents.BUNDLE_CONTENTS, mutableContents.toImmutable());
-				if (owner instanceof ServerPlayer player) {
-					player.awardStat(Stats.ITEM_USED.get(this));
-					level.playSound(null, player, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, player.getSoundSource(), 1.0F, 1.0F);
+				if (mapData != null) {
+					int centerX = mapData.centerX;
+					int centerZ = mapData.centerZ;
+					Vector2i center = new Vector2i(centerX, centerZ);
+					if (!cachedCenters.contains(Pair.of(center, mapData.dimension.identifier()))) {
+						BundleContents.Mutable mutableContents = new BundleContents.Mutable(contents);
+						//noinspection DataFlowIssue
+						((BundleContentsMutableExtension) mutableContents).mapstitch$removeOneItemAtIndex(emptyMapIndex);
+						newMap.set(ModDataComponents.MAP_CENTER, new Vector2i(centerX, centerZ));
+						newMap.inventoryTick(level, owner, EquipmentSlot.MAINHAND);
+						mutableContents.tryInsert(newMap);
+						atlas.set(DataComponents.BUNDLE_CONTENTS, mutableContents.toImmutable());
+						if (owner instanceof ServerPlayer player) {
+							player.awardStat(Stats.ITEM_USED.get(this));
+							level.playSound(null, player, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, player.getSoundSource(), 1.0F, 1.0F);
+						}
+					}
 				}
 			} catch (InterruptedException e) {
 				MapStitch.LOGGER.warn("Map creation interrupted", e);
