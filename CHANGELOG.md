@@ -1,1 +1,8 @@
-- Fixed a bug that sometimes caused multiple copies of the same map to be created in the atlas while exploring.
+- Fixed a bug that caused all maps to show in the world map of the initially loaded dimension.
+    - Due to a vanilla dimension registry quirk, after rejoining a world, you will need to visit a dimension once in order to initialize its maps. After doing so, the world map for that dimension will be viewable from other dimensions until the next rejoin.
+- Fixed a bug that caused the minimap to not update when visiting other dimensions.
+- Fixed a bug that caused the world map player marker to show up in dimensions the player is not in.
+- The world map now automatically switches to the current dimension you're in when opened.
+- Added additional help messages to the world map:
+    - When no maps or atlases are in the inventory, a message will be shown instructing players how to add maps to the world map.
+    - When maps for the currently selected dimension are in the inventory, but its maps haven't been initialized yet, a message will be shown saying to visit that dimension in order to initialize its maps.

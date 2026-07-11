@@ -49,6 +49,7 @@ public class WorldMapScreen extends Screen {
 	private final Minecraft MC = Minecraft.getInstance();
 	private static final Map<GridPos, MapDataWithId> MAPS = new HashMap<>();
 	private static final ResourceLocation PLAYER_MARKER = ResourceLocation.withDefaultNamespace("textures/map/decorations/player.png");
+	private static final ResourceLocation ATLAS_CRAFTING = MapStitch.id("textures/gui/atlas_crafting.png");
 
 	public static List<ResourceLocation> dimensionIds = List.of();
 	private static ResourceLocation dimensionId = ResourceLocation.withDefaultNamespace("overworld");
@@ -71,6 +72,7 @@ public class WorldMapScreen extends Screen {
 	private boolean follow;
 	private int mapsRendered = 0;
 
+	@SuppressWarnings("DataFlowIssue")
 	public WorldMapScreen() {
 		super(Component.translatable("mapstitch.gui.worldmap.title"));
 		WorldMapState state = WorldMapStateHolder.state();
@@ -82,6 +84,7 @@ public class WorldMapScreen extends Screen {
 		grid = state.grid;
 		follow = state.follow;
 		ModUtil.worldMapOpen = true;
+		dimensionId = MC.level.dimension().location();
 	}
 
 	@Override
@@ -177,6 +180,7 @@ public class WorldMapScreen extends Screen {
 	private double screenToWorldX(double screenX) { return (screenX - screenW / 2.0) / zoom + camX; }
 	private double screenToWorldZ(double screenY) { return (screenY - screenH / 2.0) / zoom + camZ; }
 
+	@SuppressWarnings("DataFlowIssue")
 	@Override
 	public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		renderBackground(graphics, mouseX, mouseY, partialTick);
@@ -191,7 +195,7 @@ public class WorldMapScreen extends Screen {
 		int zBoundMax = Math.floorDiv((int)(camZ + (screenH/2d)/zoom), mapSize) + 1;
 		renderMaps(graphics, xBoundMin, xBoundMax, zBoundMin, zBoundMax);
 		if (compass) {
-			renderPlayerMarker(graphics);
+			if (MC.level.dimension().location().equals(dimensionId)) renderPlayerMarker(graphics);
 			if (grid) {
 				renderGrid(graphics, xBoundMin, xBoundMax, zBoundMin, zBoundMax);
 				renderPosAtCursor(graphics, mouseX, mouseY, highlightColor);
@@ -208,6 +212,7 @@ public class WorldMapScreen extends Screen {
 		MAPS.clear();
 		if (!ModConfigHolder.options().worldMapHelp) help = false;
 		if (MC.level == null || MC.player == null) return;
+		boolean hasAnyMapSources = false;
 		compass = ModUtil.hasCompass(MC);
 		if (compass) {
 			posX = MC.player.blockPosition().getX();
@@ -218,33 +223,63 @@ public class WorldMapScreen extends Screen {
 		zoom = (float) Math.pow(2, zoomLevel) / (float) Math.pow(2, scale);
 		List<ItemStack> items = new ArrayList<>(MC.player.getInventory().items);
 		if (CompatFlags.CURIOS_LOADED) items.addAll(CuriosCompat.getCurioAtlases(MC.player));
-		items.forEach(stack -> {
+		for (ItemStack stack : items) {
 			if (stack.is(ModItems.ATLAS)) {
 				BundleContents contents = stack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
 				for (ItemStack map : contents.items()) {
-					if (map.is(Items.FILLED_MAP)) prepareMap(map);
+					if (map.is(Items.FILLED_MAP)) {
+						prepareMap(map);
+						hasAnyMapSources = true;
+					}
 				}
 			} else if (stack.is(Items.FILLED_MAP)) {
 				prepareMap(stack);
+				hasAnyMapSources = true;
 			}
-		});
+		}
 		screenW = MC.getWindow().getGuiScaledWidth();
 		screenH = MC.getWindow().getGuiScaledHeight();
-		for (int gy = zBoundMin; gy <= zBoundMax; gy++) {
-			for (int gx = xBoundMin; gx <= xBoundMax; gx++) {
-				MapDataWithId map = MAPS.get(new GridPos(gx, gy, scale));
-				if (map != null && map.data.scale == scale) {
-					double px = worldToScreenX(gridOriginX(gx));
-					double py = worldToScreenZ(gridOriginZ(gy));
-					PoseStack pose = graphics.pose();
-					pose.pushPose();
-					pose.translate((float) px, (float) py, 0);
-					pose.scale((float) (mapPixels / 128.0), (float) (mapPixels / 128.0), 0);
-					MC.gameRenderer.getMapRenderer().render(graphics.pose(), graphics.bufferSource(), map.id, map.data, true, 15728880);
-					mapsRendered++;
-					pose.popPose();
+		PoseStack pose = graphics.pose();
+		if (hasAnyMapSources) {
+			if (MAPS.isEmpty()) {
+				compass = false;
+				Component text = Component.translatable("mapstitch.gui.worldmap.no_maps_rendered");
+				graphics.drawString(MC.font, text, width / 2 - font.width(text) / 2, height / 2, 0xffffffff);
+			}
+			else for (int gy = zBoundMin; gy <= zBoundMax; gy++) {
+				for (int gx = xBoundMin; gx <= xBoundMax; gx++) {
+					MapDataWithId map = MAPS.get(new GridPos(gx, gy, scale));
+					if (map != null && map.data.scale == scale) {
+						double px = worldToScreenX(gridOriginX(gx));
+						double py = worldToScreenZ(gridOriginZ(gy));
+						pose.pushPose();
+						pose.translate((float) px, (float) py, 0);
+						pose.scale((float) (mapPixels / 128.0), (float) (mapPixels / 128.0), 0);
+						MC.gameRenderer.getMapRenderer().render(graphics.pose(), graphics.bufferSource(), map.id, map.data, true, 15728880);
+						mapsRendered++;
+						pose.popPose();
+					}
 				}
 			}
+		} else {
+			compass = false;
+			pose.pushPose();
+			pose.translate(width / 2F, height / 2F - 52, 0);
+			Component text1 = Component.translatable("mapstitch.gui.worldmap.no_map_sources")
+					.withColor(ModConfigHolder.options().worldMapTextHighlightColor.color);
+			Component text2 = Component.translatable("mapstitch.gui.worldmap.no_map_sources_info_1");
+			Component text3 = Component.translatable("mapstitch.gui.worldmap.no_map_sources_info_2");
+			graphics.drawString(MC.font, text1, -font.width(text1) / 2, 0, 0xffffffff);
+			graphics.drawString(MC.font, text2, -font.width(text2) / 2, 12, 0xffffffff);
+			graphics.drawString(MC.font, text3, -font.width(text3) / 2, 24, 0xffffffff);
+			graphics.blit(
+					ATLAS_CRAFTING,
+					-60, 36,
+					0, 0,
+					120, 68,
+					120, 68
+			);
+			pose.popPose();
 		}
 	}
 

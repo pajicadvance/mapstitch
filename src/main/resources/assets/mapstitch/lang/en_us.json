@@ -44,6 +44,11 @@
   "mapstitch.gui.worldmap.button.help": "H",
   "mapstitch.gui.worldmap.button.help.tooltip": "Toggle help",
 
+  "mapstitch.gui.worldmap.no_map_sources": "No maps found",
+  "mapstitch.gui.worldmap.no_map_sources_info_1": "Add some maps to your inventory, or",
+  "mapstitch.gui.worldmap.no_map_sources_info_2": "craft an Atlas and store maps inside of it",
+  "mapstitch.gui.worldmap.no_maps_rendered": "Visit dimension to load world map",
+
   "mapstitch.gui.worldmap.debug.rendered_maps": "[Debug] Rendered maps: %s",
 
   "mapstitch.tooltip.atlas.filled_maps": "%s filled maps",
@@ -111,7 +116,7 @@
   "config.mapstitch.worldmap.text_highlight_color.DARK_PURPLE": "Dark purple",
   "config.mapstitch.worldmap.text_highlight_color.GOLD": "Gold",
   "config.mapstitch.worldmap.text_highlight_color.GRAY": "Gray",
-  "config.mapstitch.worldmap.text_highlight_color.DARK_GRAY": "Drak gray",
+  "config.mapstitch.worldmap.text_highlight_color.DARK_GRAY": "Dark gray",
   "config.mapstitch.worldmap.text_highlight_color.BLUE": "Blue",
   "config.mapstitch.worldmap.text_highlight_color.GREEN": "Green",
   "config.mapstitch.worldmap.text_highlight_color.AQUA": "Aqua",

@@ -191,7 +191,7 @@ public class AtlasItem extends Item {
 						INITIALIZED.putIfAbsent(uuid, new HashSet<>());
 						if (mapId != null && (!INITIALIZED.get(uuid).contains(mapId) || activeMapId == mapId.id())) {
 							MapItemSavedData data = MapItem.getSavedData(mapId, serverLevel);
-							if (data != null) {
+							if (data != null && data.dimension.location().equals(level.dimension().location())) {
 								data.tickCarriedBy(player, atlas);
 								if (!data.locked) {
 									((MapItem) stack.getItem()).update(serverLevel, player, data);
@@ -204,10 +204,14 @@ public class AtlasItem extends Item {
 								if (distX > 64 * scale || distZ > 64 * scale) {
 									updateActiveMap(atlas, contents, posX, posZ, serverLevel, player);
 								}
+								INITIALIZED.get(uuid).add(mapId);
 							}
-							INITIALIZED.get(uuid).add(mapId);
 						}
 					}
+				}
+				MapItemSavedData activeMapData = MapItem.getSavedData(new MapId(activeMapId), level);
+				if (activeMapData != null && !activeMapData.dimension.location().equals(level.dimension().location())) {
+					activeMapId = -1;
 				}
 				if (activeMapId == -1) updateActiveMap(atlas, contents, posX, posZ, serverLevel, player);
 			}
@@ -256,7 +260,7 @@ public class AtlasItem extends Item {
 				hasAnyFilledMaps = true;
 				MapId mapId = map.get(DataComponents.MAP_ID);
 				MapItemSavedData mapData = MapItem.getSavedData(mapId, level);
-				if (mapData != null) {
+				if (mapData != null && mapData.dimension.location().equals(level.dimension().location())) {
 					int centerX = mapData.centerX;
 					int centerZ = mapData.centerZ;
 					cachedCenters.add(Pair.of(new Vector2i(centerX, centerZ), mapData.dimension.location()));
