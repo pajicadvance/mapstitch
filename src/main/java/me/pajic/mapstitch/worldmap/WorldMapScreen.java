@@ -55,6 +55,7 @@ public class WorldMapScreen extends Screen {
 	private final Minecraft MC = Minecraft.getInstance();
 	private static final Map<GridPos, MapDataWithId> MAPS = new HashMap<>();
 	private static final Identifier PLAYER_MARKER = Identifier.withDefaultNamespace("textures/map/decorations/player.png");
+	private static final Identifier ATLAS_CRAFTING = MapStitch.id("textures/gui/atlas_crafting.png");
 
 	public static List<Identifier> dimensionIds = List.of();
 	private static Identifier dimensionId = Identifier.withDefaultNamespace("overworld");
@@ -77,6 +78,7 @@ public class WorldMapScreen extends Screen {
 	private boolean follow;
 	private int mapsRendered = 0;
 
+	@SuppressWarnings("DataFlowIssue")
 	public WorldMapScreen() {
 		super(Component.translatable("mapstitch.gui.worldmap.title"));
 		WorldMapState state = WorldMapStateHolder.state();
@@ -87,6 +89,7 @@ public class WorldMapScreen extends Screen {
 		help = state.help;
 		grid = state.grid;
 		follow = state.follow;
+		dimensionId = MC.level.dimension().identifier();
 	}
 
 	@Override
@@ -182,6 +185,7 @@ public class WorldMapScreen extends Screen {
 	private double screenToWorldX(double screenX) { return (screenX - screenW / 2.0) / zoom + camX; }
 	private double screenToWorldZ(double screenY) { return (screenY - screenH / 2.0) / zoom + camZ; }
 
+	@SuppressWarnings("DataFlowIssue")
 	@Override
 	public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
 		mapSize = 128 << scale;
@@ -195,7 +199,7 @@ public class WorldMapScreen extends Screen {
 		int zBoundMax = Math.floorDiv((int)(camZ + (screenH/2d)/zoom), mapSize) + 1;
 		renderMaps(graphics, xBoundMin, xBoundMax, zBoundMin, zBoundMax);
 		if (compass) {
-			renderPlayerMarker(graphics);
+			if (MC.level.dimension().identifier().equals(dimensionId)) renderPlayerMarker(graphics);
 			if (grid) {
 				renderGrid(graphics, xBoundMin, xBoundMax, zBoundMin, zBoundMax);
 				renderPosAtCursor(graphics, mouseX, mouseY, highlightColor);
@@ -210,6 +214,7 @@ public class WorldMapScreen extends Screen {
 		MAPS.clear();
 		if (!ModConfigHolder.options().worldMapHelp) help = false;
 		if (MC.level == null || MC.player == null) return;
+		boolean hasAnyMapSources = false;
 		compass = ModUtil.hasCompass(MC);
 		if (compass) {
 			posX = MC.player.blockPosition().getX();
@@ -221,39 +226,70 @@ public class WorldMapScreen extends Screen {
 		List<ItemStack> items = new ArrayList<>(MC.player.getInventory().getNonEquipmentItems());
 		if (CompatFlags.TRINKETS_LOADED) items.addAll(TrinketsCompat.getTrinketAtlases(MC.player));
 		if (CompatFlags.OHMEGA_LOADED) items.addAll(OhmegaCompat.getOhmegaAtlases(MC.player));
-		items.forEach(stack -> {
+		for (ItemStack stack : items) {
 			if (stack.is(ModItems.ATLAS)) {
 				BundleContents contents = stack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
 				for (ItemStackTemplate map : contents.items()) {
-					if (map.is(Items.FILLED_MAP)) prepareMap(map);
+					if (map.is(Items.FILLED_MAP)) {
+						prepareMap(map);
+						hasAnyMapSources = true;
+					}
 				}
 			} else if (stack.is(Items.FILLED_MAP)) {
 				prepareMap(ItemStackTemplate.fromNonEmptyStack(stack));
+				hasAnyMapSources = true;
 			}
-		});
+		}
 		screenW = MC.getWindow().getGuiScaledWidth();
 		screenH = MC.getWindow().getGuiScaledHeight();
-		for (int gy = zBoundMin; gy <= zBoundMax; gy++) {
-			for (int gx = xBoundMin; gx <= xBoundMax; gx++) {
-				MapDataWithId map = MAPS.get(new GridPos(gx, gy, scale));
-				if (map != null && map.data.scale == scale) {
-					double px = worldToScreenX(gridOriginX(gx));
-					double py = worldToScreenZ(gridOriginZ(gy));
-					Matrix3x2fStack pose = graphics.pose();
-					pose.pushMatrix();
-					pose.translate((float) px, (float) py);
-					pose.scale((float) (mapPixels / 128.0), (float) (mapPixels / 128.0));
-					MapRenderState state = new MapRenderState();
-					MC.getMapRenderer().extractRenderState(map.id, map.data, state);
-					state.decorations.forEach(decor -> {
-						Holder<MapDecorationType> type = ((MapDecorationRenderStateExtension) decor).mapstitch$getDecorationType();
-						if (!ModUtil.DECORS_REQUIRING_COMPASS.contains(type)) decor.renderOnFrame = true;
-					});
-					graphics.map(state);
-					mapsRendered++;
-					pose.popMatrix();
+		Matrix3x2fStack pose = graphics.pose();
+		if (hasAnyMapSources) {
+			if (MAPS.isEmpty()) {
+				compass = false;
+				Component text = Component.translatable("mapstitch.gui.worldmap.no_maps_rendered");
+				graphics.text(MC.font, text, width / 2 - font.width(text) / 2, height / 2, 0xffffffff);
+			}
+			else for (int gy = zBoundMin; gy <= zBoundMax; gy++) {
+				for (int gx = xBoundMin; gx <= xBoundMax; gx++) {
+					MapDataWithId map = MAPS.get(new GridPos(gx, gy, scale));
+					if (map != null && map.data.scale == scale) {
+						double px = worldToScreenX(gridOriginX(gx));
+						double py = worldToScreenZ(gridOriginZ(gy));
+						pose.pushMatrix();
+						pose.translate((float) px, (float) py);
+						pose.scale((float) (mapPixels / 128.0), (float) (mapPixels / 128.0));
+						MapRenderState state = new MapRenderState();
+						MC.getMapRenderer().extractRenderState(map.id, map.data, state);
+						state.decorations.forEach(decor -> {
+							Holder<MapDecorationType> type = ((MapDecorationRenderStateExtension) decor).mapstitch$getDecorationType();
+							if (!ModUtil.DECORS_REQUIRING_COMPASS.contains(type)) decor.renderOnFrame = true;
+						});
+						graphics.map(state);
+						mapsRendered++;
+						pose.popMatrix();
+					}
 				}
 			}
+		} else {
+			compass = false;
+			pose.pushMatrix();
+			pose.translate(width / 2F, height / 2F - 52);
+			Component text1 = Component.translatable("mapstitch.gui.worldmap.no_map_sources")
+					.withColor(ModConfigHolder.options().worldMapTextHighlightColor.color);
+			Component text2 = Component.translatable("mapstitch.gui.worldmap.no_map_sources_info_1");
+			Component text3 = Component.translatable("mapstitch.gui.worldmap.no_map_sources_info_2");
+			graphics.text(MC.font, text1, -font.width(text1) / 2, 0, 0xffffffff);
+			graphics.text(MC.font, text2, -font.width(text2) / 2, 12, 0xffffffff);
+			graphics.text(MC.font, text3, -font.width(text3) / 2, 24, 0xffffffff);
+			graphics.blit(
+					RenderPipelines.GUI_TEXTURED,
+					ATLAS_CRAFTING,
+					-60, 36,
+					0, 0,
+					120, 68,
+					120, 68
+			);
+			pose.popMatrix();
 		}
 	}
 
