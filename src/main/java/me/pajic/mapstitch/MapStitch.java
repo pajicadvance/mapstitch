@@ -16,4 +16,8 @@ public class MapStitch {
     public static boolean isDebug() {
         return !FMLLoader.isProduction();
     }
+
+    public static void debugLog(String message, Object ... args) {
+        if (isDebug()) LOGGER.info(message, args);
+    }
 }

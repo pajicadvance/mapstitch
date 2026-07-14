@@ -58,6 +58,9 @@ public class CommonEventSubscriber {
 		registrar.playToClient(S2CCompassGameRule.TYPE, S2CCompassGameRule.CODEC, (payload, context) ->
 				ClientNetworkEvents.setCompassRequired(payload)
 		);
+		registrar.playToClient(S2CMaxAtlasItemsGameRule.TYPE, S2CMaxAtlasItemsGameRule.CODEC, (payload, context) ->
+				ClientNetworkEvents.setMaxAtlasSize(payload)
+		);
 		registrar.playToClient(S2COpenWorldMapScreen.TYPE, S2COpenWorldMapScreen.CODEC, (payload, context) ->
 				ClientNetworkEvents.openWorldMapScreen(context)
 		);

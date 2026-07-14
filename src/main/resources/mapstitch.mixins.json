@@ -1,7 +1,9 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "mixinextras": {"minVersion": "0.5.3"},
+  "mixinextras": {
+    "minVersion": "0.5.3"
+  },
   "package": "me.pajic.mapstitch.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
@@ -10,6 +12,7 @@
     "DataComponentHolderMixin",
     "InventoryMixin",
     "MapItemMixin",
+    "MinecraftServerMixin",
     "PlayerListMixin",
     "accessor.BundleContentsAccessor",
     "accessor.BundleItemAccessor",
