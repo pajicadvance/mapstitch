@@ -24,7 +24,7 @@ Making maps is now cheaper, requiring only 9 paper instead of 8 paper and a comp
 
 ## Atlas
 
-The inventory doesn't have much space for maps, but the brand-new Atlas item does! Create an atlas by combining a filled map and a book. The atlas can then be used like a bundle to store empty maps and filled maps matching the scale of the filled map used to create the atlas (up to 16384 items in total).
+The inventory doesn't have much space for maps, but the brand-new Atlas item does! Create an atlas by combining a filled map and a book. The atlas can then be used like a bundle to store empty maps and filled maps matching the scale of the filled map used to create the atlas (up to 16384 items in total, configurable via a game rule).
 
 Maps from the atlas will be used to create the world map, and the atlas will automatically turn empty maps inside it into filled maps as you enter unmapped areas.
 
@@ -46,7 +46,11 @@ If multiple atlases are present, the minimap will prioritize the atlas in your h
 
 ### Game rules
 
+Game rule changes apply in real-time for all players without having to rejoin or restart.
+
 - `mapstitch:require_compass_for_pos`: Whether a compass is required to display the minimap and the player marker, coordinates, and grid overlay in the world map (default true)
+- `mapstitch:max_atlas_items`: The maximum amount of items each atlas can have (default 16384)
+  - When decreasing the value, make sure that no atlases exist in the world which have more items than what you're about to set, otherwise item loss or crashes may occur. Increasing the value should always be safe.
 
 ### Client settings
 

@@ -9,6 +9,7 @@ import me.pajic.mapstitch.minimap.MinimapOverlay;
 import me.pajic.mapstitch.networking.ClientNetworkEvents;
 import me.pajic.mapstitch.networking.payload.S2CCompassGameRule;
 import me.pajic.mapstitch.networking.payload.S2CDimensionIds;
+import me.pajic.mapstitch.networking.payload.S2CMaxAtlasItemsGameRule;
 import me.pajic.mapstitch.networking.payload.S2COpenWorldMapScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -43,6 +44,9 @@ public class FabricClientEntrypoint implements ClientModInitializer {
 		);
 		ClientPlayNetworking.registerGlobalReceiver(S2COpenWorldMapScreen.TYPE, (_, context) ->
 				ClientNetworkEvents.openWorldMapScreen(context.player())
+		);
+		ClientPlayNetworking.registerGlobalReceiver(S2CMaxAtlasItemsGameRule.TYPE, (payload, _) ->
+				ClientNetworkEvents.setMaxAtlasSize(payload)
 		);
 		HudElementRegistry.attachElementBefore(
 				VanillaHudElements.MOB_EFFECTS,

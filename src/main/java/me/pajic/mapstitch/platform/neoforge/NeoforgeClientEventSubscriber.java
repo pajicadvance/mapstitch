@@ -9,6 +9,7 @@ import me.pajic.mapstitch.minimap.MinimapOverlay;
 import me.pajic.mapstitch.networking.ClientNetworkEvents;
 import me.pajic.mapstitch.networking.payload.S2CCompassGameRule;
 import me.pajic.mapstitch.networking.payload.S2CDimensionIds;
+import me.pajic.mapstitch.networking.payload.S2CMaxAtlasItemsGameRule;
 import me.pajic.mapstitch.networking.payload.S2COpenWorldMapScreen;
 import me.pajic.mapstitch.util.CompatFlags;
 import net.minecraft.client.Minecraft;
@@ -62,6 +63,9 @@ public class NeoforgeClientEventSubscriber {
 		);
 		event.register(S2CCompassGameRule.TYPE, (payload, _) ->
 				ClientNetworkEvents.setCompassRequired(payload)
+		);
+		event.register(S2CMaxAtlasItemsGameRule.TYPE, (payload, _) ->
+				ClientNetworkEvents.setMaxAtlasSize(payload)
 		);
 		event.register(S2COpenWorldMapScreen.TYPE, (_, context) ->
 				ClientNetworkEvents.openWorldMapScreen(context.player())

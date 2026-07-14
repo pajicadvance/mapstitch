@@ -62,6 +62,8 @@
 
   "mapstitch.require_compass_for_pos": "Require compass for position",
   "gamerule.mapstitch.require_compass_for_pos": "Require compass to show position in minimap and world map",
+  "mapstitch.max_atlas_items": "Max items in atlas",
+  "gamerule.mapstitch.max_atlas_items": "Maximum amount of items in an atlas",
 
   "key.category.mapstitch.keys": "MapStitch",
   "key.category.mapstitch.keys_world_map": "MapStitch - World map",

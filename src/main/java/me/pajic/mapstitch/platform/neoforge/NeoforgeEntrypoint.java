@@ -12,6 +12,7 @@ import me.pajic.mapstitch.networking.payload.C2SPlaySound;
 import me.pajic.mapstitch.networking.payload.C2SSetEjectMode;
 import me.pajic.mapstitch.networking.payload.S2CCompassGameRule;
 import me.pajic.mapstitch.networking.payload.S2CDimensionIds;
+import me.pajic.mapstitch.networking.payload.S2CMaxAtlasItemsGameRule;
 import me.pajic.mapstitch.networking.payload.S2COpenWorldMapScreen;
 import me.pajic.mapstitch.recipe.ModRecipes;
 import net.minecraft.core.registries.Registries;
@@ -49,9 +50,10 @@ public class NeoforgeEntrypoint {
 			registry.register(MapStitch.id("atlas_eject_filled_maps_first"), ModDataComponents.ATLAS_EJECT_FILLED_MAPS_FIRST);
 			registry.register(MapStitch.id("map_center"), ModDataComponents.MAP_CENTER);
 		});
-		event.register(Registries.GAME_RULE, registry ->
-				registry.register(MapStitch.id("require_compass_for_pos"), ModGameRules.REQUIRE_COMPASS_FOR_POS)
-		);
+		event.register(Registries.GAME_RULE, registry -> {
+			registry.register(MapStitch.id("require_compass_for_pos"), ModGameRules.REQUIRE_COMPASS_FOR_POS);
+			registry.register(MapStitch.id("max_atlas_items"), ModGameRules.MAX_ATLAS_ITEMS);
+		});
 		event.register(Registries.ITEM, registry ->
 				registry.register(ModItems.ATLAS_KEY, ModItems.ATLAS)
 		);
@@ -65,6 +67,7 @@ public class NeoforgeEntrypoint {
 		PayloadRegistrar registrar = event.registrar("1");
 		registrar.playToClient(S2CDimensionIds.TYPE, S2CDimensionIds.CODEC);
 		registrar.playToClient(S2CCompassGameRule.TYPE, S2CCompassGameRule.CODEC);
+		registrar.playToClient(S2CMaxAtlasItemsGameRule.TYPE, S2CMaxAtlasItemsGameRule.CODEC);
 		registrar.playToClient(S2COpenWorldMapScreen.TYPE, S2COpenWorldMapScreen.CODEC);
 		registrar.playToServer(C2SPlaySound.TYPE, C2SPlaySound.CODEC, (payload, context) ->
 				ServerNetworkEvents.playSound(payload, context.player())
