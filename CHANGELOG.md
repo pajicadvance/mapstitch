@@ -1,4 +1,4 @@
-- Added game rule `mapstitch:max_atlas_items` that sets the maximum amount of items each atlas can have.
-  - When decreasing the value, make sure that no atlases exist in the world which have more items than what you're about to set, otherwise item loss or crashes may occur. Increasing the value should always be safe.
-- Fixed a bug that caused the stage 4 atlas fullness item texture to not show up.
-- [NeoForge 1.21.1] Fixed a bug that caused the bar on the atlas representing how full it is to display incorrectly.
+- Opening the world map by right-clicking an atlas will now automatically switch the world map to the scale of that atlas.
+- Decorations in the world map now have a consistent size regardless of the zoom level.
+- Fixed a bug that caused atlases to not create new maps if one filled map wasn't manually inserted beforehand.
+- Fixed a bug that caused an error to show up in the log when trying to scroll over an atlas in creative mode.

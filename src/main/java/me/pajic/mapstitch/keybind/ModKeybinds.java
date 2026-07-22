@@ -79,7 +79,7 @@ public class ModKeybinds {
 		if (client.player != null && client.level != null && OPEN_WORLD_MAP.consumeClick()) {
 			client.player.playSound(SoundEvents.BOOK_PAGE_TURN);
 			PacketDistributor.sendToServer(new C2SPlaySound(BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.BOOK_PAGE_TURN)));
-			client.setScreen(new WorldMapScreen());
+			client.setScreen(new WorldMapScreen(-1));
 		}
 	}
 }

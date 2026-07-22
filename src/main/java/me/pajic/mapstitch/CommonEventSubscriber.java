@@ -62,7 +62,7 @@ public class CommonEventSubscriber {
 				ClientNetworkEvents.setMaxAtlasSize(payload)
 		);
 		registrar.playToClient(S2COpenWorldMapScreen.TYPE, S2COpenWorldMapScreen.CODEC, (payload, context) ->
-				ClientNetworkEvents.openWorldMapScreen(context)
+				ClientNetworkEvents.openWorldMapScreen(context, payload.scaleOverride())
 		);
 		registrar.playToServer(C2SPlaySound.TYPE, C2SPlaySound.CODEC, ServerNetworkEvents::playSound);
 		registrar.playToServer(C2SSetEjectMode.TYPE, C2SSetEjectMode.CODEC, ServerNetworkEvents::setEjectMode);

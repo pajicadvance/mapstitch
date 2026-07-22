@@ -57,13 +57,13 @@ public class WorldMapScreen extends Screen {
 	private static int posX = 0;
 	private static int posY = 0;
 	private static int posZ = 0;
+	private static int zoomLevel;
 
 	private boolean compass;
 	private int mapSize;
 	private double mapPixels;
 	private double camX, camZ;
 	private int mouseX, mouseY;
-	private int zoomLevel;
 	private float zoom;
 	private int screenW, screenH;
 	private int scale;
@@ -73,10 +73,10 @@ public class WorldMapScreen extends Screen {
 	private int mapsRendered = 0;
 
 	@SuppressWarnings("DataFlowIssue")
-	public WorldMapScreen() {
+	public WorldMapScreen(int scaleOverride) {
 		super(Component.translatable("mapstitch.gui.worldmap.title"));
 		WorldMapState state = WorldMapStateHolder.state();
-		scale = state.scale;
+		scale = scaleOverride > -1 ? scaleOverride : state.scale;
 		zoomLevel = state.zoom;
 		camX = state.x;
 		camZ = state.z;
@@ -407,7 +407,9 @@ public class WorldMapScreen extends Screen {
 			graphics.fill(0, 0, screenW, 12, 0xc0000000);
 			graphics.fill(0, 0, verticalBarWidth, screenH, 0xc0000000);
 		}
-		textRenderCalls.forEach(d -> graphics.drawString(font, d.get().s, d.get().i1, d.get().i2, 0xffffffff, false));
+		textRenderCalls.forEach(d -> graphics.drawString(
+				font, d.get().s, d.get().i1, d.get().i2, 0xffffffff, false)
+		);
 	}
 
 	private record TextRenderData(String s, int i1, int i2) {}
@@ -547,5 +549,9 @@ public class WorldMapScreen extends Screen {
 		state.writeChanges();
 		ModUtil.worldMapOpen = false;
 		super.onClose();
+	}
+
+	public static int getZoomLevel() {
+		return zoomLevel;
 	}
 }
