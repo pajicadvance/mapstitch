@@ -18,6 +18,7 @@ import java.util.Set;
 
 public class ModUtil {
 	public static boolean compassRequired = true;
+	public static boolean worldMapOpen = false;
 	public static final Set<Holder<MapDecorationType>> DECORS_REQUIRING_COMPASS = Set.of(
 			MapDecorationTypes.PLAYER,
 			MapDecorationTypes.PLAYER_OFF_MAP,

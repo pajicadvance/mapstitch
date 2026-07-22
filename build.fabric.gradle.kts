@@ -16,6 +16,9 @@ platform {
 		required("fabricloader") {
 			versionRange = ">=${libs.fabric.loader.get().version}"
 		}
+		incompatible("ohmega") {
+			versionRange = ">=1.6.0"
+		}
 	}
 }
 

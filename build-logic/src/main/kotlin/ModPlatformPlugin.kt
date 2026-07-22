@@ -294,6 +294,7 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		projectId = project.prop("publish.modrinth")
 		accessToken = acesssToken
 		minecraftVersions.addAll(listOf(currentVersion) + additionalVersions)
+		environment = CLIENT_AND_SERVER
 
 		if (!staging) {
 			deps.required.forEach { dep -> whenNotNull(dep.modrinth) { requires(it) } }
@@ -313,6 +314,8 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		projectId = project.prop("publish.curseforge")
 		accessToken = acesssToken
 		minecraftVersions.addAll(listOf(currentVersion) + additionalVersions)
+		client = true
+		server = true
 
 		deps.required.forEach { dep -> whenNotNull(dep.curseforge) { requires(it) } }
 		deps.optional.forEach { dep -> whenNotNull(dep.curseforge) { optional(it) } }

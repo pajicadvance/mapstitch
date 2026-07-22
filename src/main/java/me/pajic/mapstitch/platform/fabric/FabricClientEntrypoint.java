@@ -42,8 +42,8 @@ public class FabricClientEntrypoint implements ClientModInitializer {
 		ClientPlayNetworking.registerGlobalReceiver(S2CCompassGameRule.TYPE, (payload, _) ->
 				ClientNetworkEvents.setCompassRequired(payload)
 		);
-		ClientPlayNetworking.registerGlobalReceiver(S2COpenWorldMapScreen.TYPE, (_, context) ->
-				ClientNetworkEvents.openWorldMapScreen(context.player())
+		ClientPlayNetworking.registerGlobalReceiver(S2COpenWorldMapScreen.TYPE, (payload, context) ->
+				ClientNetworkEvents.openWorldMapScreen(context.player(), payload.scaleOverride())
 		);
 		ClientPlayNetworking.registerGlobalReceiver(S2CMaxAtlasItemsGameRule.TYPE, (payload, _) ->
 				ClientNetworkEvents.setMaxAtlasSize(payload)

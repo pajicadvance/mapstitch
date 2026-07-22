@@ -153,7 +153,9 @@ public class AtlasItem extends Item {
 		player.startUsingItem(hand);
 		if (player instanceof ServerPlayer serverPlayer) {
 			serverPlayer.playSound(SoundEvents.BOOK_PAGE_TURN);
-			MapStitch.xplat().s2c(serverPlayer, new S2COpenWorldMapScreen());
+			MapStitch.xplat().s2c(serverPlayer, new S2COpenWorldMapScreen(
+					player.getItemInHand(hand).getOrDefault(ModDataComponents.ATLAS_SCALE, -1))
+			);
 		}
 		return InteractionResult.SUCCESS;
 	}
@@ -281,12 +283,10 @@ public class AtlasItem extends Item {
 
 	private void updateActiveMap(ItemStack atlas, BundleContents contents, int posX, int posZ, ServerLevel level, Entity owner) {
 		int emptyMapIndex = -1;
-		boolean hasAnyFilledMaps = false;
 		Set<Pair<Vector2i, Identifier>> cachedCenters = new HashSet<>();
 		for (int i = 0; i < contents.size(); i++) {
 			ItemStackTemplate map = contents.items().get(i);
 			if (map.is(Items.FILLED_MAP)) {
-				hasAnyFilledMaps = true;
 				MapId mapId = map.get(DataComponents.MAP_ID);
 				MapItemSavedData mapData = MapItem.getSavedData(mapId, level);
 				if (mapData != null && mapData.dimension.identifier().equals(level.dimension().identifier())) {
@@ -304,10 +304,14 @@ public class AtlasItem extends Item {
 			} else if (emptyMapIndex == -1 && map.is(Items.MAP)) emptyMapIndex = i;
 		}
 		atlas.set(ModDataComponents.ATLAS_ACTIVE_MAP_ID, -1);
-		if (MUTEX.availablePermits() > 0 && emptyMapIndex != -1 && hasAnyFilledMaps) {
+		if (MUTEX.availablePermits() > 0 && emptyMapIndex != -1) {
 			try {
 				MUTEX.acquire();
-				ItemStack newMap = MapItem.create(level, posX, posZ, atlas.getOrDefault(ModDataComponents.ATLAS_SCALE, 0).byteValue(), true, false);
+				ItemStack newMap = MapItem.create(
+						level, posX, posZ,
+						atlas.getOrDefault(ModDataComponents.ATLAS_SCALE, 0).byteValue(),
+						true, false
+				);
 				MapItemSavedData mapData = MapItem.getSavedData(newMap.get(DataComponents.MAP_ID), level);
 				if (mapData != null) {
 					int centerX = mapData.centerX;
@@ -323,7 +327,10 @@ public class AtlasItem extends Item {
 						atlas.set(DataComponents.BUNDLE_CONTENTS, mutableContents.toImmutable());
 						if (owner instanceof ServerPlayer player) {
 							player.awardStat(Stats.ITEM_USED.get(this));
-							level.playSound(null, player, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, player.getSoundSource(), 1.0F, 1.0F);
+							level.playSound(
+									null, player, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT,
+									player.getSoundSource(), 1.0F, 1.0F
+							);
 						}
 					}
 				}
@@ -339,7 +346,10 @@ public class AtlasItem extends Item {
 		BundleContents immutableContents = contents.toImmutable();
 		atlas.set(DataComponents.BUNDLE_CONTENTS, immutableContents);
 		int itemCount = getAtlasItemCount(immutableContents);
-		atlas.set(ModDataComponents.ATLAS_FULLNESS, Math.min(4, itemCount == 0 ? 0 : itemCount / ((MAX_SIZE.intValue() * 64) / 4) + 1));
+		atlas.set(
+				ModDataComponents.ATLAS_FULLNESS,
+				Math.min(4, itemCount == 0 ? 0 : itemCount / ((MAX_SIZE.intValue() * 64) / 4) + 1)
+		);
 		atlas.set(ModDataComponents.ATLAS_ACTIVE_MAP_ID, -1);
 	}
 

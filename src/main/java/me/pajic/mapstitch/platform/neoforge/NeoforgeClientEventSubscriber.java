@@ -67,8 +67,8 @@ public class NeoforgeClientEventSubscriber {
 		event.register(S2CMaxAtlasItemsGameRule.TYPE, (payload, _) ->
 				ClientNetworkEvents.setMaxAtlasSize(payload)
 		);
-		event.register(S2COpenWorldMapScreen.TYPE, (_, context) ->
-				ClientNetworkEvents.openWorldMapScreen(context.player())
+		event.register(S2COpenWorldMapScreen.TYPE, (payload, context) ->
+				ClientNetworkEvents.openWorldMapScreen(context.player(), payload.scaleOverride())
 		);
 	}
 

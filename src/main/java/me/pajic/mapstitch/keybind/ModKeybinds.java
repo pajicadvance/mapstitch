@@ -82,7 +82,7 @@ public class ModKeybinds {
 		if (client.player != null && client.level != null && OPEN_WORLD_MAP.consumeClick()) {
 			client.player.playSound(SoundEvents.BOOK_PAGE_TURN);
 			MapStitch.xplat().c2s(new C2SPlaySound(BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.BOOK_PAGE_TURN)));
-			client.setScreenAndShow(new WorldMapScreen());
+			client.setScreenAndShow(new WorldMapScreen(-1));
 		}
 	}
 }

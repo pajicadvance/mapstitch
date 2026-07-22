@@ -13,6 +13,7 @@ import me.pajic.mapstitch.util.CompatFlags;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
@@ -29,10 +30,16 @@ public class ServerNetworkEvents {
     }
 
     public static void setEjectMode(C2SSetEjectMode payload, Player player) {
-        ItemStack stack = player.containerMenu.getSlot(payload.slotId()).getItem();
-		if (stack.is(ModItems.ATLAS)) {
-		    boolean current = stack.getOrDefault(ModDataComponents.ATLAS_EJECT_FILLED_MAPS_FIRST, true);
-			stack.set(ModDataComponents.ATLAS_EJECT_FILLED_MAPS_FIRST, !current);
+		AbstractContainerMenu menu = player.containerMenu;
+		int slotIndex = payload.slotId();
+		if (slotIndex >= 0 && slotIndex < menu.slots.size()) {
+		    ItemStack stack = player.containerMenu.getSlot(slotIndex).getItem();
+			if (stack.is(ModItems.ATLAS)) {
+				stack.set(
+						ModDataComponents.ATLAS_EJECT_FILLED_MAPS_FIRST,
+						!stack.getOrDefault(ModDataComponents.ATLAS_EJECT_FILLED_MAPS_FIRST, true)
+				);
+			}
 	    }
     }
 

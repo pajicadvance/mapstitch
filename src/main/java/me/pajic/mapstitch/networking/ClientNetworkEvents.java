@@ -24,8 +24,8 @@ public class ClientNetworkEvents {
 		AtlasItem.setMaxSize(payload.maxSize());
 	}
 
-    public static void openWorldMapScreen(Player player) {
+    public static void openWorldMapScreen(Player player, int scaleOverride) {
         player.playSound(SoundEvents.BOOK_PAGE_TURN);
-        Minecraft.getInstance().setScreenAndShow(new WorldMapScreen());
+        Minecraft.getInstance().setScreenAndShow(new WorldMapScreen(Math.max(scaleOverride, -1)));
     }
 }

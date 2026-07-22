@@ -12,6 +12,9 @@ platform {
 		required("neoforge") {
 			forgeVersionRange = "[1,)"
 		}
+		incompatible("ohmega") {
+			versionRange = ">=1.6.0"
+		}
 	}
 }
 
