@@ -13,6 +13,9 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.saveddata.maps.MapDecorationType;
 import net.minecraft.world.level.saveddata.maps.MapDecorationTypes;
 
+//? neoforge
+//import me.pajic.mapstitch.compat.CuriosCompat;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,6 +33,8 @@ public class ModUtil {
 		if (!compassRequired) return true;
 		if (CompatFlags.TRINKETS_LOADED && TrinketsCompat.hasCompassInTrinketSlot(mc.player)) return true;
 		if (CompatFlags.OHMEGA_LOADED && OhmegaCompat.hasCompassInOhmegaSlot(mc.player)) return true;
+		//? neoforge
+		//if (CompatFlags.CURIOS_LOADED && CuriosCompat.hasCompassInCurioSlot(mc.player)) return true;
 		Set<BundleContents> bundles = new HashSet<>();
 		Set<ItemContainerContents> containers = new HashSet<>();
 		for (int i = 0; i < mc.player.getInventory().getContainerSize(); i++) {

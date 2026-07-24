@@ -24,6 +24,8 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.state.MapRenderState;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -45,6 +47,9 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 import org.joml.Vector2i;
 
+//? neoforge
+//import me.pajic.mapstitch.compat.CuriosCompat;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +59,7 @@ import java.util.function.Supplier;
 public class WorldMapScreen extends Screen {
 	private final Minecraft MC = Minecraft.getInstance();
 	private static final Map<GridPos, MapDataWithId> MAPS = new HashMap<>();
+	private static final Map<GridPos, List<MapRenderState.MapDecorationRenderState>> DECORATIONS = new HashMap<>();
 	private static final Identifier PLAYER_MARKER = Identifier.withDefaultNamespace("textures/map/decorations/player.png");
 	private static final Identifier ATLAS_CRAFTING = MapStitch.id("textures/gui/atlas_crafting.png");
 
@@ -199,6 +205,7 @@ public class WorldMapScreen extends Screen {
 		int zBoundMin = Math.floorDiv((int)(camZ - (screenH/2d)/zoom), mapSize);
 		int zBoundMax = Math.floorDiv((int)(camZ + (screenH/2d)/zoom), mapSize) + 1;
 		renderMaps(graphics, xBoundMin, xBoundMax, zBoundMin, zBoundMax);
+		renderDecorations(graphics);
 		if (compass) {
 			if (MC.level.dimension().identifier().equals(dimensionId)) renderPlayerMarker(graphics);
 			if (grid) {
@@ -212,7 +219,6 @@ public class WorldMapScreen extends Screen {
 	}
 
 	private void renderMaps(GuiGraphicsExtractor graphics, int xBoundMin, int xBoundMax, int zBoundMin, int zBoundMax) {
-		MAPS.clear();
 		if (!ModConfigHolder.options().worldMapHelp) help = false;
 		if (MC.level == null || MC.player == null) return;
 		boolean hasAnyMapSources = false;
@@ -227,6 +233,8 @@ public class WorldMapScreen extends Screen {
 		List<ItemStack> items = new ArrayList<>(MC.player.getInventory().getNonEquipmentItems());
 		if (CompatFlags.TRINKETS_LOADED) items.addAll(TrinketsCompat.getTrinketAtlases(MC.player));
 		if (CompatFlags.OHMEGA_LOADED) items.addAll(OhmegaCompat.getOhmegaAtlases(MC.player));
+		//? neoforge
+		//if (CompatFlags.CURIOS_LOADED) items.addAll(CuriosCompat.getCurioAtlases(MC.player));
 		for (ItemStack stack : items) {
 			if (stack.is(ModItems.ATLAS)) {
 				BundleContents contents = stack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
@@ -248,23 +256,21 @@ public class WorldMapScreen extends Screen {
 			if (MAPS.isEmpty()) {
 				compass = false;
 				Component text = Component.translatable("mapstitch.gui.worldmap.no_maps_rendered");
-				graphics.text(MC.font, text, width / 2 - font.width(text) / 2, height / 2, 0xffffffff);
+				graphics.text(MC.font, text, width / 2 - font.width(text) / 2, height / 2, -1);
 			}
 			else for (int gy = zBoundMin; gy <= zBoundMax; gy++) {
 				for (int gx = xBoundMin; gx <= xBoundMax; gx++) {
-					MapDataWithId map = MAPS.get(new GridPos(gx, gy, scale));
+					GridPos gp = new GridPos(gx, gy, scale);
+					MapDataWithId map = MAPS.get(gp);
 					if (map != null && map.data.scale == scale) {
 						double px = worldToScreenX(gridOriginX(gx));
 						double py = worldToScreenZ(gridOriginZ(gy));
 						pose.pushMatrix();
 						pose.translate((float) px, (float) py);
-						pose.scale((float) (mapPixels / 128.0), (float) (mapPixels / 128.0));
+						pose.scale((float) (mapPixels / 128), (float) (mapPixels / 128));
 						MapRenderState state = new MapRenderState();
 						MC.getMapRenderer().extractRenderState(map.id, map.data, state);
-						state.decorations.forEach(decor -> {
-							Holder<MapDecorationType> type = ((MapDecorationRenderStateExtension) decor).mapstitch$getDecorationType();
-							if (!ModUtil.DECORS_REQUIRING_COMPASS.contains(type)) decor.renderOnFrame = true;
-						});
+						state.decorations.forEach(decor -> prepareDecoration(decor, gp));
 						graphics.map(state);
 						mapsRendered++;
 						pose.popMatrix();
@@ -279,9 +285,9 @@ public class WorldMapScreen extends Screen {
 					.withColor(ModConfigHolder.options().worldMapTextHighlightColor.color);
 			Component text2 = Component.translatable("mapstitch.gui.worldmap.no_map_sources_info_1");
 			Component text3 = Component.translatable("mapstitch.gui.worldmap.no_map_sources_info_2");
-			graphics.text(MC.font, text1, -font.width(text1) / 2, 0, 0xffffffff);
-			graphics.text(MC.font, text2, -font.width(text2) / 2, 12, 0xffffffff);
-			graphics.text(MC.font, text3, -font.width(text3) / 2, 24, 0xffffffff);
+			graphics.text(MC.font, text1, -font.width(text1) / 2, 0, -1);
+			graphics.text(MC.font, text2, -font.width(text2) / 2, 12, -1);
+			graphics.text(MC.font, text3, -font.width(text3) / 2, 24, -1);
 			graphics.blit(
 					RenderPipelines.GUI_TEXTURED,
 					ATLAS_CRAFTING,
@@ -292,6 +298,53 @@ public class WorldMapScreen extends Screen {
 			);
 			pose.popMatrix();
 		}
+		MAPS.clear();
+	}
+
+	private void renderDecorations(GuiGraphicsExtractor graphics) {
+		Matrix3x2fStack pose = graphics.pose();
+		DECORATIONS.forEach((gp, decors) -> {
+			double px = worldToScreenX(gridOriginX(gp.gx));
+			double py = worldToScreenZ(gridOriginZ(gp.gy));
+			float s = (float) Math.pow(2, zoomLevel);
+			pose.pushMatrix();
+			pose.translate((float) px, (float) py);
+			pose.scale((float) (mapPixels / 128.0), (float) (mapPixels / 128.0));
+			decors.forEach(decor -> {
+				pose.pushMatrix();
+				pose.translate(decor.x / 2F + 64F, decor.y / 2F + 64F);
+				pose.rotate((float) (Math.PI / 180.0) * decor.rot * 360F / 16F);
+				pose.scale(4F / s, 4F / s);
+				pose.translate(-0.125F, 0.125F);
+				TextureAtlasSprite spr = decor.atlasSprite;
+				if (spr != null) {
+					AbstractTexture tex = MC.getTextureManager().getTexture(spr.atlasLocation());
+					graphics.blit(
+							tex.getTextureView(), tex.getSampler(),
+							-1, -1,
+							1, 1,
+							spr.getU0(), spr.getU1(),
+							spr.getV1(), spr.getV0()
+					);
+				}
+				pose.popMatrix();
+				if (decor.name != null) {
+					Font font = MC.font;
+					float width = font.width(decor.name);
+					float scale = Mth.clamp(25F / width, 0.5F, 1) / s;
+					pose.pushMatrix();
+					pose.translate(
+							decor.x / 2F + 64F - width * scale / 2F,
+							decor.y / 2F + 64F + 4F / s
+					);
+					pose.scale(scale, scale);
+					graphics.text(font, decor.name, 0, 0, -1);
+					pose.popMatrix();
+				}
+			});
+			pose.popMatrix();
+		});
+		DECORATIONS.clear();
 	}
 
 	@SuppressWarnings("DataFlowIssue")
@@ -304,6 +357,15 @@ public class WorldMapScreen extends Screen {
 				GridPos gridPos = worldToGrid(mapCenter.x, mapCenter.y, data.scale);
 				MAPS.put(gridPos, new MapDataWithId(id, data));
 			}
+		}
+	}
+
+	private void prepareDecoration(MapRenderState.MapDecorationRenderState decor, GridPos gp) {
+		decor.renderOnFrame = false;
+		Holder<MapDecorationType> type = ((MapDecorationRenderStateExtension) decor).mapstitch$getDecorationType();
+		if (!ModUtil.DECORS_REQUIRING_COMPASS.contains(type)) {
+			DECORATIONS.putIfAbsent(gp, new ArrayList<>());
+			DECORATIONS.get(gp).add(decor);
 		}
 	}
 
@@ -332,25 +394,79 @@ public class WorldMapScreen extends Screen {
 
 	private void renderText(GuiGraphicsExtractor graphics, int c) {
 		textStack(4 + (grid & compass ? 12 : 0), grid & compass ? getVerticalGridBarWidth(MC.font) : 0, false, graphics, List.of(
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.position", white(String.valueOf(posX)), white(String.valueOf(posY)), white(String.valueOf(posZ))).withColor(c), compass),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.dimension", getDimensionDisplayName()), true),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.scale", white("1:" + Math.powExact(2, scale))).withColor(c), true),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.zoom", white(zoom * Math.powExact(2, scale) + "x")).withColor(c), true),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.following"), follow),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.debug.rendered_maps", mapsRendered), MapStitch.xplat().isDebug())
+				new ObjectBooleanImmutablePair<>(Component.translatable(
+						"mapstitch.gui.worldmap.position",
+						white(String.valueOf(posX)), white(String.valueOf(posY)), white(String.valueOf(posZ))
+				).withColor(c), compass),
+				new ObjectBooleanImmutablePair<>(Component.translatable(
+						"mapstitch.gui.worldmap.dimension",
+						getDimensionDisplayName()
+				), true),
+				new ObjectBooleanImmutablePair<>(Component.translatable(
+						"mapstitch.gui.worldmap.scale",
+						white("1:" + Math.powExact(2, scale))
+				).withColor(c), true),
+				new ObjectBooleanImmutablePair<>(Component.translatable(
+						"mapstitch.gui.worldmap.zoom",
+						white(zoom * Math.powExact(2, scale) + "x")
+				).withColor(c), true),
+				new ObjectBooleanImmutablePair<>(Component.translatable(
+						"mapstitch.gui.worldmap.following"
+				), follow),
+				new ObjectBooleanImmutablePair<>(Component.translatable(
+						"mapstitch.gui.worldmap.debug.rendered_maps",
+						mapsRendered
+				), MapStitch.xplat().isDebug())
 		));
 		textStack(screenH - 12, grid & compass ? getVerticalGridBarWidth(MC.font) : 0, true, graphics, List.of(
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.help", Component.keybind(ModKeybinds.TOGGLE_HELP.getName()).withColor(c)), ModConfigHolder.options().worldMapHelp && !help),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.help_control", Component.keybind(ModKeybinds.TOGGLE_HELP.getName()).withColor(c)), help),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.exit_control", Component.translatable("mapstitch.gui.worldmap.exit_key").withColor(c), Component.keybind(ModKeybinds.OPEN_WORLD_MAP.getName()).withColor(c)), help),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.eject_control", Component.translatable("mapstitch.gui.worldmap.eject_key", Component.keybind(ModKeybinds.EJECT_MAP.getName())).withColor(c)), help),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.grid_control", Component.keybind(ModKeybinds.TOGGLE_GRID.getName()).withColor(c)), help),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.follow_control", Component.keybind(ModKeybinds.FOLLOW_PLAYER.getName()).withColor(c)), help),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.scale_control", getMultiKeyTranslation(ModKeybinds.SCALE_UP, ModKeybinds.SCALE_DOWN, c)), help),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.dimension_control", getMultiKeyTranslation(ModKeybinds.DIMENSION_UP, ModKeybinds.DIMENSION_DOWN, c)), help),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.center_control", Component.translatable("mapstitch.gui.worldmap.center_key").withColor(c)), help),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.zoom_control", Component.translatable("mapstitch.gui.worldmap.zoom_key").withColor(c)), help),
-				new ObjectBooleanImmutablePair<>(Component.translatable("mapstitch.gui.worldmap.move_control", Component.translatable("mapstitch.gui.worldmap.move_key").withColor(c)), help)
+				new ObjectBooleanImmutablePair<>(Component.translatable(
+						"mapstitch.gui.worldmap.help",
+						Component.keybind(ModKeybinds.TOGGLE_HELP.getName()).withColor(c)
+				), ModConfigHolder.options().worldMapHelp && !help),
+				new ObjectBooleanImmutablePair<>(Component.translatable(
+						"mapstitch.gui.worldmap.help_control",
+						Component.keybind(ModKeybinds.TOGGLE_HELP.getName()).withColor(c)
+				), help),
+				new ObjectBooleanImmutablePair<>(Component.translatable(
+						"mapstitch.gui.worldmap.exit_control",
+						Component.translatable("mapstitch.gui.worldmap.exit_key").withColor(c),
+						Component.keybind(ModKeybinds.OPEN_WORLD_MAP.getName()).withColor(c)
+				), help),
+				new ObjectBooleanImmutablePair<>(Component.translatable(
+						"mapstitch.gui.worldmap.eject_control",
+						Component.translatable(
+								"mapstitch.gui.worldmap.eject_key",
+								Component.keybind(ModKeybinds.EJECT_MAP.getName())
+						).withColor(c)
+				), help),
+				new ObjectBooleanImmutablePair<>(Component.translatable(
+						"mapstitch.gui.worldmap.grid_control",
+						Component.keybind(ModKeybinds.TOGGLE_GRID.getName()).withColor(c)
+				), help),
+				new ObjectBooleanImmutablePair<>(Component.translatable(
+						"mapstitch.gui.worldmap.follow_control",
+						Component.keybind(ModKeybinds.FOLLOW_PLAYER.getName()).withColor(c)
+				), help),
+				new ObjectBooleanImmutablePair<>(Component.translatable(
+						"mapstitch.gui.worldmap.scale_control",
+						getMultiKeyTranslation(ModKeybinds.SCALE_UP, ModKeybinds.SCALE_DOWN, c)
+				), help),
+				new ObjectBooleanImmutablePair<>(Component.translatable(
+						"mapstitch.gui.worldmap.dimension_control",
+						getMultiKeyTranslation(ModKeybinds.DIMENSION_UP, ModKeybinds.DIMENSION_DOWN, c)
+				), help),
+				new ObjectBooleanImmutablePair<>(Component.translatable(
+						"mapstitch.gui.worldmap.center_control",
+						Component.translatable("mapstitch.gui.worldmap.center_key").withColor(c)
+				), help),
+				new ObjectBooleanImmutablePair<>(Component.translatable(
+						"mapstitch.gui.worldmap.zoom_control",
+						Component.translatable("mapstitch.gui.worldmap.zoom_key").withColor(c)
+				), help),
+				new ObjectBooleanImmutablePair<>(Component.translatable(
+						"mapstitch.gui.worldmap.move_control",
+						Component.translatable("mapstitch.gui.worldmap.move_key").withColor(c)
+				), help)
 		));
 	}
 
@@ -376,14 +492,14 @@ public class WorldMapScreen extends Screen {
 						ARGB.as8BitChannel(ModConfigHolder.options().worldMapTextBackgroundOpacity / 100F),
 						0, 0, 0
 				));
-				graphics.text(MC.font, line.left(), 4 + x, y, 0xffffffff);
+				graphics.text(MC.font, line.left(), 4 + x, y, -1);
 				y += flipped ? -12 : 12;
 			}
 		}
 	}
 
 	private void renderGrid(GuiGraphicsExtractor graphics, int xBoundMin, int xBoundMax, int zBoundMin, int zBoundMax) {
-		Font font = minecraft.font;
+		Font font = MC.font;
 		int verticalBarWidth = getVerticalGridBarWidth(font);
 		int step = Math.max(1, (int) Math.ceil(48 / mapPixels));
 		List<Supplier<TextRenderData>> textRenderCalls = new ArrayList<>();
@@ -417,7 +533,7 @@ public class WorldMapScreen extends Screen {
 			graphics.fill(0, 0, verticalBarWidth, screenH, 0xc0000000);
 		}
 		textRenderCalls.forEach(d -> graphics.text(
-				font, d.get().s, d.get().i1, d.get().i2, 0xffffffff, false
+				font, d.get().s, d.get().i1, d.get().i2, -1, false
 		));
 	}
 
@@ -433,18 +549,18 @@ public class WorldMapScreen extends Screen {
 		int wx = (int) Math.floor(screenToWorldX(mouseX));
 		int wz = (int) Math.floor(screenToWorldZ(mouseY));
 		Component text = Component.translatable("mapstitch.gui.worldmap.cursor_position", white(String.valueOf(wx)), white(String.valueOf(wz))).withColor(c);
-		Font font = minecraft.font;
+		Font font = MC.font;
 		int posX = mouseX + 8;
 		int posY = mouseY + 8;
 		graphics.fill(posX - 2, posY - 2, posX + font.width(text) + 1, posY + 9, ARGB.color(
 				ARGB.as8BitChannel(ModConfigHolder.options().worldMapTextBackgroundOpacity / 100F),
 				0, 0, 0
 		));
-		graphics.text(font, text, posX, posY, 0xffffffff);
+		graphics.text(font, text, posX, posY, -1);
 	}
 
 	private Component white(String s) {
-		return Component.literal(s).withColor(0xffffffff);
+		return Component.literal(s).withColor(-1);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -562,9 +678,5 @@ public class WorldMapScreen extends Screen {
 		state.writeChanges();
 		ModUtil.worldMapOpen = false;
 		super.onClose();
-	}
-
-	public static int getZoomLevel() {
-		return zoomLevel;
 	}
 }

@@ -12,6 +12,9 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.component.BundleContents;
 
+//? neoforge
+//import me.pajic.mapstitch.compat.CuriosCompat;
+
 public class ModItems {
 	public static final ResourceKey<Item> ATLAS_KEY = ResourceKey.create(Registries.ITEM, MapStitch.id("atlas"));
 	public static final Item ATLAS = makeAtlas(createAtlasProperties());
@@ -31,6 +34,8 @@ public class ModItems {
 	private static AtlasItem makeAtlas(Item.Properties properties) {
 		if (CompatFlags.TRINKETS_LOADED) return TrinketsCompat.makeTrinketAtlas(properties);
 		if (CompatFlags.OHMEGA_LOADED) return OhmegaCompat.makeOhmegaAtlas(properties);
+		//? neoforge
+		//if (CompatFlags.CURIOS_LOADED) return CuriosCompat.makeCurioAtlas(properties);
 		return new AtlasItem(properties);
 	}
 

@@ -57,6 +57,8 @@
   "mapstitch.tooltip.atlas.empty_maps_first": "Ejects empty maps first",
 
   "mapstitch.pack.cheaper_maps": "Cheaper Maps",
+  "mapstitch.pack.atlas_slot": "Atlas Slot",
+  "mapstitch.pack.compass_slot": "Compass Slot",
 
   "item.mapstitch.atlas": "Atlas",
 
@@ -78,6 +80,9 @@
   "mapstitch.key.toggle_help": "Toggle help",
 
   "trinkets.slot.mapstitch.atlas": "Atlas",
+  "trinkets.slot.mapstitch.compass": "Compass",
+  "curios.identifier.atlas": "Atlas",
+  "curios.identifier.compass": "Compass",
 
   "config.mapstitch.title": "MapStitch Configuration",
   "config.mapstitch.minimap": "Minimap",

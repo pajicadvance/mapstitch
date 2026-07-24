@@ -1,0 +1,4 @@
+{
+  "icon": "mapstitch:container/slots/compass",
+  "validators": ["curios:tag"]
+}

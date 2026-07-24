@@ -1,0 +1,9 @@
+{
+	"pack": {
+		"description": "Requires Trinkets/Curios/Ohmega",
+		"min_format": 63,
+		"max_format": 9999,
+		"supported_formats": [63, 9999],
+		"pack_format": 63
+	}
+}

@@ -46,6 +46,7 @@ repositories {
 	strictMaven("https://api.modrinth.com/maven", "maven.modrinth") { name = "Modrinth" }
 	strictMaven("https://maven.caffeinemc.net/releases") { name = "CaffeineMC" }
 	strictMaven("https://maven.nucleoid.xyz/releases") { name = "Nucleoid" }
+	strictMaven("https://maven.theillusivec4.top/") { name = "TheIllusiveC4" }
 }
 
 dependencies {
@@ -57,6 +58,8 @@ dependencies {
 	compileOnly("io.github.swackyy:ohmega-neoforge:${prop("deps.ohmega")}")
 	/*runtimeOnly("io.github.swackyy:ohmega-neoforge:${prop("deps.ohmega")}")
 	runtimeOnly("maven.modrinth:forge-config-api-port:26.1.3-neoforge")*/
+	compileOnly("top.theillusivec4.curios:curios-neoforge:${prop("deps.curios")}:api")
+	//runtimeOnly("top.theillusivec4.curios:curios-neoforge:${prop("deps.curios")}")
 }
 
 tasks.named("createMinecraftArtifacts") {

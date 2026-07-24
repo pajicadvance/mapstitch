@@ -1,0 +1,4 @@
+{
+  "icon": "mapstitch:container/slots/atlas",
+  "validators": ["curios:tag"]
+}

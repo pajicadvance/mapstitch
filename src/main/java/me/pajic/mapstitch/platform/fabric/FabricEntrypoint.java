@@ -64,14 +64,26 @@ public class FabricEntrypoint implements ModInitializer {
 		ServerPlayNetworking.registerGlobalReceiver(C2SEjectMap.TYPE, (payload, context) ->
 				ServerNetworkEvents.ejectMap(payload, context.player()))
 		;
-		FabricLoader.getInstance().getModContainer(MapStitch.MOD_ID).ifPresent(container ->
-				ResourceLoader.registerBuiltinPack(
-						MapStitch.id("cheaper_maps"),
-						container,
-						Component.translatable("mapstitch.pack.cheaper_maps"),
-						PackActivationType.DEFAULT_ENABLED
-				)
-		);
+		FabricLoader.getInstance().getModContainer(MapStitch.MOD_ID).ifPresent(container -> {
+			ResourceLoader.registerBuiltinPack(
+					MapStitch.id("cheaper_maps"),
+					container,
+					Component.translatable("mapstitch.pack.cheaper_maps"),
+					PackActivationType.DEFAULT_ENABLED
+			);
+			ResourceLoader.registerBuiltinPack(
+					MapStitch.id("atlas_slot"),
+					container,
+					Component.translatable("mapstitch.pack.atlas_slot"),
+					PackActivationType.DEFAULT_ENABLED
+			);
+			ResourceLoader.registerBuiltinPack(
+					MapStitch.id("compass_slot"),
+					container,
+					Component.translatable("mapstitch.pack.compass_slot"),
+					PackActivationType.DEFAULT_ENABLED
+			);
+		});
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(output -> {
 			for (int i = 4; i >= 0; i--) {
 				ItemStack atlas = new ItemStack(ModItems.ATLAS);

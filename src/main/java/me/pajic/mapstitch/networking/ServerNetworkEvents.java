@@ -20,6 +20,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.level.saveddata.maps.MapId;
 
+//? neoforge
+//import me.pajic.mapstitch.compat.CuriosCompat;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +50,8 @@ public class ServerNetworkEvents {
 		List<ItemStack> items = new ArrayList<>(player.getInventory().getNonEquipmentItems());
 		if (CompatFlags.TRINKETS_LOADED) items.addAll(TrinketsCompat.getTrinketAtlases(player));
 		if (CompatFlags.OHMEGA_LOADED) items.addAll(OhmegaCompat.getOhmegaAtlases(player));
+		//? neoforge
+		//if (CompatFlags.CURIOS_LOADED) items.addAll(CuriosCompat.getCurioAtlases(player));
 		for (ItemStack stack : items) {
 			boolean dropped = false;
 			if (stack.is(ModItems.ATLAS)) {
