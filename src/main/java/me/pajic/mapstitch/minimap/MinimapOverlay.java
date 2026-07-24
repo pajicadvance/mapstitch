@@ -13,12 +13,15 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MinimapOverlay {
 	private static final Minecraft MC = Minecraft.getInstance();
@@ -47,7 +50,7 @@ public class MinimapOverlay {
 				switch (ModConfigHolder.options().minimapPosition) {
 					case TOP_RIGHT -> position = new IntIntImmutablePair(
 							width - offset - scaleOffset - offsetX,
-							offset + offsetY + (!MC.player.getActiveEffects().isEmpty() && ModConfigHolder.options().minimapPreventEffectOverlap ? 51 : 0)
+							offset + offsetY + getEffectOffset()
 					);
 					case BOTTOM_LEFT -> position = new IntIntImmutablePair(
 							offset + offsetX,
@@ -90,14 +93,28 @@ public class MinimapOverlay {
 					if (noMapTextTimer == 0) {
 						Component c1 = Component.translatable("mapstitch.gui.minimap.no_map_1");
 						Component c2 = Component.translatable("mapstitch.gui.minimap.no_map_2");
-						graphics.drawString(MC.font, c1, 64 - MC.font.width(c1) / 2, 64 - 8, 0xffffffff);
-						graphics.drawString(MC.font, c2, 64 - MC.font.width(c2) / 2, 64 - 8 + 12, 0xffffffff);
+						graphics.drawString(MC.font, c1, 64 - MC.font.width(c1) / 2, 64 - 8, -1);
+						graphics.drawString(MC.font, c2, 64 - MC.font.width(c2) / 2, 64 - 8 + 12, -1);
 					} else noMapTextTimer--;
 				}
 				graphics.pose().popPose();
 				graphics.flush();
 			}
 		}
+	}
+
+	@SuppressWarnings("DataFlowIssue")
+	private static int getEffectOffset() {
+		if (ModConfigHolder.options().minimapPreventEffectOverlap) {
+			Set<MobEffectInstance> effects = new HashSet<>(MC.player.getActiveEffects());
+			if (!effects.isEmpty()) {
+				for (MobEffectInstance effect : effects) {
+					if (!effect.getEffect().value().isBeneficial()) return 51;
+				}
+				return 25;
+			}
+		}
+		return 0;
 	}
 
 	@SuppressWarnings("DataFlowIssue")

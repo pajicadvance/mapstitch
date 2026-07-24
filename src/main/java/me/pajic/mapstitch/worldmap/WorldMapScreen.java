@@ -1,6 +1,7 @@
 package me.pajic.mapstitch.worldmap;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectBooleanImmutablePair;
@@ -21,6 +22,8 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -32,11 +35,13 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.BundleContents;
+import net.minecraft.world.level.saveddata.maps.MapDecoration;
 import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
 import org.joml.Vector2i;
 
 import java.util.ArrayList;
@@ -48,6 +53,7 @@ import java.util.function.Supplier;
 public class WorldMapScreen extends Screen {
 	private final Minecraft MC = Minecraft.getInstance();
 	private static final Map<GridPos, MapDataWithId> MAPS = new HashMap<>();
+	private static final Map<GridPos, List<MapDecoration>> DECORATIONS = new HashMap<>();
 	private static final ResourceLocation PLAYER_MARKER = ResourceLocation.withDefaultNamespace("textures/map/decorations/player.png");
 	private static final ResourceLocation ATLAS_CRAFTING = MapStitch.id("textures/gui/atlas_crafting.png");
 
@@ -194,6 +200,7 @@ public class WorldMapScreen extends Screen {
 		int zBoundMin = Math.floorDiv((int)(camZ - (screenH/2d)/zoom), mapSize);
 		int zBoundMax = Math.floorDiv((int)(camZ + (screenH/2d)/zoom), mapSize) + 1;
 		renderMaps(graphics, xBoundMin, xBoundMax, zBoundMin, zBoundMax);
+		renderDecorations(graphics);
 		if (compass) {
 			if (MC.level.dimension().location().equals(dimensionId)) renderPlayerMarker(graphics);
 			if (grid) {
@@ -209,7 +216,6 @@ public class WorldMapScreen extends Screen {
 	}
 
 	private void renderMaps(GuiGraphics graphics, int xBoundMin, int xBoundMax, int zBoundMin, int zBoundMax) {
-		MAPS.clear();
 		if (!ModConfigHolder.options().worldMapHelp) help = false;
 		if (MC.level == null || MC.player == null) return;
 		boolean hasAnyMapSources = false;
@@ -248,13 +254,15 @@ public class WorldMapScreen extends Screen {
 			}
 			else for (int gy = zBoundMin; gy <= zBoundMax; gy++) {
 				for (int gx = xBoundMin; gx <= xBoundMax; gx++) {
-					MapDataWithId map = MAPS.get(new GridPos(gx, gy, scale));
+					GridPos gp = new GridPos(gx, gy, scale);
+					MapDataWithId map = MAPS.get(gp);
 					if (map != null && map.data.scale == scale) {
 						double px = worldToScreenX(gridOriginX(gx));
 						double py = worldToScreenZ(gridOriginZ(gy));
 						pose.pushPose();
 						pose.translate((float) px, (float) py, 0);
-						pose.scale((float) (mapPixels / 128.0), (float) (mapPixels / 128.0), 0);
+						pose.scale((float) (mapPixels / 128), (float) (mapPixels / 128), 0);
+						map.data.getDecorations().forEach(decor -> prepareDecoration(decor, gp));
 						MC.gameRenderer.getMapRenderer().render(graphics.pose(), graphics.bufferSource(), map.id, map.data, true, 15728880);
 						mapsRendered++;
 						pose.popPose();
@@ -281,6 +289,52 @@ public class WorldMapScreen extends Screen {
 			);
 			pose.popPose();
 		}
+		MAPS.clear();
+	}
+
+	private void renderDecorations(GuiGraphics graphics) {
+		PoseStack pose = graphics.pose();
+		DECORATIONS.forEach((gp, decors) -> {
+			double px = worldToScreenX(gridOriginX(gp.gx));
+			double py = worldToScreenZ(gridOriginZ(gp.gy));
+			float s = (float) Math.pow(2, zoomLevel);
+			pose.pushPose();
+			pose.translate((float) px, (float) py, 0);
+			pose.scale((float) (mapPixels / 128.0), (float) (mapPixels / 128.0), 0);
+			decors.forEach(decor -> {
+				pose.pushPose();
+				pose.translate(decor.x() / 2F + 64F, decor.y() / 2F + 64F, -0.02F);
+				pose.mulPose(Axis.ZP.rotationDegrees((float)(decor.rot() * 360) / 16.0F));
+				pose.scale(4F / s, 4F / s, 3F);
+				pose.translate(-0.125F, 0.125F, 0);
+				TextureAtlasSprite spr = MC.getMapDecorationTextures().get(decor);
+				VertexConsumer vc = graphics.bufferSource().getBuffer(RenderType.text(spr.atlasLocation()));
+				Matrix4f m4f = pose.last().pose();
+				vc.addVertex(m4f, -1.0F, 1.0F, -0.001F).setColor(-1).setUv(spr.getU0(), spr.getV0()).setLight(15728880);
+				vc.addVertex(m4f, 1.0F, 1.0F, -0.001F).setColor(-1).setUv(spr.getU1(), spr.getV0()).setLight(15728880);
+				vc.addVertex(m4f, 1.0F, -1.0F, -0.001F).setColor(-1).setUv(spr.getU1(), spr.getV1()).setLight(15728880);
+				vc.addVertex(m4f, -1.0F, -1.0F, -0.001F).setColor(-1).setUv(spr.getU0(), spr.getV1()).setLight(15728880);
+				pose.popPose();
+				if (decor.name().isPresent()) {
+					Font font = MC.font;
+					Component name = decor.name().get();
+					float width = font.width(name);
+					float scale = Mth.clamp(25F / width, 0.5F, 1) / s;
+					pose.pushPose();
+					pose.translate(
+							decor.x() / 2F + 64F - width * scale / 2F,
+							decor.y() / 2F + 64F + 4F / s,
+							-0.025F
+					);
+					pose.scale(scale, scale, 1);
+					pose.translate(0, 0, -0.1F);
+					graphics.drawString(font, name, 0, 0, -1);
+					pose.popPose();
+				}
+			});
+			pose.popPose();
+		});
+		DECORATIONS.clear();
 	}
 
 	@SuppressWarnings("DataFlowIssue")
@@ -293,6 +347,13 @@ public class WorldMapScreen extends Screen {
 				GridPos gridPos = worldToGrid(mapCenter.x, mapCenter.y, data.scale);
 				MAPS.put(gridPos, new MapDataWithId(id, data));
 			}
+		}
+	}
+
+	private void prepareDecoration(MapDecoration decor, GridPos gp) {
+		if (!ModUtil.DECORS_REQUIRING_COMPASS.contains(decor.type())) {
+			DECORATIONS.putIfAbsent(gp, new ArrayList<>());
+			DECORATIONS.get(gp).add(decor);
 		}
 	}
 
@@ -372,9 +433,8 @@ public class WorldMapScreen extends Screen {
 		}
 	}
 
-	@SuppressWarnings("DataFlowIssue")
     private void renderGrid(GuiGraphics graphics, int xBoundMin, int xBoundMax, int zBoundMin, int zBoundMax) {
-		Font font = minecraft.font;
+		Font font = MC.font;
 		int verticalBarWidth = getVerticalGridBarWidth(font);
 		int step = Math.max(1, (int) Math.ceil(48 / mapPixels));
 		List<Supplier<TextRenderData>> textRenderCalls = new ArrayList<>();
@@ -420,12 +480,11 @@ public class WorldMapScreen extends Screen {
 		return Math.max(wMax, wMin) + 4;
 	}
 
-	@SuppressWarnings("DataFlowIssue")
     private void renderPosAtCursor(GuiGraphics graphics, int mouseX, int mouseY, int c) {
 		int wx = (int) Math.floor(screenToWorldX(mouseX));
 		int wz = (int) Math.floor(screenToWorldZ(mouseY));
 		Component text = Component.translatable("mapstitch.gui.worldmap.cursor_position", white(String.valueOf(wx)), white(String.valueOf(wz))).withColor(c);
-		Font font = minecraft.font;
+		Font font = MC.font;
 		int posX = mouseX + 8;
 		int posY = mouseY + 8;
 		graphics.fill(posX - 2, posY - 2, posX + font.width(text) + 1, posY + 9, FastColor.ARGB32.color(
@@ -549,9 +608,5 @@ public class WorldMapScreen extends Screen {
 		state.writeChanges();
 		ModUtil.worldMapOpen = false;
 		super.onClose();
-	}
-
-	public static int getZoomLevel() {
-		return zoomLevel;
 	}
 }

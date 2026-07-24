@@ -79,6 +79,22 @@ public class CommonEventSubscriber {
 				false,
 				Pack.Position.TOP
 		);
+		event.addPackFinders(
+				MapStitch.id("resourcepacks/atlas_slot"),
+				PackType.SERVER_DATA,
+				Component.translatable("mapstitch.pack.atlas_slot"),
+				PackSource.BUILT_IN,
+				false,
+				Pack.Position.TOP
+		);
+		event.addPackFinders(
+				MapStitch.id("resourcepacks/compass_slot"),
+				PackType.SERVER_DATA,
+				Component.translatable("mapstitch.pack.compass_slot"),
+				PackSource.BUILT_IN,
+				false,
+				Pack.Position.TOP
+		);
 	}
 
 	@SubscribeEvent

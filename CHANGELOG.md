@@ -1,4 +1,6 @@
-- Opening the world map by right-clicking an atlas will now automatically switch the world map to the scale of that atlas.
-- Decorations in the world map now have a consistent size regardless of the zoom level.
-- Fixed a bug that caused atlases to not create new maps if one filled map wasn't manually inserted beforehand.
-- Fixed a bug that caused an error to show up in the log when trying to scroll over an atlas in creative mode.
+- Implemented custom decoration renderer in the world map, fixing the following issues:
+  - Decoration names are now more legible, especially long names.
+  - Decorations are no longer cut off by other maps if they're near the edge of the map.
+- Added a compass slot when Trinkets/Curios/Ohmega is installed.
+- Atlas and compass slots are now data packs and can be toggled.
+- Added support for Curios API on NeoForge 26.1+.

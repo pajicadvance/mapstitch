@@ -52,6 +52,14 @@ Game rule changes apply in real-time for all players without having to rejoin or
 - `mapstitch:max_atlas_items`: The maximum amount of items each atlas can have (default 16384)
   - When decreasing the value, make sure that no atlases exist in the world which have more items than what you're about to set, otherwise item loss or crashes may occur. Increasing the value should always be safe.
 
+### Data packs
+
+The following features are built-in data packs and can be toggled on/off from the data packs screen during world creation or using the `/datapack enable` and `/datapack disable` commands:
+
+- Cheaper maps
+- Atlas slot
+- Compass slot
+
 ### Client settings
 
 These can be configured either through [Sodium](https://modrinth.com/mod/sodium) video settings or in a config screen provided by [YACL](https://modrinth.com/mod/yacl). Both mods are optional and the config can be edited manually through `mapstitch.json` in the config folder, but it's highly recommended to use one of the two config screens instead.
@@ -87,7 +95,7 @@ These can be configured either through [Sodium](https://modrinth.com/mod/sodium)
 
 ## Mod integration
 
-- [Trinkets (Updated)](https://modrinth.com/mod/trinkets-updated) or [Ohmega](https://modrinth.com/mod/ohmega) (Fabric + NeoForge 26.1+), [Curios API](https://modrinth.com/mod/curios) (NeoForge 1.21.1): Allows equipping one atlas as an accessory, from where it will function as usual and be prioritized for the minimap
+- [Trinkets (Updated)](https://modrinth.com/mod/trinkets-updated), [Ohmega](https://modrinth.com/mod/ohmega), or [Curios API](https://modrinth.com/mod/curios): Allows equipping one atlas as an accessory, from where it will function as usual and be prioritized for the minimap
 
 ## Recommended mods
 
