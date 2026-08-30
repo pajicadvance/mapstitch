@@ -1,97 +1,112 @@
 # general
-mod.id = "modid"
-mod.name = "Template mod"
+mod.id = "mapstitch"
+mod.name = "MapStitch"
 mod.group = "me.pajic"
-mod.version = "1.0.0"
-mod.description = ""
+mod.version = "1.1.0"
+mod.description = "World map and minimap using vanilla maps"
 mod.authors = "pajic"
-mod.contributors = ""
+mod.contributors = "Luth, MerryDreambound"
 mod.license = "MIT"
 
 # links
-mod.sources_url = "https://github.com/pajicadvance/modid"
-mod.homepage_url = "https://modrinth.com/mod/modid"
-mod.issues_url = "https://github.com/pajicadvance/modid/issues"
+mod.sources_url = "https://github.com/pajicadvance/mapstitch"
+mod.homepage_url = "https://modrinth.com/mod/mapstitch"
+mod.issues_url = "https://github.com/pajicadvance/mapstitch/issues"
 mod.discord_url = "https://discord.gg/5RkzS66zWb"
 
 # publishing
-publish.modrinth = ""
-publish.curseforge = ""
+publish.modrinth = "etdHQJ0B"
+publish.curseforge = "1595069"
 publish.env.mr = "CLIENT_AND_SERVER" #https://modmuss50.github.io/mod-publish-plugin/platforms/modrinth/#all-options
 publish.env.cf.client = true
 publish.env.cf.server = true
 publish.dry_run = true
 
-# config
-config.run_optional_deps = true
-
 # loom
 loomx.loom_version = "1.17-SNAPSHOT"
-loomx.loom_remap_plugin = "org.relativitymc.neo-loom-remap"
-loomx.loom_unobf_plugin = "org.relativitymc.neo-loom"
 
 # dependencies
 loader.fabric = "0.19.3"
-dep.mixinconstraints.coords = "com.moulberry:$id"
-dep.fzzy_config.coords = "me.fzzyhmstrs:$id"
+dep.mixinconstraints.coords = "com.moulberry:$id:$version"
+dep.fzzy_config.coords = "me.fzzyhmstrs:$id:$version"
 dep.fzzy_config.slug = "fzzy-config"
-dep.sodium.coords = "net.caffeinemc:$id-$loader"
+dep.sodium.coords = "net.caffeinemc:$id-$loader-api:$version"
+dep.sodium_runtime.coords = "net.caffeinemc:sodium-$loader:$version"
+dep.trinkets.coords = "eu.pb4:$id:$version"
+dep.ohmega.coords = "io.github.swackyy:$id-$loader:$version"
+dep.curios.coords = "top.theillusivec4.$id:$id-$loader:$version"
+dep.emi.coords = "dev.emi:$id-$loader:$version"
+dep.remapped.coords = "maven.modrinth:$id:$version"
 include.mixinconstraints = "1.1.0"
 
 [fabric]
-dep.fabric-api.coords = "net.fabricmc.fabric-api:$id"
-dep.modmenu.coords = "com.terraformersmc:$id"
+dep.fabric-api.coords = "net.fabricmc.fabric-api:$id:$version"
+dep.modmenu.coords = "com.terraformersmc:$id:$version"
+dev.runtime_optionals = ["modmenu", "trinkets"]
 
 [neoforge]
+dev.runtime_optionals = ["curios", "emi"]
 
 
 ["1.21.1"]
 mod.mc_releases = ["1.21", "1.21.1"]
 loader.neo = "21.1.244"
-dep.mixson.coords = "com.github:Mixson"
-required.fzzy_config = "0.7.6+1.21"
-include.mixson = "2.1.0"
-runtime.sodium = "0.8.12+mc1.21.1"
+dep.trinkets.coords = "dev.emi:$id:$version"
+optional.sodium = "0.8.12+mc1.21.1"
+runtime.sodium_runtime = "0.8.12+mc1.21.1"
+optional.ohmega = "1.5.20-mc1.21.1"
+optional.emi = "1.1.24+1.21.1"
 
 [fabric."1.21.1"]
 mod.mc_compat = ">=1.21 <=1.21.1"
 required.fabric-api = "0.116.14+1.21.1"
-runtime.modmenu = "11.0.4"
+required.fzzy_config = "0.7.6+1.21"
+optional.modmenu = "11.0.4"
+optional.trinkets = "3.10.0"
 
 [neoforge."1.21.1"]
 mod.mc_compat = "[1.21, 1.21.1]"
+required.fzzy_config = "0.7.6+1.21+neoforge"
+optional.curios = "9.5.1+1.21.1"
 
 
 ["26.1.2"]
 mod.mc_releases = ["26.1", "26.1.1", "26.1.2"]
 loader.neo = "26.1.2.87"
-dep.mixson.coords = "maven.modrinth:$id"
-required.fzzy_config = "0.7.6+26.1-pre-3"
-required.mixson = "2.2.0"
-runtime.sodium = "0.9.1+mc26.1.2"
+optional.sodium = "0.9.1+mc26.1.2"
+runtime.sodium_runtime = "0.9.1+mc26.1.2"
+optional.trinkets = "4.0.0-beta.3+26.1"
+optional.ohmega = "1.5.20-mc26.1.2"
 
 [fabric."26.1.2"]
 mod.mc_compat = "~26.1"
 required.fabric-api = "0.155.2+26.1.2"
-runtime.modmenu = "18.0.0"
+required.fzzy_config = "0.7.6+26.1-pre-3"
+optional.modmenu = "18.0.0"
+optional.remapped = "bBfNuGXN"
 
 [neoforge."26.1.2"]
 mod.mc_compat = "[26.1, 26.2)"
+required.fzzy_config = "0.7.6+26.1-pre-3+neoforge"
+optional.curios = "15.0.0+26.1.2"
 
 
 ["26.2"]
 mod.mc_releases = ["26.2"]
-loader.neo = "26.2.0.36-beta"
-dep.mixson.coords = "maven.modrinth:$id"
-required.fzzy_config = "0.7.6+26.2-pre-3"
-required.mixson = "2.2.0"
-runtime.sodium = "0.9.1+mc26.2"
+loader.neo = "26.2.0.59"
+optional.sodium = "0.9.1+mc26.2"
+runtime.sodium_runtime = "0.9.1+mc26.2"
+optional.trinkets = "4.1.0-beta.2+26.2"
+optional.ohmega = "1.5.19-mc26.2"
 
 [fabric."26.2"]
 mod.mc_compat = "~26.2"
 required.fabric-api = "0.155.2+26.2"
-runtime.modmenu = "20.0.1"
+required.fzzy_config = "0.7.6+26.2-pre-3"
+optional.modmenu = "20.0.1"
+optional.remapped = "2.0.2"
 
-#[neoforge."26.2"]
-#mod.mc_compat = "[26.2, 26.3)"
-#loader.neo = "26.2.0.36-beta"
+[neoforge."26.2"]
+mod.mc_compat = "[26.2, 26.3)"
+required.fzzy_config = "0.7.6+26.2+neoforge"
+optional.curios = "16.0.0+26.2"

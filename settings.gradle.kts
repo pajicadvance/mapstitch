@@ -9,6 +9,12 @@ pluginManagement {
         maven("https://maven.kikugie.dev/snapshots") { name = "KikuGie Snapshots" }
         maven("https://repo.codemc.io/repository/relativitymc/") { name = "RelativityMC" }
     }
+    plugins {
+        kotlin("jvm") version "2.3.21"
+        id("com.google.devtools.ksp") version "2.3.10"
+        id("dev.kikugie.fletching-table.fabric") version "0.1.0-alpha.22"
+        id("me.modmuss50.mod-publish-plugin") version "2.1.1"
+    }
 }
 
 plugins {
@@ -20,13 +26,13 @@ plugins {
 stonecutter {
     create(rootProject) {
         fun match(project: String, vararg loaders: String, version: String = project) {
-            for (loader in loaders) version("$project-$loader", version).buildscript("build.gradle.kts")
+            for (loader in loaders) version("$project-$loader", version).buildscript("build.$loader.gradle.kts")
         }
         match("1.21.1", "fabric", "neoforge")
         match("26.1.2", "fabric", "neoforge")
-        match("26.2", "fabric")
+        match("26.2", "fabric", "neoforge")
         vcsVersion = "26.2-fabric"
     }
 }
 
-rootProject.name = "Multicutter"
+rootProject.name = "MapStitch"

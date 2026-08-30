@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "mapstitch:item/atlas_empty"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "mapstitch:atlas_fullness": 1
+      },
+      "model": "mapstitch:item/atlas_full_0"
+    },
+    {
+      "predicate": {
+        "mapstitch:atlas_fullness": 2
+      },
+      "model": "mapstitch:item/atlas_full_1"
+    },
+    {
+      "predicate": {
+        "mapstitch:atlas_fullness": 3
+      },
+      "model": "mapstitch:item/atlas_full_2"
+    },
+    {
+      "predicate": {
+        "mapstitch:atlas_fullness": 4
+      },
+      "model": "mapstitch:item/atlas_full_3"
+    }
+  ]
+}

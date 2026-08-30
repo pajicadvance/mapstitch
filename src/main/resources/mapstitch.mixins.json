@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "me.pajic.mapstitch.mixin",
+  "minVersion": "0.8",
+  "mixinextras": {"minVersion": "0.5.0"},
+  "compatibilityLevel": "${java}",
+  "plugin": "com.moulberry.mixinconstraints.ConstraintsMixinPlugin",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  },
+  "mixins": [],
+  "client": []
+}
