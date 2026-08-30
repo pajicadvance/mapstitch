@@ -52,7 +52,7 @@ val runtimeOptionals: List<String> = sc.properties.rawOrNull("dev", "runtime_opt
 data class ModDep(val key: String, val version: String) {
     private fun meta(suffix: String): String? = findProperty("dep.$key.$suffix")?.toString()?.takeIf { it.isNotBlank() }
     val id: String get() = meta("id") ?: key
-    val coords: String? get() = meta("coords")?.replace($$"$id", id)?.replace($$"$loader", "neoforge")
+    val coords: String? get() = meta("coords")?.replace($$"$id", id)?.replace($$"$loader", "neoforge")?.replace($$"$mc", sc.current.version)
     val base: String get() = version.substringBefore('+').substringBefore("-beta")
     val range: String get() = meta("range") ?: "[${base.substringBefore('-')},)"
     fun slug(platform: String): String = meta("slug.$platform") ?: meta("slug") ?: key

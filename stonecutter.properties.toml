@@ -20,7 +20,7 @@ publish.curseforge = "1595069"
 publish.env.mr = "CLIENT_AND_SERVER" #https://modmuss50.github.io/mod-publish-plugin/platforms/modrinth/#all-options
 publish.env.cf.client = true
 publish.env.cf.server = true
-publish.dry_run = true
+publish.dry_run = false
 
 # loom
 loomx.loom_version = "1.17-SNAPSHOT"
@@ -33,7 +33,7 @@ dep.fzzy_config.slug = "fzzy-config"
 dep.sodium.coords = "net.caffeinemc:$id-$loader-api:$version"
 dep.sodium_runtime.coords = "net.caffeinemc:sodium-$loader:$version"
 dep.trinkets.coords = "eu.pb4:$id:$version"
-dep.ohmega.coords = "io.github.swackyy:$id-$loader:$version"
+dep.ohmega.coords = "maven.modrinth:$id:$version-$loader,$mc"
 dep.curios.coords = "top.theillusivec4.$id:$id-$loader:$version"
 dep.emi.coords = "dev.emi:$id-$loader:$version"
 dep.remapped.coords = "maven.modrinth:$id:$version"
@@ -42,9 +42,11 @@ include.mixinconstraints = "1.1.0"
 [fabric]
 dep.fabric-api.coords = "net.fabricmc.fabric-api:$id:$version"
 dep.modmenu.coords = "com.terraformersmc:$id:$version"
+dep.ohmega.range = ">=1.5.21 <1.6"
 dev.runtime_optionals = ["modmenu", "trinkets"]
 
 [neoforge]
+dep.ohmega.range = "[1.5.21, 1.6)"
 dev.runtime_optionals = ["curios", "emi"]
 
 
@@ -54,7 +56,7 @@ loader.neo = "21.1.244"
 dep.trinkets.coords = "dev.emi:$id:$version"
 optional.sodium = "0.8.12+mc1.21.1"
 runtime.sodium_runtime = "0.8.12+mc1.21.1"
-optional.ohmega = "1.5.20-mc1.21.1"
+optional.ohmega = "1.5.21"
 optional.emi = "1.1.24+1.21.1"
 
 [fabric."1.21.1"]
@@ -76,7 +78,7 @@ loader.neo = "26.1.2.87"
 optional.sodium = "0.9.1+mc26.1.2"
 runtime.sodium_runtime = "0.9.1+mc26.1.2"
 optional.trinkets = "4.0.0-beta.3+26.1"
-optional.ohmega = "1.5.20-mc26.1.2"
+optional.ohmega = "1.5.21"
 
 [fabric."26.1.2"]
 mod.mc_compat = "~26.1"
@@ -97,7 +99,7 @@ loader.neo = "26.2.0.59"
 optional.sodium = "0.9.1+mc26.2"
 runtime.sodium_runtime = "0.9.1+mc26.2"
 optional.trinkets = "4.1.0-beta.2+26.2"
-optional.ohmega = "1.5.19-mc26.2"
+optional.ohmega = "1.5.21"
 
 [fabric."26.2"]
 mod.mc_compat = "~26.2"
