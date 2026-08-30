@@ -12,13 +12,13 @@ Requires:
 
 MapStitch uses atlases from your inventory to create a world map which you can open at any time by pressing M or right-clicking while holding an atlas.
 
-![worldmap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v3/images/worldmap.png)
+![worldmap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/multicutter-v3/images/worldmap.png)
 
 The world map can only show one dimension and scale at once. These can be switched in the world map itself. There are basic controls like panning and zooming using the mouse, and toggleable player following and map grid overlay. A keybind reference can be brought up at any time by pressing H. Most of the keybinds can be rebound in the vanilla Controls menu.
 
 The player marker, coordinates, and grid overlay require having a compass anywhere in the inventory.
 
-![help](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v3/images/help.png)
+![help](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/multicutter-v3/images/help.png)
 
 ## Atlas
 
@@ -31,7 +31,7 @@ Maps from the atlas will be used to create the world map, and the atlas will aut
 - Scrolling while hovering over an atlas will switch between ejecting filled or empty maps first.
 - Right-clicking with an atlas in hand when targeting a banner will create a banner marker on the currently active map, just like regular maps do.
 
-![atlas](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v3/images/atlas.png)
+![atlas](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/multicutter-v3/images/atlas.png)
 
 ## Minimap
 
@@ -39,7 +39,7 @@ Having an atlas in the hotbar and a compass anywhere in your inventory will disp
 
 If multiple atlases are present, the minimap will prioritize the atlas in your hands, otherwise the first atlas will be used.
 
-![minimap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v3/images/minimap.png)
+![minimap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/multicutter-v3/images/minimap.png)
 
 The minimap can show some basic information like real time, game time, coordinates, biome and weather, with each being toggleable. These are all disabled by default. Note that in order to enable these, just enabling them in the client configuration isn't enough - they also need to be allowed in the common/server configuration.
 
@@ -47,13 +47,13 @@ The minimap can show some basic information like real time, game time, coordinat
 
 MapStitch enables maps in the Nether - no other mods required. The way Nether maps are displayed can be configured, and additional ceiling dimensions can be added to enable maps in them.
 
-![nethermap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v3/images/nethermap.png)
+![nethermap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/multicutter-v3/images/nethermap.png)
 
 ## Cheaper maps
 
 Making maps is now cheaper, requiring only 9 paper instead of 8 paper and a compass, but they won't show your position unless you have a compass in your inventory.
 
-![emptymap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/v3/images/emptymap.png)
+![emptymap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/multicutter-v3/images/emptymap.png)
 
 ## Mod integration
 
