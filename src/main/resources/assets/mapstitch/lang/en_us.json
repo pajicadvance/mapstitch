@@ -54,8 +54,7 @@
   "mapstitch.gui.worldmap.button.help.tooltip": "Toggle help",
 
   "mapstitch.gui.worldmap.no_map_sources": "No maps found",
-  "mapstitch.gui.worldmap.no_map_sources_info_1": "Add some maps to your inventory, or",
-  "mapstitch.gui.worldmap.no_map_sources_info_2": "craft an Atlas and store maps inside of it",
+  "mapstitch.gui.worldmap.no_map_sources_info": "Craft an Atlas and store maps inside of it",
   "mapstitch.gui.worldmap.no_maps_rendered": "Visit dimension to load world map",
 
   "mapstitch.gui.worldmap.debug.rendered_maps": "[Debug] Rendered maps: %s",

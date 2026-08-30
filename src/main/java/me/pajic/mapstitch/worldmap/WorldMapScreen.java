@@ -76,7 +76,7 @@ public class WorldMapScreen extends Screen {
 	private static int zoomLevel;
     private static float updateTimer = 1;
 
-	private boolean playerMarkerAllowed;
+	private boolean hasCompass;
     private boolean coordinatesAllowed;
 	private int mapSize;
 	private double mapPixels;
@@ -226,7 +226,7 @@ public class WorldMapScreen extends Screen {
             renderMaps(graphics, xBoundMin, xBoundMax, zBoundMin, zBoundMax);
             renderDecorations(graphics);
             renderExplorationMarkers(graphics);
-            if (playerMarkerAllowed && MC.level.dimension().identifier().equals(dimensionId)) renderPlayerMarker(graphics);
+            if (hasCompass && MC.level.dimension().identifier().equals(dimensionId)) renderPlayerMarker(graphics);
             if (gridAllowed && grid) {
                 renderGrid(graphics, xBoundMin, xBoundMax, zBoundMin, zBoundMax);
                 renderPosAtCursor(graphics, mouseX, mouseY, highlightColor);
@@ -248,10 +248,10 @@ public class WorldMapScreen extends Screen {
 		if (!MapStitchClient.CONFIG.worldMap.help.get()) help = false;
 		if (MC.level == null || MC.player == null) return;
 		boolean hasAnyMapSources = false;
-		playerMarkerAllowed = ModUtil.hasCompass(MC, "playerMarker");
+		hasCompass = ModUtil.hasCompass(MC, "playerMarker");
         gridAllowed = ModUtil.hasCompass(MC, "grid");
         coordinatesAllowed = ModUtil.hasCompass(MC, "coordinates") && !MC.showOnlyReducedInfo();
-		if (playerMarkerAllowed) {
+		if (hasCompass) {
 			posX = MC.player.blockPosition().getX();
 			posY = MC.player.blockPosition().getY();
 			posZ = MC.player.blockPosition().getZ();
@@ -276,7 +276,7 @@ public class WorldMapScreen extends Screen {
 		screenH = MC.getWindow().getGuiScaledHeight();
 		if (hasAnyMapSources) {
 			if (MAPS.isEmpty()) {
-				playerMarkerAllowed = false;
+				hasCompass = false;
                 gridAllowed = false;
 				Component text = Component.translatable("mapstitch.gui.worldmap.no_maps_rendered");
 				graphics.text(MC.font, text, width / 2 - font.width(text) / 2, height / 2, -1);
@@ -298,20 +298,18 @@ public class WorldMapScreen extends Screen {
 				}
 			}
 		} else {
-			playerMarkerAllowed = false;
+			hasCompass = false;
             gridAllowed = false;
             MultiVersionUtil.INSTANCE.pushPose(graphics);
-            MultiVersionUtil.INSTANCE.translatePose(graphics, width / 2F, height / 2F - 52, 0);
+            MultiVersionUtil.INSTANCE.translatePose(graphics, width / 2F, height / 2F - 46, 0);
 			Component text1 = Component.translatable("mapstitch.gui.worldmap.no_map_sources")
 					.withColor(MapStitchClient.CONFIG.worldMap.textHighlightColor.get().color);
-			Component text2 = Component.translatable("mapstitch.gui.worldmap.no_map_sources_info_1");
-			Component text3 = Component.translatable("mapstitch.gui.worldmap.no_map_sources_info_2");
+			Component text2 = Component.translatable("mapstitch.gui.worldmap.no_map_sources_info");
 			graphics.text(MC.font, text1, -font.width(text1) / 2, 0, -1);
 			graphics.text(MC.font, text2, -font.width(text2) / 2, 12, -1);
-			graphics.text(MC.font, text3, -font.width(text3) / 2, 24, -1);
             MultiVersionUtil.INSTANCE.blit(
                     graphics, ATLAS_CRAFTING,
-                    -60, 36,
+                    -60, 24,
                     0, 0,
                     120, 68,
                     120, 68
@@ -449,7 +447,7 @@ public class WorldMapScreen extends Screen {
 	}
 
 	private void renderText(GuiGraphicsExtractor graphics, int c) {
-		textStack(4 + (grid ? 12 : 0), grid ? getVerticalGridBarWidth(MC.font) : 0, false, graphics, List.of(
+		textStack(4 + (hasCompass && grid ? 12 : 0), hasCompass && grid ? getVerticalGridBarWidth(MC.font) : 0, false, graphics, List.of(
 				new ObjectBooleanImmutablePair<>(Component.translatable(
 						"mapstitch.gui.worldmap.position",
 						white(String.valueOf(posX)), white(String.valueOf(posY)), white(String.valueOf(posZ))
@@ -474,7 +472,7 @@ public class WorldMapScreen extends Screen {
 						mapsRendered
 				), MultiLoaderUtil.INSTANCE.isDevEnv())
 		));
-		textStack(screenH - 12, grid ? getVerticalGridBarWidth(MC.font) : 0, true, graphics, List.of(
+		textStack(screenH - 12, hasCompass && grid ? getVerticalGridBarWidth(MC.font) : 0, true, graphics, List.of(
 				new ObjectBooleanImmutablePair<>(Component.translatable(
 						"mapstitch.gui.worldmap.help",
 						Component.keybind(ModKeybinds.TOGGLE_HELP.getName()).withColor(c)
@@ -623,7 +621,7 @@ public class WorldMapScreen extends Screen {
 	}
 
 	private void centerMap() {
-		if (playerMarkerAllowed) {
+		if (hasCompass) {
 			camX = posX;
 			camZ = posZ;
 		} else if (MC.level != null) {
