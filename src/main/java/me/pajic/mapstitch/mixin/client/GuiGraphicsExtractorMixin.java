@@ -5,7 +5,7 @@ package me.pajic.mapstitch.mixin.client;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import me.pajic.mapstitch.extension.MapDecorationRenderStateExtension;
-import me.pajic.mapstitch.util.ModUtil;
+import me.pajic.mapstitch.util.ModClientUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.state.MapRenderState;
@@ -32,7 +32,7 @@ public class GuiGraphicsExtractorMixin {
 	)
 	private boolean checkCompass(boolean original, @Local(name = "decoration") MapRenderState.MapDecorationRenderState decoration) {
 		Holder<MapDecorationType> type = ((MapDecorationRenderStateExtension) decoration).mapstitch$getDecorationType();
-		if (ModUtil.DECORS_REQUIRING_COMPASS.contains(type)) return original && ModUtil.hasCompass(minecraft, "playerMarker");
+		if (ModClientUtil.DECORS_REQUIRING_COMPASS.contains(type)) return original && ModClientUtil.hasCompass(minecraft, "playerMarker");
 		return original;
 	}
 }

@@ -92,9 +92,7 @@ public class NeoforgeEntrypoint {
 
     @SubscribeEvent
     private static void initLoot(LootTableLoadEvent event) {
-        if (event.getKey().identifier().equals(BuiltInLootTables.STRONGHOLD_LIBRARY.identifier())) {
-            event.getTable().addPool(ModUtil.getGlobetrotterLootPool(event.getRegistries()).build());
-        }
+        if (ModUtil.isGlobetrotterLootTable(event.getKey())) event.getTable().addPool(ModUtil.getGlobetrotterLootPool(event.getRegistries()).build());
     }
 
     @SubscribeEvent

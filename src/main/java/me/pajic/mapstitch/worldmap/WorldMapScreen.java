@@ -12,7 +12,6 @@ import me.pajic.mapstitch.networking.payload.C2SEjectMap;
 import me.pajic.mapstitch.platform.MultiLoaderUtil;
 import me.pajic.mapstitch.platform.MultiVersionUtil;
 import me.pajic.mapstitch.util.ModClientUtil;
-import me.pajic.mapstitch.util.ModUtil;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -102,7 +101,7 @@ public class WorldMapScreen extends Screen {
 		help = state.help;
 		grid = state.grid;
 		follow = state.follow;
-		ModUtil.worldMapOpen = true;
+		ModClientUtil.worldMapOpen = true;
 		dimensionId = MC.level.dimension().identifier();
 	}
 
@@ -248,9 +247,9 @@ public class WorldMapScreen extends Screen {
 		if (!MapStitchClient.CONFIG.worldMap.help.get()) help = false;
 		if (MC.level == null || MC.player == null) return;
 		boolean hasAnyMapSources = false;
-		hasCompass = ModUtil.hasCompass(MC, "playerMarker");
-        gridAllowed = ModUtil.hasCompass(MC, "grid");
-        coordinatesAllowed = ModUtil.hasCompass(MC, "coordinates") && !MC.showOnlyReducedInfo();
+		hasCompass = ModClientUtil.hasCompass(MC, "playerMarker");
+        coordinatesAllowed = ModClientUtil.hasCompass(MC, "coordinates") && !MC.showOnlyReducedInfo();
+        gridAllowed = ModClientUtil.hasCompass(MC, "grid") && coordinatesAllowed;
 		if (hasCompass) {
 			posX = MC.player.blockPosition().getX();
 			posY = MC.player.blockPosition().getY();
@@ -362,7 +361,7 @@ public class WorldMapScreen extends Screen {
 		Holder<MapDecorationType> type = ((MapDecorationRenderStateExtension) decor).mapstitch$getDecorationType();
         //?}
         //~ if <26.1 'type' -> 'decor.type()'
-		if (!ModUtil.DECORS_REQUIRING_COMPASS.contains(type)) {
+		if (!ModClientUtil.DECORS_REQUIRING_COMPASS.contains(type)) {
 			DECORATIONS.putIfAbsent(gp, new ArrayList<>());
 			if (!DECORATIONS.get(gp).contains(decor)) DECORATIONS.get(gp).add(decor);
 		}
@@ -447,7 +446,7 @@ public class WorldMapScreen extends Screen {
 	}
 
 	private void renderText(GuiGraphicsExtractor graphics, int c) {
-		textStack(4 + (hasCompass && grid ? 12 : 0), hasCompass && grid ? getVerticalGridBarWidth(MC.font) : 0, false, graphics, List.of(
+		textStack(4 + (gridAllowed && grid ? 12 : 0), gridAllowed && grid ? getVerticalGridBarWidth(MC.font) : 0, false, graphics, List.of(
 				new ObjectBooleanImmutablePair<>(Component.translatable(
 						"mapstitch.gui.worldmap.position",
 						white(String.valueOf(posX)), white(String.valueOf(posY)), white(String.valueOf(posZ))
@@ -472,7 +471,7 @@ public class WorldMapScreen extends Screen {
 						mapsRendered
 				), MultiLoaderUtil.INSTANCE.isDevEnv())
 		));
-		textStack(screenH - 12, hasCompass && grid ? getVerticalGridBarWidth(MC.font) : 0, true, graphics, List.of(
+		textStack(screenH - 12, gridAllowed && grid ? getVerticalGridBarWidth(MC.font) : 0, true, graphics, List.of(
 				new ObjectBooleanImmutablePair<>(Component.translatable(
 						"mapstitch.gui.worldmap.help",
 						Component.keybind(ModKeybinds.TOGGLE_HELP.getName()).withColor(c)
@@ -762,7 +761,7 @@ public class WorldMapScreen extends Screen {
 		state.grid = grid;
 		state.follow = follow;
 		state.writeChanges();
-		ModUtil.worldMapOpen = false;
+		ModClientUtil.worldMapOpen = false;
         clearMaps();
 		super.onClose();
 	}

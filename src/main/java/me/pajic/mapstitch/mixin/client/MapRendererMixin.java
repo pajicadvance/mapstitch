@@ -7,7 +7,7 @@ import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import me.pajic.mapstitch.extension.MapDecorationRenderStateExtension;
-import me.pajic.mapstitch.util.ModUtil;
+import me.pajic.mapstitch.util.ModClientUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MapRenderer;
 import net.minecraft.client.renderer.state.MapRenderState;
@@ -38,7 +38,7 @@ public class MapRendererMixin {
 			at = @At("MIXINEXTRAS:EXPRESSION")
 	)
 	private boolean checkCompass(boolean original) {
-		return original || !ModUtil.hasCompass(Minecraft.getInstance(), "playerMarker");
+		return original || !ModClientUtil.hasCompass(Minecraft.getInstance(), "playerMarker");
 	}
 
 	@ModifyExpressionValue(
@@ -51,7 +51,7 @@ public class MapRendererMixin {
 	)
 	private boolean checkCompass(boolean original, @Local(name = "decoration") MapRenderState.MapDecorationRenderState decoration) {
 		Holder<MapDecorationType> type = ((MapDecorationRenderStateExtension) decoration).mapstitch$getDecorationType();
-		if (ModUtil.DECORS_REQUIRING_COMPASS.contains(type)) return original && ModUtil.hasCompass(Minecraft.getInstance(), "playerMarker");
+		if (ModClientUtil.DECORS_REQUIRING_COMPASS.contains(type)) return original && ModClientUtil.hasCompass(Minecraft.getInstance(), "playerMarker");
 		return original;
 	}
 }

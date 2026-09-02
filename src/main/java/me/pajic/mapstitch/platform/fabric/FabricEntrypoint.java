@@ -30,7 +30,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 
 //? <26.1 {
 /*import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
@@ -78,9 +77,7 @@ public class FabricEntrypoint implements ModInitializer {
             }
         });
         LootTableEvents.MODIFY.register((key, tableBuilder, source, registries) -> {
-            if (key.identifier().equals(BuiltInLootTables.STRONGHOLD_LIBRARY.identifier())) {
-                tableBuilder.withPool(ModUtil.getGlobetrotterLootPool(registries));
-            }
+            if (ModUtil.isGlobetrotterLootTable(key)) tableBuilder.withPool(ModUtil.getGlobetrotterLootPool(registries));
         });
         FabricLoader.getInstance().getModContainer(MapStitch.MOD_ID).ifPresent(container ->
                 //~ if <26.1 'ResourceLoader.registerBuiltinPack' -> 'ResourceManagerHelper.registerBuiltinResourcePack'

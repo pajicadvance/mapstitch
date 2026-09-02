@@ -6,7 +6,7 @@ package me.pajic.mapstitch.mixin.client;
 import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
-import me.pajic.mapstitch.util.ModUtil;
+import me.pajic.mapstitch.util.ModClientUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.world.level.saveddata.maps.MapDecoration;
@@ -26,7 +26,7 @@ public class MapRendererInstanceMixin {
             )
     )
     private boolean checkCompass(boolean original) {
-        return original || !ModUtil.hasCompass(Minecraft.getInstance(), "playerMarker");
+        return original || !ModClientUtil.hasCompass(Minecraft.getInstance(), "playerMarker");
     }
 
     @ModifyExpressionValue(
@@ -37,9 +37,9 @@ public class MapRendererInstanceMixin {
             )
     )
     private boolean modifyRenderCondition(boolean original, @Local MapDecoration decor) {
-        if (ModUtil.worldMapOpen) return false;
-        if (ModUtil.DECORS_REQUIRING_COMPASS.contains(decor.type())) {
-            return ModUtil.hasCompass(Minecraft.getInstance(), "playerMarker");
+        if (ModClientUtil.worldMapOpen) return false;
+        if (ModClientUtil.DECORS_REQUIRING_COMPASS.contains(decor.type())) {
+            return ModClientUtil.hasCompass(Minecraft.getInstance(), "playerMarker");
         }
         return original;
     }

@@ -1,12 +1,16 @@
 package me.pajic.mapstitch.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.sugar.Local;
 import me.pajic.mapstitch.MapStitch;
 import me.pajic.mapstitch.nethermap.ImprovedNetherMap;
-import net.minecraft.core.BlockPos;
+import me.pajic.mapstitch.util.CompatFlags;import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -21,7 +25,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.Inject;
 *///?}
 
-@Mixin(MapItem.class)
+//? >=26.1 && fabric
+import me.pajic.mapstitch.compat.RemappedCompat;
+
+@Mixin(value = MapItem.class, priority = 2000)
 public abstract class MapItemMixin {
 
     @ModifyExpressionValue(
@@ -43,7 +50,7 @@ public abstract class MapItemMixin {
             )
     )
     private int modifyNetherMapHeight(int original, @Local(argsOnly = true) Level level, @Local(ordinal = 0) BlockPos.MutableBlockPos blockPos) {
-        if (ImprovedNetherMap.dimensionAllowed(level.dimension())) {
+        if (level.dimensionType().hasCeiling() && ImprovedNetherMap.dimensionAllowed(level.dimension())) {
             return switch (MapStitch.CONFIG.netherMap.mode.get()) {
                 case DYNAMIC -> ImprovedNetherMap.getDynamicHeight(level, blockPos, original);
                 case STATIC -> MapStitch.CONFIG.netherMap.staticModeHeight.get();
@@ -66,4 +73,12 @@ public abstract class MapItemMixin {
         }
     }
     *///?}
+
+    //? >=26.1 && fabric {
+    @WrapMethod(method = "update")
+    private void remappedUpdate(Level level, Entity player, MapItemSavedData data, Operation<Void> original) {
+        if (CompatFlags.REMAPPED_LOADED) RemappedCompat.updateColors(level, player, data);
+        else original.call(level, player, data);
+    }
+    //?}
 }

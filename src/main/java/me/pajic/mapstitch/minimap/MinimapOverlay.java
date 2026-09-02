@@ -7,7 +7,6 @@ import me.pajic.mapstitch.component.ModDataComponents;
 import me.pajic.mapstitch.item.ModItems;
 import me.pajic.mapstitch.platform.MultiVersionUtil;
 import me.pajic.mapstitch.util.ModClientUtil;
-import me.pajic.mapstitch.util.ModUtil;
 import me.pajic.mapstitch.worldmap.WorldMapScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -53,10 +52,10 @@ public class MinimapOverlay {
 
 	public static void render(GuiGraphicsExtractor graphics) {
 		if (
-				MC.player != null && MC.level != null && !MC.gui.hud.isHidden() && ModUtil.hasCompass(MC, "minimap")
+				MC.player != null && MC.level != null && !MC.gui.hud.isHidden() && ModClientUtil.hasCompass(MC, "minimap")
 				&& !MC.gui.hud.getDebugOverlay().showDebugScreen() && !(MC.gui.screen() instanceof WorldMapScreen)
 		) {
-			ItemStack atlas = ModUtil.getFirstItem(MC, ModItems.ATLAS);
+			ItemStack atlas = ModClientUtil.getFirstItem(MC, ModItems.ATLAS);
 			if (!atlas.isEmpty()) {
                 if (!ItemStack.isSameItemSameComponents(atlas, lastAtlas)) {
                     lastAtlas = atlas.copy();
@@ -160,7 +159,7 @@ public class MinimapOverlay {
                     );
                     graphics.text(MC.font, c, 64 - MC.font.width(c) / 2, i+=12, -1);
                 }
-                if (MapStitch.CONFIG.minimapInfo.allowGameTime.get() && MapStitchClient.CONFIG.minimapInfo.gameTime.get() && ModUtil.hasClock(MC, "time")) {
+                if (MapStitch.CONFIG.minimapInfo.allowGameTime.get() && !MC.showOnlyReducedInfo() && MapStitchClient.CONFIG.minimapInfo.gameTime.get() && ModClientUtil.hasClock(MC, "time")) {
                     //~ if <26.1 'getOverworldClockTime()' -> 'getDayTime()'
                     long time = MC.level.getOverworldClockTime();
                     long timeOffset = (time + 6000) % 24000;
@@ -172,14 +171,14 @@ public class MinimapOverlay {
                     );
                     graphics.text(MC.font, c, 64 - MC.font.width(c) / 2, i+=12, -1);
                 }
-                if (MapStitch.CONFIG.minimapInfo.allowCoordinates.get() && MapStitchClient.CONFIG.minimapInfo.coordinates.get() && ModUtil.hasCompass(MC, "coordinates")) {
+                if (MapStitch.CONFIG.minimapInfo.allowCoordinates.get() && !MC.showOnlyReducedInfo() && MapStitchClient.CONFIG.minimapInfo.coordinates.get() && ModClientUtil.hasCompass(MC, "coordinates")) {
                     Component c = Component.translatable(
                             "mapstitch.gui.minimap.coordinates",
                             blockPos.getX(), blockPos.getY(), blockPos.getZ()
                     );
                     graphics.text(MC.font, c, 64 - MC.font.width(c) / 2, i+=12, -1);
                 }
-                if (MapStitch.CONFIG.minimapInfo.allowBiome.get() && MapStitchClient.CONFIG.minimapInfo.biome.get() && ModUtil.hasCompass(MC, "biome")) {
+                if (MapStitch.CONFIG.minimapInfo.allowBiome.get() && !MC.showOnlyReducedInfo() && MapStitchClient.CONFIG.minimapInfo.biome.get() && ModClientUtil.hasCompass(MC, "biome")) {
                     ResourceKey<Biome> key = MC.player.level().getBiome(blockPos).unwrapKey().orElse(null);
                     Component c;
                     if (key != null) {
@@ -188,7 +187,7 @@ public class MinimapOverlay {
                     } else c = Component.translatable("mapstitch.gui.minimap.biome.unknown");
                     graphics.text(MC.font, c, 64 - MC.font.width(c) / 2, i+=12, -1);
                 }
-                if (MapStitch.CONFIG.minimapInfo.allowWeather.get() && MapStitchClient.CONFIG.minimapInfo.weather.get() && ModUtil.hasClock(MC, "weather")) {
+                if (MapStitch.CONFIG.minimapInfo.allowWeather.get() && !MC.showOnlyReducedInfo() && MapStitchClient.CONFIG.minimapInfo.weather.get() && ModClientUtil.hasClock(MC, "weather")) {
                     Component c;
                     if (MC.level.isThundering()) c = Component.translatable("mapstitch.gui.minimap.weather.thundering");
                     else if (MC.level.isRaining()) c = switch (MC.level.getBiome(blockPos).value().getPrecipitationAt(blockPos/*? >=26.1 {*/, (int) MC.player.getY()/*?}*/)) {

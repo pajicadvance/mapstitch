@@ -1,14 +1,5 @@
-- Reworked mod configuration to use Fzzy Config. Client settings can still be configured in Sodium video settings.
-- Atlases can now store explorer maps and buried treasure maps, which displays their target destination in the world map and minimap.
-- Reworked Nether maps to properly display terrain instead of just the Nether roof.
-- Added Globetrotter enchantment, which makes atlases consume paper instead of empty maps for creating new maps. Found only in stronghold library chests.
-- Added information display under the minimap (real time, game time, coordinates, biome, weather), and server-side permission settings for displaying it. Disabled by default.
-- Added an option to keep atlases on death. Disabled by default.
-- Added many configuration options for controlling item requirements and item scan locations.
-- Added support for many accessory APIs.
-- Added support for Remapped 2.0+.
-- Added Fabric 1.21.1 and NeoForge 26.2 versions.
-- Filled maps outside atlases are no longer used by the mod (was confusing to players).
-- Ejecting maps using Ctrl + Q now works properly. Ctrl + Q also prioritizes ejecting explorer maps and buried treasure maps over filled maps.
-- Fixed coordinate display in the world map not respecting reduced debug info.
-- ... and maybe some smaller bug fixes I forgot to put here
+- Fixed reduced debug info not being respected in multiple places.
+- Fixed crash on dedicated server.
+- Added Globetrotter enchanted book loot to Dungeons and Taverns Stronghold Overhaul library chest loot table.
+- Fixed improved Nether maps not working with Remapped installed.
+- Added Russian translation (by ShallIMove at [#19](https://github.com/pajicadvance/mapstitch/issues/19)).
