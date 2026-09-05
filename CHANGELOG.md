@@ -1,5 +1,1 @@
-- Fixed reduced debug info not being respected in multiple places.
-- Fixed crash on dedicated server.
-- Added Globetrotter enchanted book loot to Dungeons and Taverns Stronghold Overhaul library chest loot table.
-- Fixed improved Nether maps not working with Remapped installed.
-- Added Russian translation (by ShallIMove at [#19](https://github.com/pajicadvance/mapstitch/issues/19)).
+- Fixed an issue causing a drastic performance decrease in the world map screen when multiple markers are being displayed.

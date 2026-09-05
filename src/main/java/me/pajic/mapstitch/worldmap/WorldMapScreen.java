@@ -363,7 +363,9 @@ public class WorldMapScreen extends Screen {
         //~ if <26.1 'type' -> 'decor.type()'
 		if (!ModClientUtil.DECORS_REQUIRING_COMPASS.contains(type)) {
 			DECORATIONS.putIfAbsent(gp, new ArrayList<>());
-			if (!DECORATIONS.get(gp).contains(decor)) DECORATIONS.get(gp).add(decor);
+			if (DECORATIONS.get(gp).stream().noneMatch(d ->
+                    d.x/*? <26.1 {*//*()*//*?}*/ == decor.x/*? <26.1 {*//*()*//*?}*/ && d.y/*? <26.1 {*//*()*//*?}*/ == decor.y/*? <26.1 {*//*()*//*?}*/)
+            ) DECORATIONS.get(gp).add(decor);
 		}
 	}
 
