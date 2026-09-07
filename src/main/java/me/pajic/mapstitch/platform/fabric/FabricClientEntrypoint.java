@@ -32,11 +32,12 @@ public class FabricClientEntrypoint implements ClientModInitializer {
 	public void onInitializeClient() {
 		MapStitch.onInitializeClient();
         //? >=26.1 {
-        KeyMapping.Category.register(MapStitch.id("keys"));
-        KeyMapping.Category.register(MapStitch.id("keys_world_map"));
+        KeyMapping.Category.register(ModKeybinds.KEYS_ID);
+        KeyMapping.Category.register(ModKeybinds.KEYS_WORLD_MAP_ID);
         //?}
         //~ if <26.1 'KeyMappingHelper.registerKeyMapping' -> 'KeyBindingHelper.registerKeyBinding' {
         KeyMappingHelper.registerKeyMapping(ModKeybinds.OPEN_WORLD_MAP);
+        KeyMappingHelper.registerKeyMapping(ModKeybinds.TOGGLE_MINIMAP);
         KeyMappingHelper.registerKeyMapping(ModKeybinds.SCALE_UP);
         KeyMappingHelper.registerKeyMapping(ModKeybinds.SCALE_DOWN);
         KeyMappingHelper.registerKeyMapping(ModKeybinds.DIMENSION_UP);

@@ -49,10 +49,11 @@ public class MinimapOverlay {
     private static final Map<MapId, Vector2i> CACHED_CENTERS = new HashMap<>();
     private static ItemStack lastAtlas = ItemStack.EMPTY;
 	private static int noMapTextTimer = 100;
+    private static boolean toggle = true;
 
 	public static void render(GuiGraphicsExtractor graphics) {
 		if (
-				MC.player != null && MC.level != null && !MC.gui.hud.isHidden() && ModClientUtil.hasCompass(MC, "minimap")
+				toggle && MC.player != null && MC.level != null && !MC.gui.hud.isHidden() && ModClientUtil.hasCompass(MC, "minimap")
 				&& !MC.gui.hud.getDebugOverlay().showDebugScreen() && !(MC.gui.screen() instanceof WorldMapScreen)
 		) {
 			ItemStack atlas = ModClientUtil.getFirstItem(MC, ModItems.ATLAS);
@@ -243,6 +244,10 @@ public class MinimapOverlay {
                 }
             }
         }
+    }
+
+    public static void toggle() {
+        toggle = !toggle;
     }
 
     //~ if <26.1 'MapRenderState.MapDecorationRenderState' -> 'MapDecoration'

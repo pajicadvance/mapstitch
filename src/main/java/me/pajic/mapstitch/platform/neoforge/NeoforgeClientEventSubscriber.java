@@ -46,10 +46,11 @@ public class NeoforgeClientEventSubscriber {
     @SubscribeEvent
     private static void initKeybinds(RegisterKeyMappingsEvent event) {
         //? >=26.1 {
-        /^event.registerCategory(new KeyMapping.Category(MapStitch.id("keys")));
-        event.registerCategory(new KeyMapping.Category(MapStitch.id("keys_world_map")));
+        /^event.registerCategory(new KeyMapping.Category(ModKeybinds.KEYS_ID));
+        event.registerCategory(new KeyMapping.Category(ModKeybinds.KEYS_WORLD_MAP_ID));
         ^///?}
         event.register(ModKeybinds.OPEN_WORLD_MAP);
+        event.register(ModKeybinds.TOGGLE_MINIMAP);
         event.register(ModKeybinds.SCALE_UP);
         event.register(ModKeybinds.SCALE_DOWN);
         event.register(ModKeybinds.DIMENSION_UP);

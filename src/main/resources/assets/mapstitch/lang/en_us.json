@@ -65,8 +65,13 @@
   "mapstitch.tooltip.atlas.empty_maps_first": "Ejects empty maps first",
 
   "mapstitch.pack.cheaper_maps": "Cheaper Maps",
+  "mapstitch.pack.cheaper_maps_no_replace": "Cheaper Maps",
+  "mapstitch.pack.cheaper_maps_old": "Cheaper Maps",
+  "mapstitch.pack.cheaper_maps_old_no_replace": "Cheaper Maps",
   "mapstitch.pack.atlas_slot": "Atlas Slot",
   "mapstitch.pack.compass_slot": "Compass Slot",
+  "mapstitch.pack.clock_slot": "Clock Slot",
+  "mapstitch.pack.globetrotter": "Globetrotter Enchantment",
 
   "item.mapstitch.atlas": "Atlas",
 
@@ -81,6 +86,7 @@
   "key.category.mapstitch.keys": "MapStitch",
   "key.category.mapstitch.keys_world_map": "MapStitch - World map",
   "mapstitch.key.open_world_map": "Open world map",
+  "mapstitch.key.toggle_minimap": "Toggle minimap",
   "mapstitch.key.scale_up": "Next scale",
   "mapstitch.key.scale_down": "Previous scale",
   "mapstitch.key.dimension_up": "Next dimension",

@@ -1,1 +1,4 @@
-- Fixed an issue causing a drastic performance decrease in the world map screen when multiple markers are being displayed.
+- Added keybind to toggle the minimap, unbound by default.
+- Fixed missing datapack names.
+- Fixed keybind categories displaying incorrectly.
+- Fixed Trinkets compatibility on Fabric 1.21.1.
