@@ -449,7 +449,12 @@ public class AtlasItem extends Item {
 		if (stack.has(DataComponents.MAP_ID)) {
 			MapItemSavedData mapData = MapItem.getSavedData(stack, level);
 			int atlasScale = atlas.getOrDefault(ModDataComponents.ATLAS_SCALE, -1);
-			return mapData != null && (ModUtil.isExplorationMap(stack, level) || (atlasScale != -1 && mapData.scale == atlasScale));
+			// atlasScale == -1 means this atlas has no established scale yet (nothing inserted
+			// into it so far) - previously this required the first-ever insert to be a still-
+			// blank Items.MAP (handled above), silently rejecting an already-filled map with no
+			// explanation. A player has no way to know that rule; let a filled map establish the
+			// atlas's scale too, same as a blank one would once activated.
+			return mapData != null && (ModUtil.isExplorationMap(stack, level) || atlasScale == -1 || mapData.scale == atlasScale);
 		}
 		return false;
 	}

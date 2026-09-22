@@ -20,7 +20,19 @@ import org.jetbrains.annotations.Nullable;
 
 public class Util26_1_2 implements MultiVersionUtil {
 
-    private static final MapRenderState STATE = new MapRenderState();
+    // Lazily constructed rather than an eager `= new MapRenderState()` field initializer: any
+    // reference to MultiVersionUtil.INSTANCE (even for a non-rendering method, e.g. AtlasItem's
+    // server-reachable toMutable() call during a container click) forces this class to load and
+    // its static initializer to run. MapRenderState is a client-only class, so eagerly
+    // constructing it there throws NoClassDefFoundError on a dedicated server the moment a player
+    // inserts a map into an Atlas. Deferring construction to renderMap() - the only place this is
+    // actually used - means the class is only touched from a genuinely client-only code path.
+    private static MapRenderState state;
+
+    private static MapRenderState state() {
+        if (state == null) state = new MapRenderState();
+        return state;
+    }
 
     @Override
     public void pushPose(GuiGraphicsExtractor graphics) {
@@ -65,13 +77,13 @@ public class Util26_1_2 implements MultiVersionUtil {
 
     @Override
     public void renderMap(Minecraft mc, GuiGraphicsExtractor graphics, MapId id, MapItemSavedData data, @Nullable WorldMapScreen.GridPos gp, boolean minimap) {
-        MapRenderState state = minimap ? STATE : new MapRenderState();
-        mc.getMapRenderer().extractRenderState(id, data, state);
-        state.decorations.forEach(decor -> {
+        MapRenderState renderState = minimap ? state() : new MapRenderState();
+        mc.getMapRenderer().extractRenderState(id, data, renderState);
+        renderState.decorations.forEach(decor -> {
             if (minimap) decor.renderOnFrame = true;
             else if (gp != null) WorldMapScreen.prepareDecoration(decor, gp);
         });
-        graphics.map(state);
+        graphics.map(renderState);
     }
 
     @Override
