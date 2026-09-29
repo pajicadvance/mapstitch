@@ -2,6 +2,7 @@ package me.pajic.mapstitch.util;
 
 import me.pajic.mapstitch.MapStitch;
 import me.pajic.mapstitch.compat.AccessoryUtil;
+import me.pajic.mapstitch.compat.ToolPouchCompat;
 import me.pajic.mapstitch.platform.MultiVersionUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -123,6 +124,7 @@ public class ModClientUtil {
         if (!reqs.contains(context)) return true;
         List<String> locations = MapStitch.CONFIG.itemRequirements.compassAndClockScan;
         if (locations.contains("accessories") && AccessoryUtil.INSTANCE != null && AccessoryUtil.INSTANCE.hasItem(item, mc.player)) return true;
+        if (locations.contains("accessories") && ToolPouchCompat.hasItem(mc.player, item)) return true;
         if (locations.contains("mainHand") && mc.player.getMainHandItem().is(item)) return true;
         Set<BundleContents> bundles = new HashSet<>();
         Set<ItemContainerContents> containers = new HashSet<>();
@@ -157,6 +159,9 @@ public class ModClientUtil {
         if (locations.contains("accessories") && AccessoryUtil.INSTANCE != null) {
             ItemStack accessory = AccessoryUtil.INSTANCE.getFirstItem(item, mc.player);
             if (accessory.is(item)) return accessory;
+        }
+        if (locations.contains("accessories")) {
+            for (ItemStack atlas : ToolPouchCompat.getAtlases(mc.player)) if (atlas.is(item)) return atlas;
         }
         if (locations.contains("mainHand")) {
             ItemStack mainHand = mc.player.getMainHandItem();

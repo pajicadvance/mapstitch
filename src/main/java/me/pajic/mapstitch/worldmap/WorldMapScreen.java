@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.ObjectBooleanImmutablePair;
 import me.pajic.mapstitch.MapStitch;
 import me.pajic.mapstitch.MapStitchClient;
 import me.pajic.mapstitch.compat.AccessoryUtil;
+import me.pajic.mapstitch.compat.ToolPouchCompat;
 import me.pajic.mapstitch.component.ModDataComponents;
 import me.pajic.mapstitch.item.ModItems;
 import me.pajic.mapstitch.keybind.ModKeybinds;
@@ -269,6 +270,7 @@ public class WorldMapScreen extends Screen {
         if (locations.contains("accessories") && AccessoryUtil.INSTANCE != null) {
             items.addAll(AccessoryUtil.INSTANCE.getAtlases(MC.player));
         }
+        if (locations.contains("accessories")) items.addAll(ToolPouchCompat.getAtlases(MC.player));
 		for (ItemStack stack : items) if (stack.is(ModItems.ATLAS)) hasAnyMapSources = prepareAtlas(stack);
 		screenW = MC.getWindow().getGuiScaledWidth();
 		screenH = MC.getWindow().getGuiScaledHeight();

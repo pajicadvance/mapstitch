@@ -33,6 +33,12 @@ Maps from the atlas will be used to create the world map, and the atlas will aut
 
 ![atlas](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/multicutter-v3/images/atlas.png)
 
+## Tool Pouch compatibility (Minecraft 26.1 and newer)
+
+Atlases stored in the active [Tool Pouch](https://modrinth.com/mod/tool-pouch) keep mapping and can be used by the minimap and world map, including ejecting maps. The pouch can be equipped as an accessory, attached to leggings, or carried in the inventory when Tool Pouch's **Allow use from inventory** setting permits it. Compasses and clocks in the active pouch also satisfy MapStitch's item requirements.
+
+Keep **Accessories** enabled in the corresponding MapStitch item scan settings to display maps or use compasses and clocks from the pouch. Tool Pouch must allow `mapstitch:atlas` in its allowed items; use a release that includes that default or add it manually. Both mods remain optional to each other. Atlas updates pause while the Tool Pouch inventory screen is open and resume when it closes.
+
 ## Minimap
 
 Having an atlas in the hotbar and a compass anywhere in your inventory will display a minimap showing the map where you're currently located.

@@ -36,6 +36,8 @@ dep.trinkets.coords = "eu.pb4:$id:$version"
 dep.ohmega.coords = "maven.modrinth:$id:$version-$loader,$mc"
 dep.curios.coords = "top.theillusivec4.$id:$id-$loader:$version"
 dep.emi.coords = "dev.emi:$id-$loader:$version"
+dep.toolpouch.coords = "maven.modrinth:tool-pouch:$version"
+dep.toolpouch.range = ">=1.1.10"
 dep.remapped.coords = "maven.modrinth:$id:$version"
 include.mixinconstraints = "1.1.0"
 
@@ -46,6 +48,7 @@ dep.ohmega.range = ">=1.5.21 <1.6"
 dev.runtime_optionals = ["modmenu", "trinkets"]
 
 [neoforge]
+dep.toolpouch.range = "[1.1.10,)"
 dep.ohmega.range = "[1.5.21, 1.6)"
 dev.runtime_optionals = ["curios", "emi"]
 
@@ -81,6 +84,7 @@ optional.trinkets = "4.0.0-beta.3+26.1"
 optional.ohmega = "1.5.21"
 
 [fabric."26.1.2"]
+optional.toolpouch = "2k7c1t3e"
 mod.mc_compat = "~26.1"
 required.fabric-api = "0.155.2+26.1.2"
 required.fzzy_config = "0.7.6+26.1-pre-3"
@@ -88,6 +92,7 @@ optional.modmenu = "18.0.0"
 optional.remapped = "bBfNuGXN"
 
 [neoforge."26.1.2"]
+optional.toolpouch = "Rc4ibweg"
 mod.mc_compat = "[26.1, 26.2)"
 required.fzzy_config = "0.7.6+26.1-pre-3+neoforge"
 optional.curios = "15.0.0+26.1.2"
@@ -102,6 +107,7 @@ optional.trinkets = "4.1.0-beta.2+26.2"
 optional.ohmega = "1.5.21"
 
 [fabric."26.2"]
+optional.toolpouch = "X8f6PGFY"
 mod.mc_compat = "~26.2"
 required.fabric-api = "0.155.2+26.2"
 required.fzzy_config = "0.7.6+26.2-pre-3"
@@ -109,6 +115,7 @@ optional.modmenu = "20.0.1"
 optional.remapped = "2.0.2"
 
 [neoforge."26.2"]
+optional.toolpouch = "jJa4bP17"
 mod.mc_compat = "[26.2, 26.3)"
 required.fzzy_config = "0.7.6+26.2+neoforge"
 optional.curios = "16.0.0+26.2"
@@ -123,6 +130,7 @@ optional.trinkets = "4.2.0+26.3"
 optional.ohmega = "1.5.21"
 
 [fabric."26.3"]
+optional.toolpouch = "6Z3zMyN8"
 mod.mc_compat = "~26.3"
 required.fabric-api = "0.160.5+26.3"
 required.fzzy_config = "0.7.7+26.3"

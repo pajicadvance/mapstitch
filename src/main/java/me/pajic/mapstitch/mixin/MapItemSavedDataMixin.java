@@ -3,6 +3,7 @@ package me.pajic.mapstitch.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import me.pajic.mapstitch.compat.AccessoryUtil;
+import me.pajic.mapstitch.compat.ToolPouchCompat;
 import me.pajic.mapstitch.extension.HoldingPlayerExtension;
 import me.pajic.mapstitch.extension.MapItemSavedDataExtension;
 import me.pajic.mapstitch.item.ModItems;
@@ -33,7 +34,7 @@ public abstract class MapItemSavedDataMixin implements MapItemSavedDataExtension
             )
     )
     private boolean checkAccessoryForAtlas(boolean original, @Local(argsOnly = true) Player tickingPlayer) {
-        return original || (AccessoryUtil.INSTANCE != null && AccessoryUtil.INSTANCE.hasItem(ModItems.ATLAS, tickingPlayer));
+        return original || ToolPouchCompat.hasItem(tickingPlayer, ModItems.ATLAS) || (AccessoryUtil.INSTANCE != null && AccessoryUtil.INSTANCE.hasItem(ModItems.ATLAS, tickingPlayer));
     }
 
     @ModifyExpressionValue(

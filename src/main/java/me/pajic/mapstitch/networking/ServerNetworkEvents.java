@@ -1,6 +1,7 @@
 package me.pajic.mapstitch.networking;
 
 import me.pajic.mapstitch.compat.AccessoryUtil;
+import me.pajic.mapstitch.compat.ToolPouchCompat;
 import me.pajic.mapstitch.component.ModDataComponents;
 import me.pajic.mapstitch.extension.BundleContentsMutableExtension;
 import me.pajic.mapstitch.item.AtlasItem;
@@ -53,6 +54,8 @@ public class ServerNetworkEvents {
         //~ if <26.1 '.getNonEquipmentItems()' -> '.items'
 		List<ItemStack> items = new ArrayList<>(player.getInventory().getNonEquipmentItems());
         if (AccessoryUtil.INSTANCE != null) items.addAll(AccessoryUtil.INSTANCE.getAtlases(player));
+        List<ItemStack> pouchAtlases = ToolPouchCompat.getAtlases(player);
+        items.addAll(pouchAtlases);
 		for (ItemStack stack : items) {
 			if (stack.is(ModItems.ATLAS)) {
 				BundleContents contents = stack.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
@@ -79,6 +82,8 @@ public class ServerNetworkEvents {
 					);
 					player.playSound(SoundEvents.BUNDLE_REMOVE_ONE);
 					((AtlasItem) stack.getItem()).updateAtlas(mutable, stack, player);
+                    int pouchIndex = pouchAtlases.indexOf(stack);
+                    if (pouchIndex != -1) ToolPouchCompat.saveAtlas(player, stack, pouchIndex);
                     MultiLoaderUtil.INSTANCE.s2c((ServerPlayer) player, new S2CSyncWorldMap());
 					break;
 				}
