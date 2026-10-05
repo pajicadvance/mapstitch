@@ -214,7 +214,7 @@
   "mapstitch.client_config.minimapInfo.gameTime": "Игровое время",
   "mapstitch.client_config.minimapInfo.coordinates": "Координаты",
   "mapstitch.client_config.minimapInfo.biome": "Биомы",
-  "mapstitch.client_config.minimapInfo.weather": "Погода"
+  "mapstitch.client_config.minimapInfo.weather": "Погода",
   "mapstitch.client_config.sounds": "Звуки",
   "mapstitch.client_config.sounds.atlasMapCreation": "При создании карт в атласе"
 }
