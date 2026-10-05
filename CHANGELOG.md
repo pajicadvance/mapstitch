@@ -1,1 +1,1 @@
-- Fixed a dedicated server crash introduced in 1.1.5.
+- Fixed broken Russian translation.
