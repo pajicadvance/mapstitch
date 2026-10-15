@@ -43,6 +43,7 @@ public class ModClientUtil {
             MapDecorationTypes.PLAYER_OFF_LIMITS
     );
     public static boolean worldMapOpen = false;
+    public static boolean renderingMinimap = false;
 
     //~ if <26.1 'MapRenderState.MapDecorationRenderState' -> 'MapDecoration'
     public static void renderDecorations(Minecraft mc, GuiGraphicsExtractor graphics, List<MapRenderState.MapDecorationRenderState> decors, float decorScale) {

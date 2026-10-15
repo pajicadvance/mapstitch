@@ -15,6 +15,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.minecraft.world.scores.PlayerTeam;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -99,6 +100,7 @@ public class PinShareScreen extends Screen {
         } else {
             String filter = searchBox.getValue().strip().toLowerCase(Locale.ROOT);
             List<Entry> list = new ArrayList<>();
+            PlayerTeam ownTeam = MC.player.getTeam();
             for (PlayerInfo info : connection.getOnlinePlayers()) {
                 GameProfile profile = info.getProfile();
                 //~ if <26.1 'profile.id()' -> 'profile.getId()'
@@ -106,6 +108,7 @@ public class PinShareScreen extends Screen {
                 //~ if <26.1 'profile.name()' -> 'profile.getName()'
                 String name = profile.name();
                 if (id.equals(MC.player.getUUID())) continue;
+                if (ownTeam != null && !MC.player.isAlliedTo(info.getTeam())) continue;
                 if (!filter.isEmpty() && !name.toLowerCase(Locale.ROOT).contains(filter)) continue;
                 list.add(new Entry(id, name));
             }

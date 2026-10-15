@@ -55,6 +55,8 @@ public class PinShares {
             sender.sendSystemMessage(error("mapstitch.chat.pin_share.offline"));
             return;
         }
+        if (sender.getTeam() != null && !target.isAlliedTo(sender)) return;
+
         Pin pin = PinStorage.get(sender).stream().filter(p -> p.id().equals(pinId)).findFirst().orElse(null);
         if (pin == null) return;
 

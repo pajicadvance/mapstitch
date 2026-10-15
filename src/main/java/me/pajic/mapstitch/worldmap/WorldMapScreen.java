@@ -15,6 +15,8 @@ import me.pajic.mapstitch.pin.Pin;
 import me.pajic.mapstitch.platform.MultiLoaderUtil;
 import me.pajic.mapstitch.platform.MultiVersionUtil;
 import me.pajic.mapstitch.util.ModClientUtil;
+import me.pajic.mapstitch.util.PinMarkers;
+import me.pajic.mapstitch.util.PlayerMarkers;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -22,6 +24,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -67,7 +70,6 @@ public class WorldMapScreen extends Screen {
 	private static final Map<GridPos, List<MapRenderState.MapDecorationRenderState>> DECORATIONS = new HashMap<>();
     private static final Map<GridPos, MapDecorsWithId> EXPLORATION_MARKERS = new HashMap<>();
     //~}
-	private static final Identifier PLAYER_MARKER = Identifier.withDefaultNamespace("textures/map/decorations/player.png");
 	private static final Identifier ATLAS_CRAFTING = MapStitch.id("textures/gui/atlas_crafting.png");
 
 	public static List<Identifier> dimensionIds = List.of();
@@ -93,6 +95,9 @@ public class WorldMapScreen extends Screen {
     private boolean gridAllowed;
 	private boolean follow;
 	private int mapsRendered = 0;
+
+    private @Nullable AbstractClientPlayer hoveredPlayer;
+    private float hoveredPlayerX, hoveredPlayerY;
 
     private boolean renderingAsBackground;
     private int previewX, previewZ;
@@ -251,11 +256,13 @@ public class WorldMapScreen extends Screen {
             renderDecorations(graphics);
             renderExplorationMarkers(graphics);
             renderPins(graphics);
-            if (hasCompass && MC.level.dimension().identifier().equals(dimensionId)) renderPlayerMarker(graphics);
+            if (hasCompass && MC.level.dimension().identifier().equals(dimensionId)) renderPlayerMarkers(graphics);
+            else hoveredPlayer = null;
             if (gridAllowed && grid) {
                 renderGrid(graphics, xBoundMin, xBoundMax, zBoundMin, zBoundMax);
                 if (!renderingAsBackground) renderPosAtCursor(graphics, mouseX, mouseY, highlightColor);
             }
+            renderPlayerLabel(graphics, highlightColor);
             renderText(graphics, highlightColor);
             mapsRendered = 0;
             //? <26.1 {
@@ -477,25 +484,18 @@ public class WorldMapScreen extends Screen {
             if (mouseX >= sx - 3 && mouseX < sx + 4 && mouseY >= sy - 10 && mouseY <= sy) hoveredPin = pin;
         }
         for (Pin pin : visible) {
-            if (pin != hoveredPin) drawPin(graphics, pinScreenX(pin), pinScreenY(pin), pin.color(), false);
+            if (pin != hoveredPin) PinMarkers.draw(graphics, pinScreenX(pin), pinScreenY(pin), pin.color(), false);
         }
         if (!renderingAsBackground && hoveredPin != null) {
             int sx = pinScreenX(hoveredPin), sy = pinScreenY(hoveredPin);
-            drawPin(graphics, sx, sy, hoveredPin.color(), true);
+            PinMarkers.draw(graphics, sx, sy, hoveredPin.color(), true);
             renderPinLabel(graphics, hoveredPin, sx, sy);
         }
         if (previewColor != null && renderingAsBackground) {
             int sx = (int) Math.round(worldToScreenX(previewX + 0.5));
             int sy = (int) Math.round(worldToScreenZ(previewZ + 0.5));
-            drawPin(graphics, sx, sy, previewColor, true);
+            PinMarkers.draw(graphics, sx, sy, previewColor, true);
         }
-    }
-
-    private void drawPin(GuiGraphicsExtractor graphics, int sx, int sy, int color, boolean highlighted) {
-        graphics.fill(sx, sy - 4, sx + 1, sy + 1, 0xFF6B6B6B);
-        graphics.fill(sx - 3, sy - 10, sx + 4, sy - 3, highlighted ? 0xFFFFFFFF : 0xFF000000);
-        graphics.fill(sx - 2, sy - 9, sx + 3, sy - 4, 0xFF000000 | color);
-        graphics.fill(sx - 1, sy - 8, sx, sy - 7, 0x80FFFFFF);
     }
 
     private void renderPinLabel(GuiGraphicsExtractor graphics, Pin pin, int sx, int sy) {
@@ -542,29 +542,55 @@ public class WorldMapScreen extends Screen {
         MC.setScreenAndShow(new PinShareScreen(this, pin));
     }
 
-	private void renderPlayerMarker(GuiGraphicsExtractor graphics) {
-		double sx = worldToScreenX(posX);
-		double sz = worldToScreenZ(posZ);
-		int topInset  = grid ? 12 : 0;
-		int leftInset = grid ? getVerticalGridBarWidth(MC.font) : 0;
-		float px = (float) Mth.clamp(sx, leftInset + 4, screenW - 4);
-		float py = (float) Mth.clamp(sz, topInset + 4, screenH - 4);
+    @SuppressWarnings("DataFlowIssue")
+	private void renderPlayerMarkers(GuiGraphicsExtractor graphics) {
+        float pt = PlayerMarkers.partialTick(MC);
+        int topInset  = grid ? 12 : 0;
+        int leftInset = grid ? getVerticalGridBarWidth(MC.font) : 0;
+        hoveredPlayer = null;
+        double bestDistSq = 5 * 5;
         //? <26.1
         //graphics.flush();
-        MultiVersionUtil.INSTANCE.pushPose(graphics);
-        MultiVersionUtil.INSTANCE.translatePose(graphics, px, py, 0);
-        MultiVersionUtil.INSTANCE.rotatePlayerMarker(MC, graphics);
-        MultiVersionUtil.INSTANCE.blit(
-                graphics, PLAYER_MARKER,
-                -4, -4,
-                0, 0,
-                8, 8,
-                8, 8
-        );
-        MultiVersionUtil.INSTANCE.popPose(graphics);
+
+        for (AbstractClientPlayer other : PlayerMarkers.otherPlayers(MC)) {
+            float px = (float) Mth.clamp(worldToScreenX(PlayerMarkers.lerpX(other, pt)), leftInset + 4, screenW - 4);
+            float py = (float) Mth.clamp(worldToScreenZ(PlayerMarkers.lerpZ(other, pt)), topInset + 4, screenH - 4);
+            PlayerMarkers.draw(graphics, px, py, PlayerMarkers.lerpYaw(other, pt), PlayerMarkers.color(other));
+            if (!renderingAsBackground) {
+                double dx = mouseX - px, dy = mouseY - py, distSq = dx * dx + dy * dy;
+                if (distSq <= bestDistSq) {
+                    bestDistSq = distSq;
+                    hoveredPlayer = other;
+                    hoveredPlayerX = px;
+                    hoveredPlayerY = py;
+                }
+            }
+        }
+
+        float px = (float) Mth.clamp(worldToScreenX(posX), leftInset + 4, screenW - 4);
+        float py = (float) Mth.clamp(worldToScreenZ(posZ), topInset + 4, screenH - 4);
+        PlayerMarkers.draw(graphics, px, py, PlayerMarkers.lerpYaw(MC.player, pt), PlayerMarkers.color(MC.player));
         //? <26.1
         //graphics.flush();
 	}
+
+    @SuppressWarnings("DataFlowIssue")
+    private void renderPlayerLabel(GuiGraphicsExtractor graphics, int c) {
+        if (hoveredPlayer == null) return;
+        String name = hoveredPlayer.getDisplayName().getString();
+        Component text = coordinatesAllowed ?
+                Component.translatable("mapstitch.gui.worldmap.player_label",
+                        white(name), white(String.valueOf(Mth.floor(MC.player.distanceTo(hoveredPlayer))))
+                ).withColor(c) : white(name);
+        int w = font.width(text);
+        int x = Mth.clamp((int) hoveredPlayerX - w / 2, 2, screenW - w - 2);
+        int y = Math.max(2, (int) hoveredPlayerY - 16);
+        graphics.fill(x - 2, y - 2, x + w + 1, y + 9, MultiVersionUtil.INSTANCE.color(
+                MultiVersionUtil.INSTANCE.as8BitChannel(MapStitchClient.CONFIG.worldMap.textBackgroundOpacity.get() / 100F),
+                0, 0, 0
+        ));
+        graphics.text(font, text, x, y, -1);
+    }
 
 	private void renderText(GuiGraphicsExtractor graphics, int c) {
 		textStack(4 + (gridAllowed && grid ? 12 : 0), gridAllowed && grid ? getVerticalGridBarWidth(MC.font) : 0, false, graphics, List.of(

@@ -1,19 +1,47 @@
-- Added a location pin system to the world map:
-  - New Atlas Pin item:
-    - Craft 16 atlas pins by combining paper, any wooden planks, and an iron ingot.
-    - Atlas pins can be dyed in bulk by combining 2-8 identical atlas pins with one or more dyes, with the default color being white.
-    - Atlas pins can be carried inside your inventory, bundles, or shulker boxes to be used in the world map screen.
-    - In the world map screen, press P to turn on pin placement mode.
-    - During pin placement mode:
-      - Click anywhere on the world map to open the pin placement menu.
-      - In the menu, set the pin name and select the pin color from the palette.
-      - Press the "Confirm" button to place the pin on the clicked location, consuming the atlas pin of the matching color.
-      - Click on an existing pin while holding Ctrl to remove the pin under the cursor, placing it back into your inventory.
-      - Press P again to turn off pin placement mode.
-    - [Multiplayer only] Left-click a pin outside of pin placement mode to share it with an online player:
-      - Sharing a pin consumes an atlas pin of a similar color.
-      - The receiving player gets a chat message with a link to accept the pin.
-      - If the request isn't accepted within 60 seconds, the atlas pin is refunded.
+### Atlas pins
+
+- New Atlas Pin item:
+  - Craft 16 atlas pins by combining paper, any wooden planks, and an iron ingot.
+  - Atlas pins can be dyed in bulk by combining 2-8 identical atlas pins with one or more dyes, with the default color being white.
+  - Atlas pins can be carried inside your inventory, bundles, or shulker boxes to be used in the world map screen.
+- Pin placement:
+  - In the world map screen, press P to turn on pin placement mode.
+  - Click anywhere on the world map to open the pin placement menu.
+  - In the menu, set the pin name and select the pin color from the palette.
+  - Press the "Confirm" button to place the pin on the clicked location, consuming the atlas pin of the matching color.
+  - Click on an existing pin while holding Ctrl to remove the pin under the cursor, placing it back into your inventory.
+  - Press P again to turn off pin placement mode.
+- Pin sharing:
+  - Left-click a pin outside of pin placement mode to share it with an online player.
+  - Sharing a pin consumes an atlas pin of a similar color.
+  - The receiving player gets a chat message with a link to accept the pin.
+  - If the request isn't accepted within 60 seconds, the atlas pin is refunded.
+
+### Player marker improvements
+
+- Player markers of other players can now be seen in the world map and minimap.
+- Hovering over a player marker in the world map shows the player name.
+- Player markers in the minimap show the player name while the player list is open.
+- Player markers are now colored the same way the locator bar colors them (based on player UUID).
+- Player markers now move and rotate smoothly without any lag.
+
+### Copy and merge atlases
+
+- The cartography table can now be used to copy and merge atlases.
+- When two atlases are placed in the cartography table input slots, a button will show up which switches between copying and merging when clicked.
+- Copying:
+  - Insert the atlas to be copied (source atlas) in the top slot.
+  - Insert the atlas where the maps from the source atlas will be copied to (target atlas) in the bottom slot.
+  - The target atlas must have enough empty maps/paper to take in all the filled maps from the source atlas.
+  - Take out the resulting atlas from the rightmost slot. The source atlas will remain intact, while the target atlas will be consumed.
+  - The resulting atlas will contain all the filled maps of the source atlas, and any remaining empty maps/paper from the target atlas.
+- Merging:
+  - Place two atlases in the two leftmost slots (order doesn't matter).
+  - Take out the resulting atlas from the rightmost slot. Both input atlases will be consumed.
+  - The resulting atlas will contain the contents of both atlases combined.
+  
+### Other changes
+
 - Added config option "Globetrotter" → "Loot locations", which allows specifying loot tables where Globetrotter can be found, with defaults being:
   - Vanilla stronghold library chest
   - Enderscape stronghold library chest

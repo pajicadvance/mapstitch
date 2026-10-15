@@ -5,20 +5,27 @@ import me.pajic.mapstitch.MapStitch;
 import me.pajic.mapstitch.MapStitchClient;
 import me.pajic.mapstitch.component.ModDataComponents;
 import me.pajic.mapstitch.item.ModItems;
+import me.pajic.mapstitch.pin.ClientPins;
+import me.pajic.mapstitch.pin.Pin;
 import me.pajic.mapstitch.platform.MultiVersionUtil;
 import me.pajic.mapstitch.util.ModClientUtil;
+import me.pajic.mapstitch.util.PinMarkers;
+import me.pajic.mapstitch.util.PlayerMarkers;
 import me.pajic.mapstitch.worldmap.WorldMapScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.item.component.BundleContents;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
@@ -138,6 +145,9 @@ public class MinimapOverlay {
                             }
                         }
                         ModClientUtil.renderDecorations(MC, graphics, decors, 1);
+                        MinimapView view = new MinimapView(activeMapCenter.x, activeMapCenter.y, s);
+                        renderPins(graphics, view, mapData.dimension);
+                        renderPlayerMarkers(graphics, view, mapData.dimension.equals(MC.level.dimension()));
                     }
 				} else {
 					if (noMapTextTimer == 0) {
@@ -220,6 +230,63 @@ public class MinimapOverlay {
 	}
 
     @SuppressWarnings("DataFlowIssue")
+    private static void renderPlayerMarkers(GuiGraphicsExtractor graphics, MinimapView view, boolean sameDimension) {
+        if (!sameDimension || !ModClientUtil.hasCompass(MC, "playerMarker")) return;
+        float pt = PlayerMarkers.partialTick(MC);
+        boolean showNames = MC.options.keyPlayerList.isDown();
+        List<NameLabel> labels = new ArrayList<>();
+        //? <26.1
+        //graphics.flush();
+
+        for (AbstractClientPlayer other : PlayerMarkers.otherPlayers(MC)) {
+            float x = view.x(PlayerMarkers.lerpX(other, pt));
+            float z = view.z(PlayerMarkers.lerpZ(other, pt));
+            if (x < 0 || x > 128 || z < 0 || z > 128) continue;
+            PlayerMarkers.draw(graphics, x, z, PlayerMarkers.lerpYaw(other, pt), PlayerMarkers.color(other));
+            if (showNames) labels.add(new NameLabel(other.getDisplayName(), x, z));
+        }
+
+        float x = Mth.clamp(view.x(PlayerMarkers.lerpX(MC.player, pt)), 2, 126);
+        float z = Mth.clamp(view.z(PlayerMarkers.lerpZ(MC.player, pt)), 2, 126);
+        PlayerMarkers.draw(graphics, x, z, PlayerMarkers.lerpYaw(MC.player, pt), PlayerMarkers.color(MC.player));
+
+        if (!labels.isEmpty()) {
+            //? <26.1
+            //graphics.flush();
+            for (NameLabel label : labels) renderName(graphics, label);
+            //? <26.1
+            //graphics.flush();
+        }
+    }
+
+    private static void renderName(GuiGraphicsExtractor graphics, NameLabel label) {
+        int w = MC.font.width(label.name());
+        int x = Mth.clamp(Math.round(label.x()) - w / 2, 0, Math.max(0, 128 - w));
+        int y = Math.round(label.z()) - 15;
+        if (y < 0) y = Math.round(label.z()) + 6;
+        graphics.fill(x - 2, y - 2, x + w + 1, y + 9, 0x80000000);
+        graphics.text(MC.font, label.name(), x, y, -1);
+    }
+
+    private static void renderPins(GuiGraphicsExtractor graphics, MinimapView view, ResourceKey<Level> dimension) {
+        Identifier dimensionId = dimension.identifier();
+        //? <26.1
+        //graphics.flush();
+        for (Pin pin : ClientPins.get()) {
+            if (!pin.dimension().equals(dimensionId)) continue;
+            float x = view.x(pin.x() + 0.5);
+            float z = view.z(pin.z() + 0.5);
+            if (x < 0 || x > 128 || z < 0 || z > 128) continue;
+            MultiVersionUtil.INSTANCE.pushPose(graphics);
+            MultiVersionUtil.INSTANCE.translatePose(graphics, x, z, 0);
+            PinMarkers.draw(graphics, 0, 0, pin.color(), false);
+            MultiVersionUtil.INSTANCE.popPose(graphics);
+        }
+        //? <26.1
+        //graphics.flush();
+    }
+
+    @SuppressWarnings("DataFlowIssue")
     private static void updateMarkers(ItemStack atlas) {
         EXPLORATION_MARKERS.clear();
         BundleContents contents = atlas.getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
@@ -251,4 +318,11 @@ public class MinimapOverlay {
 
     //~ if <26.1 'MapRenderState.MapDecorationRenderState' -> 'MapDecoration'
     private record MinimapExplorationMarker(int worldX, int worldZ, MapRenderState.MapDecorationRenderState decor) {}
+
+    private record MinimapView(double centerX, double centerZ, int blocksPerPixel) {
+        float x(double worldX) { return (float) ((worldX - centerX) / blocksPerPixel + 64.0); }
+        float z(double worldZ) { return (float) ((worldZ - centerZ) / blocksPerPixel + 64.0); }
+    }
+
+    private record NameLabel(Component name, float x, float z) {}
 }

@@ -2,9 +2,11 @@ package me.pajic.mapstitch.platform.version;
 
 //? 1.21.1 {
 
-/*import com.mojang.blaze3d.vertex.VertexConsumer;
+/*import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import me.pajic.mapstitch.platform.MultiVersionUtil;
+import me.pajic.mapstitch.util.ModClientUtil;
 import me.pajic.mapstitch.worldmap.WorldMapScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -12,10 +14,13 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FastColor;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+
+import java.awt.*;
 
 public class Util1_21_1 implements MultiVersionUtil {
 
@@ -44,15 +49,22 @@ public class Util1_21_1 implements MultiVersionUtil {
         graphics.pose().mulPose(Axis.ZP.rotationDegrees((float)(rot * 360) / 16.0F));
     }
 
-    @SuppressWarnings("DataFlowIssue")
     @Override
-    public void rotatePlayerMarker(Minecraft mc, GuiGraphicsExtractor graphics) {
-        graphics.pose().mulPose(Axis.ZP.rotationDegrees(mc.player.getYRot() + 180.0F));
+    public void rotateDegrees(GuiGraphicsExtractor graphics, float degrees) {
+        graphics.pose().mulPose(Axis.ZP.rotationDegrees(degrees));
     }
 
     @Override
     public int color(int a, int r, int g, int b) {
         return FastColor.ARGB32.color(a, r, g, b);
+    }
+
+    @Override
+    public int playerMarkerColor(Player player) {
+        int color = FastColor.ARGB32.color(255, player.getUUID().hashCode());
+        float[] hsb = Color.RGBtoHSB(FastColor.ARGB32.red(color), FastColor.ARGB32.green(color), FastColor.ARGB32.blue(color), null);
+        int rgb = Color.HSBtoRGB(hsb[0], hsb[1], 0.9F);
+        return (FastColor.ARGB32.alpha(color) << 24) | (rgb & 0x00FFFFFF);
     }
 
     @Override
@@ -63,12 +75,24 @@ public class Util1_21_1 implements MultiVersionUtil {
     @Override
     public void renderMap(Minecraft mc, GuiGraphicsExtractor graphics, MapId id, MapItemSavedData data, @Nullable WorldMapScreen.GridPos gp, boolean minimap)  {
         if (!minimap) data.getDecorations().forEach(decor -> WorldMapScreen.prepareDecoration(decor, gp));
-        mc.gameRenderer.getMapRenderer().render(graphics.pose(), graphics.bufferSource(), id, data, true, 15728880);
+        ModClientUtil.renderingMinimap = minimap;
+        try {
+            mc.gameRenderer.getMapRenderer().render(graphics.pose(), graphics.bufferSource(), id, data, true, 15728880);
+        } finally {
+            ModClientUtil.renderingMinimap = false;
+        }
     }
 
     @Override
     public void blit(GuiGraphicsExtractor graphics, Identifier texture, int x, int y, float u, float v, int w, int h, int tw, int th) {
         graphics.blit(texture, x, y, u, v, w, h, tw, th);
+    }
+
+    @Override
+    public void blitTinted(GuiGraphicsExtractor graphics, Identifier texture, int x, int y, float u, float v, int w, int h, int tw, int th, int argb) {
+        RenderSystem.setShaderColor((argb >> 16 & 0xFF) / 255F, (argb >> 8 & 0xFF) / 255F, (argb & 0xFF) / 255F, (argb >>> 24) / 255F);
+        graphics.blit(texture, x, y, u, v, w, h, tw, th);
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
     }
 
     @Override

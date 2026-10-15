@@ -24,6 +24,7 @@
   "mapstitch.gui.worldmap.zoom_key": "Scroll wheel",
   "mapstitch.gui.worldmap.eject_key": "Ctrl+%s",
   "mapstitch.gui.worldmap.exit_key": "Esc",
+  "mapstitch.gui.worldmap.player_label": "%s (%s m)",
   "mapstitch.gui.worldmap.pin_mode": "Pin placement mode",
   "mapstitch.gui.worldmap.pin_control": "%s: Toggle pin placement mode",
   "mapstitch.gui.worldmap.pin.unnamed": "Unnamed pin",
