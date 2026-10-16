@@ -15,8 +15,8 @@
   - Left-click a pin outside of pin placement mode to share it with an online player.
   - Sharing a pin consumes an atlas pin of a similar color.
   - The receiving player gets a chat message with a link to accept the pin.
-  - If the request isn't accepted within 60 seconds, the atlas pin is refunded.
-- The atlas pin item can be disabled in the config. When disabled, pins can be placed and shared without atlas pins, choosing from the dye colors and the colors of existing pins.
+  - If the request isn't accepted within 60 seconds (configurable), the atlas pin is refunded.
+- The atlas pin item can be disabled in the config. When disabled, pins can be placed and shared without atlas pins, choosing from the 16 base dye colors and the colors of existing pins.
 
 ### Player marker improvements
 

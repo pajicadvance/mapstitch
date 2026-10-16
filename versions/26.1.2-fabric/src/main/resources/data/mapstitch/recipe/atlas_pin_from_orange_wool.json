@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "atlas_pin",
+  "pattern": [
+    "W",
+    "N"
+  ],
+  "key": {
+    "W": "minecraft:orange_wool",
+    "N": "minecraft:iron_nugget"
+  },
+  "result": {
+    "id": "mapstitch:atlas_pin",
+    "count": 4,
+    "components": {
+      "minecraft:dyed_color": 16351261
+    }
+  }
+}
