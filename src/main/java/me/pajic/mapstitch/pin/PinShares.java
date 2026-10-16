@@ -1,9 +1,6 @@
 package me.pajic.mapstitch.pin;
 
-import com.google.gson.JsonParser;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import me.pajic.mapstitch.MapStitch;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -15,19 +12,12 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.storage.LevelResource;
 
-import java.io.Reader;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 
 public class PinShares {
 
-    public static final int TIMEOUT_SECONDS = 60;
     public static final int MAX_PENDING_PER_SENDER = 10;
-    private static final Codec<List<Integer>> REFUNDS_CODEC = Codec.INT.listOf();
 
     private record PendingShare(
             UUID id, UUID sender, Component senderName, UUID target,
@@ -70,16 +60,20 @@ public class PinShares {
             sender.sendSystemMessage(error("mapstitch.chat.pin_share.duplicate"));
             return;
         }
-        Integer paidColor = PinUtil.findSimilarPinColor(sender, pin.color());
-        if (paidColor == null || !PinUtil.consumePin(sender, paidColor)) {
-            sender.sendSystemMessage(error("mapstitch.chat.pin_share.no_pin"));
-            return;
+        int paidColor = Pin.UNPAID;
+        if (PinUtil.itemRequired()) {
+            Integer similar = PinUtil.findSimilarPinColor(sender, pin.color());
+            if (similar == null || !PinUtil.consumePin(sender, similar)) {
+                sender.sendSystemMessage(error("mapstitch.chat.pin_share.no_pin"));
+                return;
+            }
+            paidColor = similar;
         }
 
         PendingShare share = new PendingShare(
                 UUID.randomUUID(), sender.getUUID(), sender.getDisplayName(),
                 targetId, target.getDisplayName(), pin, paidColor,
-                System.currentTimeMillis() + TIMEOUT_SECONDS * 1000L
+                System.currentTimeMillis() + getTimeoutSeconds() * 1000L
         );
         PENDING.put(share.id(), share);
 
@@ -104,7 +98,7 @@ public class PinShares {
         }
         PENDING.remove(shareId);
         Pin p = share.pin();
-        PinStorage.add(player, new Pin(UUID.randomUUID(), p.name(), p.color(), p.dimension(), p.x(), p.z()));
+        PinStorage.add(player, new Pin(UUID.randomUUID(), p.name(), p.color(), p.dimension(), p.x(), p.z(), share.paidColor()));
         PinStorage.sync(player);
         player.sendSystemMessage(Component.translatable(
                 "mapstitch.chat.pin_share.accepted", pinName(p), share.senderName()
@@ -118,6 +112,7 @@ public class PinShares {
     }
 
     public static void tick(MinecraftServer server) {
+        PinRefunds.tick(server);
         if (PENDING.isEmpty()) return;
         long now = System.currentTimeMillis();
         Iterator<PendingShare> it = PENDING.values().iterator();
@@ -142,61 +137,15 @@ public class PinShares {
     }
 
     private static void refund(MinecraftServer server, PendingShare share) {
+        String key;
+        if (share.paidColor() == Pin.UNPAID) key = "mapstitch.chat.pin_share.expired_sender_free";
+        else if (PinRefunds.refund(server, share.sender(), share.paidColor())) key = "mapstitch.chat.pin_share.expired_sender";
+        else key = "mapstitch.chat.pin_share.expired_sender_pending";
+
         ServerPlayer sender = server.getPlayerList().getPlayer(share.sender());
         if (sender != null) {
-            PinUtil.givePin(sender, share.paidColor());
-            sender.sendSystemMessage(Component.translatable(
-                    "mapstitch.chat.pin_share.expired_sender", share.targetName(), pinName(share.pin())
-            ).withStyle(ChatFormatting.GRAY));
-        } else {
-            List<Integer> refunds = new ArrayList<>(readRefunds(refundFile(server, share.sender())));
-            refunds.add(share.paidColor());
-            writeRefunds(refundFile(server, share.sender()), refunds);
-        }
-    }
-
-    public static void deliverRefunds(ServerPlayer player) {
-        Path path = refundFile(player.level().getServer(), player.getUUID());
-        if (!Files.exists(path)) return;
-        List<Integer> refunds = readRefunds(path);
-        try {
-            Files.deleteIfExists(path);
-        } catch (Exception e) {
-            MapStitch.LOGGER.warn("Couldn't delete {}", path, e);
-        }
-        if (refunds.isEmpty()) return;
-        refunds.forEach(color -> PinUtil.givePin(player, color));
-        player.sendSystemMessage(Component.translatable(
-                "mapstitch.chat.pin_share.refunded_offline",
-                refunds.size()
-        ).withStyle(ChatFormatting.GRAY));
-    }
-
-    private static Path refundFile(MinecraftServer server, UUID player) {
-        return server.getWorldPath(LevelResource.ROOT)
-                .resolve("data").resolve(MapStitch.MOD_ID).resolve("pins").resolve("refunds")
-                .resolve(player + ".json");
-    }
-
-    private static List<Integer> readRefunds(Path path) {
-        if (!Files.exists(path)) return List.of();
-        try (Reader reader = Files.newBufferedReader(path)) {
-            return REFUNDS_CODEC.parse(JsonOps.INSTANCE, JsonParser.parseReader(reader))
-                    .resultOrPartial(MapStitch.LOGGER::warn).orElse(List.of());
-        } catch (Exception e) {
-            MapStitch.LOGGER.warn("Couldn't read pin refunds from {}", path, e);
-            return List.of();
-        }
-    }
-
-    private static void writeRefunds(Path path, List<Integer> refunds) {
-        try {
-            Files.createDirectories(path.getParent());
-            try (Writer writer = Files.newBufferedWriter(path)) {
-                writer.write(REFUNDS_CODEC.encodeStart(JsonOps.INSTANCE, refunds).getOrThrow().toString());
-            }
-        } catch (Exception e) {
-            MapStitch.LOGGER.warn("Couldn't save pin refunds to {}", path, e);
+            sender.sendSystemMessage(Component.translatable(key, share.targetName(), pinName(share.pin()))
+                    .withStyle(ChatFormatting.GRAY));
         }
     }
 
@@ -209,12 +158,16 @@ public class PinShares {
 
     private static Component acceptLink(UUID shareId) {
         String command = "/" + MapStitch.MOD_ID + " acceptpin " + shareId;
-        Component hover = Component.translatable("mapstitch.chat.pin_share.accept.hover", TIMEOUT_SECONDS);
+        Component hover = Component.translatable("mapstitch.chat.pin_share.accept.hover", getTimeoutSeconds());
         return Component.translatable("mapstitch.chat.pin_share.accept").withStyle(style -> style
                 .withColor(ChatFormatting.GREEN)
                 .withUnderlined(true)
                 .withClickEvent(clickEvent(command))
                 .withHoverEvent(hoverEvent(hover)));
+    }
+
+    private static int getTimeoutSeconds() {
+        return MapStitch.CONFIG.atlasPins.shareRequestTimeout.get();
     }
 
     private static ClickEvent clickEvent(String command) {

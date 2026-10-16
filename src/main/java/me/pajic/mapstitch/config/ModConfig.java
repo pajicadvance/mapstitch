@@ -54,6 +54,7 @@ public class ModConfig extends Config {
 
     public static class AtlasPins extends ConfigSection {
         public ValidatedBoolean item = new ValidatedBoolean();
+        public ValidatedInt shareRequestTimeout = new ValidatedInt(60, 180, 10);
     }
 
     @RequiresAction(action = Action.RESTART)

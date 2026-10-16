@@ -9,12 +9,11 @@ import me.pajic.mapstitch.extension.CartographyTableMenuExtension;
 import me.pajic.mapstitch.item.ModItems;
 import me.pajic.mapstitch.recipe.AtlasCartographyHandler;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.Container;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -49,24 +48,17 @@ public abstract class CartographyTableMenuMixin extends AbstractContainerMenu im
         return mapstitch$atlasMode.get();
     }
 
+    @Override
+    public void mapstitch$setAtlasMode(int mode) {
+        mapstitch$atlasMode.set(mode);
+    }
+
     @Override public int mapstitch$getAtlasStatus() {
         return mapstitch$atlasStatus.get();
     }
 
     @Override public int mapstitch$getAtlasAmount() {
         return mapstitch$atlasAmount.get();
-    }
-
-    @Override
-    public boolean clickMenuButton(@NotNull Player player, int id) {
-        if (id == AtlasCartographyHandler.TOGGLE_MODE_BUTTON
-                && AtlasCartographyHandler.isAtlasRelatedRecipe(container.getItem(0), container.getItem(1))) {
-            mapstitch$atlasMode.set(mapstitch$atlasMode.get() == AtlasCartographyHandler.MODE_COPY ?
-                    AtlasCartographyHandler.MODE_MERGE : AtlasCartographyHandler.MODE_COPY);
-            slotsChanged(container);
-            return true;
-        }
-        return super.clickMenuButton(player, id);
     }
 
     @Mixin(targets = {
@@ -104,6 +96,39 @@ public abstract class CartographyTableMenuMixin extends AbstractContainerMenu im
             ) && ((CartographyTableMenuExtension) this$0).mapstitch$getAtlasMode() == AtlasCartographyHandler.MODE_COPY;
             return copy ? ItemStack.EMPTY : original.call(instance, i);
         }
+    }
+
+    @WrapOperation(
+            method = "quickMoveStack",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/item/ItemStack;has(Lnet/minecraft/core/component/DataComponentType;)Z"
+            )
+    )
+    private boolean allowAtlasQuickMove(ItemStack instance, DataComponentType<?> dataComponentType, Operation<Boolean> original) {
+        return original.call(instance, dataComponentType) || instance.is(ModItems.ATLAS);
+    }
+
+    @WrapOperation(
+            method = "quickMoveStack",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/inventory/CartographyTableMenu;moveItemStackTo(Lnet/minecraft/world/item/ItemStack;IIZ)Z"
+            )
+    )
+    private boolean handleAtlasQuickMove(
+            CartographyTableMenu instance,
+            ItemStack stack,
+            int start,
+            int end,
+            boolean reverse,
+            Operation<Boolean> original
+    ) {
+        if (start == 0 && end == 1 && stack.is(ModItems.ATLAS)) {
+            ItemStack top = container.getItem(0);
+            end = top.isEmpty() || top.is(ModItems.ATLAS) ? 2 : 1;
+        }
+        return original.call(instance, stack, start, end, reverse);
     }
 
     @WrapMethod(method = {"lambda$setupResultSlot$0", "method_17382"})

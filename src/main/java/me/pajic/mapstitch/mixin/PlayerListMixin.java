@@ -2,7 +2,7 @@ package me.pajic.mapstitch.mixin;
 
 import me.pajic.mapstitch.item.AtlasItem;
 import me.pajic.mapstitch.networking.payload.S2CDimensionIds;
-import me.pajic.mapstitch.pin.PinShares;
+import me.pajic.mapstitch.pin.PinRefunds;
 import me.pajic.mapstitch.pin.PinStorage;
 import me.pajic.mapstitch.platform.MultiLoaderUtil;
 import me.pajic.mapstitch.util.ModUtil;
@@ -35,7 +35,7 @@ public class PlayerListMixin {
 		MultiLoaderUtil.INSTANCE.s2c(player, new S2CDimensionIds(dimensionIds));
         ModUtil.dimensionIds = dimensionIds;
         PinStorage.sync(player);
-        PinShares.deliverRefunds(player);
+        PinRefunds.deliver(player);
 	}
 
 	@Inject(

@@ -13,12 +13,15 @@ import me.pajic.mapstitch.networking.payload.C2SSetEjectMode;
 import me.pajic.mapstitch.networking.payload.C2SSharePin;
 import me.pajic.mapstitch.networking.payload.S2CSyncWorldMap;
 import me.pajic.mapstitch.pin.Pin;
+import me.pajic.mapstitch.pin.PinRefunds;
 import me.pajic.mapstitch.pin.PinShares;
 import me.pajic.mapstitch.pin.PinStorage;
 import me.pajic.mapstitch.pin.PinUtil;
 import me.pajic.mapstitch.platform.MultiLoaderUtil;
 import me.pajic.mapstitch.util.ModUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -103,11 +106,13 @@ public class ServerNetworkEvents {
         String name = StringUtil.filterText(payload.name()).strip();
         if (name.length() > Pin.MAX_NAME_LENGTH) name = name.substring(0, Pin.MAX_NAME_LENGTH);
         int color = payload.color() & 0xFFFFFF;
-        if (!PinUtil.consumePin(serverPlayer, color)) return;
+        boolean pay = PinUtil.itemRequired();
+        if (pay && !PinUtil.consumePin(serverPlayer, color)) return;
         PinStorage.add(serverPlayer, new Pin(
                 UUID.randomUUID(), name, color, payload.dimension(),
                 Mth.clamp(payload.x(), -30_000_000, 30_000_000),
-                Mth.clamp(payload.z(), -30_000_000, 30_000_000)
+                Mth.clamp(payload.z(), -30_000_000, 30_000_000),
+                pay ? color : Pin.UNPAID
         ));
         PinStorage.sync(serverPlayer);
     }
@@ -115,10 +120,12 @@ public class ServerNetworkEvents {
     public static void removePin(C2SRemovePin payload, Player player) {
         if (!(player instanceof ServerPlayer serverPlayer)) return;
         Pin removed = PinStorage.remove(serverPlayer, payload.pinId());
-        if (removed != null) {
-            PinUtil.givePin(serverPlayer, removed.color());
-            PinStorage.sync(serverPlayer);
+        if (removed == null) return;
+        if (removed.isPaid() && !PinRefunds.refund(serverPlayer.level().getServer(), serverPlayer.getUUID(), removed.paidColor())) {
+            serverPlayer.sendSystemMessage(Component.translatable("mapstitch.chat.pin.refund_pending")
+                    .withStyle(ChatFormatting.GRAY));
         }
+        PinStorage.sync(serverPlayer);
     }
 
     public static void sharePin(C2SSharePin payload, Player player) {

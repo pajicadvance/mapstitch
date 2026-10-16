@@ -2,6 +2,7 @@ package me.pajic.mapstitch.worldmap;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import me.pajic.mapstitch.networking.payload.C2SPlacePin;
+import me.pajic.mapstitch.pin.ClientPins;
 import me.pajic.mapstitch.pin.Pin;
 import me.pajic.mapstitch.pin.PinUtil;
 import me.pajic.mapstitch.platform.MultiLoaderUtil;
@@ -14,6 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.DyeColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,6 +51,7 @@ public class PinPlacementScreen extends Screen {
     private @Nullable Integer selected;
     private int scrollRow;
     private int left, top, paletteY;
+    private boolean itemRequired;
 
     private EditBox nameBox;
     private Button confirmButton;
@@ -75,13 +78,14 @@ public class PinPlacementScreen extends Screen {
         addRenderableWidget(nameBox);
         setInitialFocus(nameBox);
 
-        counts = MC.player != null ? PinUtil.collectPinColors(MC.player) : Map.of();
-        List<Integer> sorted = new ArrayList<>(counts.keySet());
+        itemRequired = PinUtil.itemRequired();
+        counts = itemRequired && MC.player != null ? PinUtil.collectPinColors(MC.player) : Map.of();
+        List<Integer> sorted = new ArrayList<>(itemRequired ? counts.keySet() : freeColors());
         sorted.sort(PALETTE_ORDER);
         colors = sorted;
 
-        if (selected == null || !counts.containsKey(selected)) {
-            selected = counts.containsKey(PinUtil.DEFAULT_COLOR) ? Integer.valueOf(PinUtil.DEFAULT_COLOR)
+        if (selected == null || !colors.contains(selected)) {
+            selected = colors.contains(PinUtil.DEFAULT_COLOR) ? Integer.valueOf(PinUtil.DEFAULT_COLOR)
                     : colors.isEmpty() ? null : colors.getFirst();
         }
         scrollRow = Mth.clamp(scrollRow, 0, maxScroll());
@@ -113,7 +117,8 @@ public class PinPlacementScreen extends Screen {
     }
 
     private void confirm() {
-        if (MC.player == null || selected == null || PinUtil.countPins(MC.player, selected) <= 0) return;
+        if (MC.player == null || selected == null) return;
+        if (itemRequired && PinUtil.countPins(MC.player, selected) <= 0) return;
         MultiLoaderUtil.INSTANCE.c2s(new C2SPlacePin(nameBox.getValue().strip(), selected, dimension, x, z));
         MC.player.playSound(SoundEvents.BUNDLE_INSERT);
         onClose();
@@ -184,9 +189,10 @@ public class PinPlacementScreen extends Screen {
 
         Integer info = hoveredIndex >= 0 ? colors.get(hoveredIndex) : selected;
         if (info != null) {
-            Component text = Component.translatable("mapstitch.gui.pin.color_info",
-                    Component.literal(String.format("#%06X", info)).withColor(info),
-                    counts.getOrDefault(info, 0));
+            Component hex = Component.literal(String.format("#%06X", info)).withColor(info);
+            Component text = itemRequired
+                    ? Component.translatable("mapstitch.gui.pin.color_info", hex, counts.getOrDefault(info, 0))
+                    : hex;
             graphics.text(font, text, width / 2 - font.width(text) / 2, paletteY + PALETTE_H + 5, -1);
         }
     }
@@ -250,6 +256,13 @@ public class PinPlacementScreen extends Screen {
         return true;
     }
     //?}
+
+    private static Set<Integer> freeColors() {
+        Set<Integer> set = new LinkedHashSet<>();
+        for (DyeColor dye : DyeColor.values()) set.add(dye.getTextureDiffuseColor() & 0xFFFFFF);
+        for (Pin pin : ClientPins.get()) set.add(pin.color() & 0xFFFFFF);
+        return set;
+    }
 
     private static boolean isGrayish(int c) {
         int r = c >> 16 & 0xFF, g = c >> 8 & 0xFF, b = c & 0xFF;

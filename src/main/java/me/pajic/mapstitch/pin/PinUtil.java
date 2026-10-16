@@ -1,5 +1,6 @@
 package me.pajic.mapstitch.pin;
 
+import me.pajic.mapstitch.MapStitch;
 import me.pajic.mapstitch.extension.BundleContentsMutableExtension;
 import me.pajic.mapstitch.item.ModItems;
 import me.pajic.mapstitch.util.ModUtil;
@@ -28,6 +29,10 @@ public class PinUtil {
     private static final int CONTAINER_SIZE = 27;
     public static final int DEFAULT_COLOR = 0xF9FFFE;
     public static final double SIMILAR_COLOR_THRESHOLD = 0.1;
+
+    public static boolean itemRequired() {
+        return MapStitch.CONFIG.atlasPins.item.get();
+    }
 
     public static int colorOf(ItemStack stack) {
         DyedItemColor dyed = stack.get(DataComponents.DYED_COLOR);

@@ -45,6 +45,7 @@ public class PinShareScreen extends Screen {
     private int available;
     private int scrollRow;
     private int left, top, listY;
+    private boolean itemRequired;
 
     private EditBox searchBox;
     private Button confirmButton;
@@ -114,12 +115,13 @@ public class PinShareScreen extends Screen {
             }
             list.sort(Comparator.comparing(Entry::name, String.CASE_INSENSITIVE_ORDER));
             players = list;
-            available = PinUtil.countSimilarPins(MC.player, pin.color());
-            paymentColor = PinUtil.findSimilarPinColor(MC.player, pin.color());
+            itemRequired = PinUtil.itemRequired();
+            available = itemRequired ? PinUtil.countSimilarPins(MC.player, pin.color()) : 0;
+            paymentColor = itemRequired ? PinUtil.findSimilarPinColor(MC.player, pin.color()) : null;
         }
         if (selected != null && players.stream().noneMatch(e -> e.id().equals(selected))) selected = null;
         scrollRow = Mth.clamp(scrollRow, 0, maxScroll());
-        confirmButton.active = selected != null && paymentColor != null;
+        confirmButton.active = selected != null && (!itemRequired || paymentColor != null);
     }
 
     private int maxScroll() { return Math.max(0, players.size() - VISIBLE_ROWS); }
@@ -132,7 +134,7 @@ public class PinShareScreen extends Screen {
 
     private void confirm() {
         if (MC.player == null || selected == null || !WorldMapScreen.canSharePins()) return;
-        if (PinUtil.findSimilarPinColor(MC.player, pin.color()) == null) return;
+        if (itemRequired && PinUtil.findSimilarPinColor(MC.player, pin.color()) == null) return;
         MultiLoaderUtil.INSTANCE.c2s(new C2SSharePin(pin.id(), selected));
         onClose();
     }
@@ -200,16 +202,18 @@ public class PinShareScreen extends Screen {
             }
         }
 
-        int cy = listY + LIST_H + 5;
-        if (paymentColor != null) {
-            Component cost = Component.translatable("mapstitch.gui.pin_share.cost", available);
-            int cx = width / 2 - (10 + font.width(cost)) / 2;
-            graphics.fill(cx, cy, cx + 7, cy + 7, 0xFF000000);
-            graphics.fill(cx + 1, cy + 1, cx + 6, cy + 6, 0xFF000000 | paymentColor);
-            graphics.text(font, cost, cx + 10, cy, 0xFFA0A0A0);
-        } else {
-            Component none = Component.translatable("mapstitch.gui.pin_share.no_similar");
-            graphics.text(font, none, width / 2 - font.width(none) / 2, cy, 0xFFFF5555);
+        if (itemRequired) {
+            int cy = listY + LIST_H + 5;
+            if (paymentColor != null) {
+                Component cost = Component.translatable("mapstitch.gui.pin_share.cost", available);
+                int cx = width / 2 - (10 + font.width(cost)) / 2;
+                graphics.fill(cx, cy, cx + 7, cy + 7, 0xFF000000);
+                graphics.fill(cx + 1, cy + 1, cx + 6, cy + 6, 0xFF000000 | paymentColor);
+                graphics.text(font, cost, cx + 10, cy, 0xFFA0A0A0);
+            } else {
+                Component none = Component.translatable("mapstitch.gui.pin_share.no_similar");
+                graphics.text(font, none, width / 2 - font.width(none) / 2, cy, 0xFFFF5555);
+            }
         }
     }
 
@@ -223,7 +227,7 @@ public class PinShareScreen extends Screen {
             int index = rowAt(event.x(), event.y());
             if (index >= 0) {
                 selected = players.get(index).id();
-                confirmButton.active = paymentColor != null;
+                confirmButton.active = !itemRequired || paymentColor != null;
                 MC.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
                         net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 return true;

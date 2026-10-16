@@ -505,7 +505,10 @@ public class WorldMapScreen extends Screen {
                 Component.literal(pin.name())
         );
         if (pinMode) {
-            lines.add(Component.translatable("mapstitch.gui.worldmap.pin.remove_hint").withColor(0xFFAAAAAA));
+            lines.add((pin.isPaid() ?
+                    Component.translatable("mapstitch.gui.worldmap.pin.remove_hint") :
+                    Component.translatable("mapstitch.gui.worldmap.pin.remove_hint_free")
+            ).withColor(0xFFAAAAAA));
         } else if (canSharePins()) {
             lines.add(Component.translatable("mapstitch.gui.worldmap.pin.share_hint").withColor(0xFFAAAAAA));
         }
