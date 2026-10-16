@@ -81,6 +81,15 @@
 
   "mapstitch.gui.worldmap.debug.rendered_maps": "[Debug] Rendered maps: %s",
 
+  "mapstitch.gui.cartography.atlas_mode.copy": "Copy",
+  "mapstitch.gui.cartography.atlas_mode.merge": "Merge",
+  "mapstitch.gui.cartography.atlas_mode.copy.tooltip": "Copy the filled maps of the top atlas into the bottom atlas. The top atlas is kept.\nClick to switch to merging.",
+  "mapstitch.gui.cartography.atlas_mode.merge.tooltip": "Combine both atlases into one. Both atlases are consumed.\nClick to switch to copying.",
+  "mapstitch.gui.cartography.atlas.not_enough_empty_maps": "The bottom atlas needs %s more empty maps or paper.",
+  "mapstitch.gui.cartography.atlas.scale_mismatch": "The atlases have different scales.",
+  "mapstitch.gui.cartography.atlas.too_many_items": "The merged atlas would hold %s items too many.",
+  "mapstitch.gui.cartography.atlas.nothing_to_copy": "The bottom atlas already has all maps of the top atlas.",
+
   "mapstitch.chat.pin_share.request": "%s wants to share the pin %s with you. %s",
   "mapstitch.chat.pin_share.accept": "[Accept]",
   "mapstitch.chat.pin_share.accept.hover": "Click to add this pin to your world map (expires in %s seconds)",
@@ -143,7 +152,8 @@
 
   "mapstitch.config": "MapStitch Configuration",
   "mapstitch.config.maxAtlasItems": "Max items in atlas",
-  "mapstitch.config.atlasPin": "Atlas pins",
+  "mapstitch.config.atlasPins": "Atlas pins",
+  "mapstitch.config.atlasPins.item": "Atlas pin item",
   "mapstitch.config.itemRequirements": "Item requirement settings",
   "mapstitch.config.itemRequirements.compass": "Require compass for...",
   "mapstitch.config.itemRequirements.clock": "Require clock for...",

@@ -427,13 +427,14 @@ public class AtlasItem extends Item {
 		BundleContents immutableContents = contents.toImmutable();
 		atlas.set(DataComponents.BUNDLE_CONTENTS, immutableContents);
 		int itemCount = getAtlasItemCount(immutableContents);
-		atlas.set(
-				ModDataComponents.ATLAS_FULLNESS,
-				Math.min(4, itemCount == 0 ? 0 : itemCount / ((getMaxSize().intValue() * 64) / 4) + 1)
-		);
+		atlas.set(ModDataComponents.ATLAS_FULLNESS, fullness(itemCount));
 		atlas.set(ModDataComponents.ATLAS_ACTIVE_MAP_ID, -1);
         player.containerMenu.slotsChanged(player.getInventory());
 	}
+
+    public static int fullness(int itemCount) {
+        return Math.min(4, itemCount == 0 ? 0 : itemCount / ((getMaxSize().intValue() * 64) / 4) + 1);
+    }
 
 	private int getAtlasItemCount(BundleContents contents) {
 		int itemCount = 0;

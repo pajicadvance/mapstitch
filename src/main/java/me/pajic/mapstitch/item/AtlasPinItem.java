@@ -13,6 +13,6 @@ public class AtlasPinItem extends Item {
 
     @Override
     public boolean isEnabled(@NotNull FeatureFlagSet enabledFeatures) {
-        return MapStitch.CONFIG.atlasPin.get();
+        return MapStitch.CONFIG.atlasPins.item.get();
     }
 }

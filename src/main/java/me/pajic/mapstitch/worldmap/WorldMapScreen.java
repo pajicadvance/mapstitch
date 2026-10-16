@@ -190,7 +190,7 @@ public class WorldMapScreen extends Screen {
 					Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.help.tooltip"))
 			).build());
 
-            if (MapStitch.CONFIG.atlasPin.get()) addRenderableWidget(Button.builder(
+            addRenderableWidget(Button.builder(
                     Component.translatable("mapstitch.gui.worldmap.button.pin"),
                     b -> pinMode = !pinMode
             ).pos(width - 20, height / 2 + 72).size(16, 16).tooltip(
@@ -663,7 +663,7 @@ public class WorldMapScreen extends Screen {
                 new ObjectBooleanImmutablePair<>(Component.translatable(
                         "mapstitch.gui.worldmap.pin_control",
                         Component.keybind(ModKeybinds.TOGGLE_PIN_MODE.getName()).withColor(c)
-                ), MapStitch.CONFIG.atlasPin.get() && help),
+                ), help),
 				new ObjectBooleanImmutablePair<>(Component.translatable(
 						"mapstitch.gui.worldmap.zoom_control",
 						Component.translatable("mapstitch.gui.worldmap.zoom_key").withColor(c)
@@ -919,7 +919,7 @@ public class WorldMapScreen extends Screen {
 			onClose();
 			return true;
 		}
-        if (MapStitch.CONFIG.atlasPin.get() && ModKeybinds.TOGGLE_PIN_MODE.matches(event)) {
+        if (ModKeybinds.TOGGLE_PIN_MODE.matches(event)) {
             pinMode = !pinMode;
             return true;
         }

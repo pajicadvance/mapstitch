@@ -5,25 +5,69 @@ import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import me.pajic.mapstitch.extension.CartographyTableMenuExtension;
 import me.pajic.mapstitch.item.ModItems;
 import me.pajic.mapstitch.recipe.AtlasCartographyHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Container;
-import net.minecraft.world.inventory.CartographyTableMenu;
-import net.minecraft.world.inventory.ResultContainer;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CartographyTableMenu.class)
-public class CartographyTableMenuMixin {
+public abstract class CartographyTableMenuMixin extends AbstractContainerMenu implements CartographyTableMenuExtension {
 
     @Shadow @Final public Container container;
     @Shadow @Final private ResultContainer resultContainer;
+
+    @Unique private final DataSlot mapstitch$atlasMode = DataSlot.standalone();
+    @Unique private final DataSlot mapstitch$atlasStatus = DataSlot.standalone();
+    @Unique private final DataSlot mapstitch$atlasAmount = DataSlot.standalone();
+
+    protected CartographyTableMenuMixin(@Nullable MenuType<?> menuType, int containerId) {
+        super(menuType, containerId);
+    }
+
+    @Inject(
+            method = "<init>(ILnet/minecraft/world/entity/player/Inventory;Lnet/minecraft/world/inventory/ContainerLevelAccess;)V",
+            at = @At("TAIL")
+    )
+    private void addAtlasDataSlots(CallbackInfo ci) {
+        addDataSlot(mapstitch$atlasMode);
+        addDataSlot(mapstitch$atlasStatus);
+        addDataSlot(mapstitch$atlasAmount);
+    }
+
+    @Override public int mapstitch$getAtlasMode() {
+        return mapstitch$atlasMode.get();
+    }
+
+    @Override public int mapstitch$getAtlasStatus() {
+        return mapstitch$atlasStatus.get();
+    }
+
+    @Override public int mapstitch$getAtlasAmount() {
+        return mapstitch$atlasAmount.get();
+    }
+
+    @Override
+    public boolean clickMenuButton(@NotNull Player player, int id) {
+        if (id == AtlasCartographyHandler.TOGGLE_MODE_BUTTON
+                && AtlasCartographyHandler.isAtlasRelatedRecipe(container.getItem(0), container.getItem(1))) {
+            mapstitch$atlasMode.set(mapstitch$atlasMode.get() == AtlasCartographyHandler.MODE_COPY ?
+                    AtlasCartographyHandler.MODE_MERGE : AtlasCartographyHandler.MODE_COPY);
+            slotsChanged(container);
+            return true;
+        }
+        return super.clickMenuButton(player, id);
+    }
 
     @Mixin(targets = {
             "net/minecraft/world/inventory/CartographyTableMenu$3",
@@ -53,26 +97,33 @@ public class CartographyTableMenuMixin {
                         ordinal = 0
                 )
         )
-        private ItemStack keepOriginalAtlasOnCopy(Slot instance, int i, Operation<ItemStack> original) {
-            return AtlasCartographyHandler.isCopyRecipe(
+        private ItemStack keepSourceAtlasOnCopy(Slot instance, int i, Operation<ItemStack> original) {
+            boolean copy = AtlasCartographyHandler.isAtlasRelatedRecipe(
                     this$0.container.getItem(0),
                     this$0.container.getItem(1)
-            ) ? ItemStack.EMPTY : original.call(instance, i);
+            ) && ((CartographyTableMenuExtension) this$0).mapstitch$getAtlasMode() == AtlasCartographyHandler.MODE_COPY;
+            return copy ? ItemStack.EMPTY : original.call(instance, i);
         }
     }
 
     @WrapMethod(method = {"lambda$setupResultSlot$0", "method_17382"})
-    private void handleAtlasCopy(
+    private void handleAtlasRecipes(
             ItemStack mapStack,
             ItemStack additionalStack,
             ItemStack resultStack,
-            Level level,
-            BlockPos pos,
+            Level level, BlockPos pos,
             Operation<Void> original
     ) {
-        if (AtlasCartographyHandler.isCopyRecipe(container.getItem(0), container.getItem(1))) {
-            resultContainer.setItem(2, AtlasCartographyHandler.createCopy(mapStack, additionalStack, level));
+        if (AtlasCartographyHandler.isAtlasRelatedRecipe(mapStack, additionalStack)) {
+            AtlasCartographyHandler.Result result = AtlasCartographyHandler.assemble(
+                    mapStack, additionalStack, mapstitch$atlasMode.get(), level
+            );
+            mapstitch$atlasStatus.set(result.status().ordinal());
+            mapstitch$atlasAmount.set(result.amount());
+            if (!ItemStack.matches(result.stack(), resultStack)) resultContainer.setItem(2, result.stack());
+            broadcastChanges();
         } else {
+            mapstitch$atlasStatus.set(0);
             original.call(mapStack, additionalStack, resultStack, level, pos);
         }
     }

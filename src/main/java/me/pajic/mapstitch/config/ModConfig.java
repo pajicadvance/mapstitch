@@ -25,7 +25,7 @@ import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 
 import java.util.List;
 
-@Version(version = 1)
+@Version(version = 2)
 public class ModConfig extends Config {
 
     private static final List<String> COMPASS_REQ = List.of("minimap", "playerMarker", "grid", "coordinates", "biome");
@@ -42,22 +42,18 @@ public class ModConfig extends Config {
 		super(MapStitch.id("config"));
 	}
 
-    public ValidatedInt maxAtlasItems = new ValidatedInt(16384, 16384, 1, ValidatedNumber.WidgetType.TEXTBOX);
-    public ValidatedBoolean atlasPin = new ValidatedBoolean();
-    public ItemRequirements itemRequirements = new ItemRequirements();
+    public ValidatedInt maxAtlasItems = new ValidatedInt(16384, 32767, 1, ValidatedNumber.WidgetType.TEXTBOX);
+    public AtlasPins atlasPins = new AtlasPins();
     public MapRecipe mapRecipe = new MapRecipe();
     public NetherMap netherMap = new NetherMap();
     public Globetrotter globetrotter = new Globetrotter();
     public AccessorySlots accessorySlots = new AccessorySlots();
     public MinimapInfo minimapInfo = new MinimapInfo();
+    public ItemRequirements itemRequirements = new ItemRequirements();
     public ValidatedBoolean keepAtlasOnDeath = new ValidatedBoolean(false);
 
-    public static class ItemRequirements extends ConfigSection {
-        public ValidatedChoiceList<String> compass = compassReqEntry.toList(COMPASS_REQ).toChoiceList(COMPASS_REQ, ValidatedChoiceList.WidgetType.POPUP, (s, s2) -> Component.translatable("mapstitch.config.reqEntry." + s));
-        public ValidatedChoiceList<String> clock = clockReqEntry.toList(CLOCK_REQ).toChoiceList(CLOCK_REQ, ValidatedChoiceList.WidgetType.POPUP, (s, s2) -> Component.translatable("mapstitch.config.reqEntry." + s));
-        public ValidatedChoiceList<String> compassAndClockScan = itemScanEntry.toList(ITEM_SCAN_LOCATIONS).toChoiceList(ITEM_SCAN_LOCATIONS, ValidatedChoiceList.WidgetType.POPUP, (s, s2) -> Component.translatable("mapstitch.config.scanEntry." + s));
-        public ValidatedChoiceList<String> worldMapAtlasScan = atlasScanEntry.toList(ATLAS_SCAN_LOCATIONS).toChoiceList(ATLAS_SCAN_LOCATIONS, ValidatedChoiceList.WidgetType.POPUP, (s, s2) -> Component.translatable("mapstitch.config.scanEntry." + s));
-        public ValidatedChoiceList<String> minimapAtlasScan = atlasScanEntry.toList(ATLAS_SCAN_LOCATIONS).toChoiceList(List.of("mainHand", "offhand", "hotbar", "accessories"), ValidatedChoiceList.WidgetType.POPUP, (s, s2) -> Component.translatable("mapstitch.config.scanEntry." + s));
+    public static class AtlasPins extends ConfigSection {
+        public ValidatedBoolean item = new ValidatedBoolean();
     }
 
     @RequiresAction(action = Action.RESTART)
@@ -90,16 +86,36 @@ public class ModConfig extends Config {
 
     @RequiresAction(action = Action.RESTART)
     public static class AccessorySlots extends ConfigSection {
-        public ValidatedBoolean atlasSlot = new ValidatedBoolean();
-        public ValidatedBoolean compassSlot = new ValidatedBoolean();
+        public ValidatedBoolean atlasSlot = new ValidatedBoolean(false);
+        public ValidatedBoolean compassSlot = new ValidatedBoolean(false);
         public ValidatedBoolean clockSlot = new ValidatedBoolean(false);
     }
 
     public static class MinimapInfo extends ConfigSection {
         public ValidatedBoolean allowRealTime = new ValidatedBoolean(true);
-        public ValidatedBoolean allowGameTime = new ValidatedBoolean(false);
-        public ValidatedBoolean allowCoordinates = new ValidatedBoolean(false);
-        public ValidatedBoolean allowBiome = new ValidatedBoolean(false);
-        public ValidatedBoolean allowWeather = new ValidatedBoolean(false);
+        public ValidatedBoolean allowGameTime = new ValidatedBoolean(true);
+        public ValidatedBoolean allowCoordinates = new ValidatedBoolean(true);
+        public ValidatedBoolean allowBiome = new ValidatedBoolean(true);
+        public ValidatedBoolean allowWeather = new ValidatedBoolean(true);
+    }
+
+    public static class ItemRequirements extends ConfigSection {
+        public ValidatedChoiceList<String> compass = compassReqEntry.toList(COMPASS_REQ).toChoiceList(List.of(), ValidatedChoiceList.WidgetType.POPUP, (s, s2) -> Component.translatable("mapstitch.config.reqEntry." + s));
+        public ValidatedChoiceList<String> clock = clockReqEntry.toList(CLOCK_REQ).toChoiceList(List.of(), ValidatedChoiceList.WidgetType.POPUP, (s, s2) -> Component.translatable("mapstitch.config.reqEntry." + s));
+        public ValidatedChoiceList<String> compassAndClockScan = itemScanEntry.toList(ITEM_SCAN_LOCATIONS).toChoiceList(ITEM_SCAN_LOCATIONS, ValidatedChoiceList.WidgetType.POPUP, (s, s2) -> Component.translatable("mapstitch.config.scanEntry." + s));
+        public ValidatedChoiceList<String> worldMapAtlasScan = atlasScanEntry.toList(ATLAS_SCAN_LOCATIONS).toChoiceList(ATLAS_SCAN_LOCATIONS, ValidatedChoiceList.WidgetType.POPUP, (s, s2) -> Component.translatable("mapstitch.config.scanEntry." + s));
+        public ValidatedChoiceList<String> minimapAtlasScan = atlasScanEntry.toList(ATLAS_SCAN_LOCATIONS).toChoiceList(List.of("mainHand", "offhand", "hotbar", "accessories"), ValidatedChoiceList.WidgetType.POPUP, (s, s2) -> Component.translatable("mapstitch.config.scanEntry." + s));
+    }
+
+    @Override
+    public void update(int deserializedVersion) {
+        if (deserializedVersion == 1) {
+            itemRequirements.compass.validateAndSet(List.of());
+            itemRequirements.clock.validateAndSet(List.of());
+            minimapInfo.allowGameTime.validateAndSet(true);
+            minimapInfo.allowCoordinates.validateAndSet(true);
+            minimapInfo.allowBiome.validateAndSet(true);
+            minimapInfo.allowWeather.validateAndSet(true);
+        }
     }
 }
