@@ -2,14 +2,20 @@ package me.pajic.mapstitch.util;
 
 import me.pajic.mapstitch.MapStitch;
 import me.pajic.mapstitch.compat.AccessoryUtil;
+import me.pajic.mapstitch.extension.CartographyTableMenuExtension;
 import me.pajic.mapstitch.platform.MultiVersionUtil;
+import me.pajic.mapstitch.recipe.AtlasCartographyHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -44,6 +50,8 @@ public class ModClientUtil {
     );
     public static boolean worldMapOpen = false;
     public static boolean renderingMinimap = false;
+
+    private static final String MODE_KEY = "mapstitch.gui.cartography.atlas_mode.";
 
     //~ if <26.1 'MapRenderState.MapDecorationRenderState' -> 'MapDecoration'
     public static void renderDecorations(Minecraft mc, GuiGraphicsExtractor graphics, List<MapRenderState.MapDecorationRenderState> decors, float decorScale) {
@@ -172,5 +180,28 @@ public class ModClientUtil {
             }
         }
         return ItemStack.EMPTY;
+    }
+
+    public static int cartographyButtonWidth(Font font) {
+        int text = Math.max(
+                font.width(Component.translatable(MODE_KEY + "copy")),
+                font.width(Component.translatable(MODE_KEY + "merge"))
+        );
+        int w = Math.min(text + 12, 56);
+        return w + (w & 1);
+    }
+
+    public static void cartographyUpdateButton(Button button, AbstractContainerMenu menu) {
+        if (button == null) return;
+        button.visible = AtlasCartographyHandler.isAtlasRelatedRecipe(menu.getSlot(0).getItem(), menu.getSlot(1).getItem());
+        if (!button.visible) return;
+        CartographyTableMenuExtension ext = (CartographyTableMenuExtension) menu;
+        boolean copy = ext.mapstitch$getAtlasMode() == AtlasCartographyHandler.MODE_COPY;
+        String key = MODE_KEY + (copy ? "copy" : "merge");
+        button.setMessage(Component.translatable(key));
+        MutableComponent tooltip = Component.translatable(key + ".tooltip");
+        Component problem = AtlasCartographyHandler.describe(ext.mapstitch$getAtlasStatus(), ext.mapstitch$getAtlasAmount());
+        if (problem != null) tooltip.append("\n\n").append(problem);
+        button.setTooltip(Tooltip.create(tooltip));
     }
 }

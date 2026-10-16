@@ -158,6 +158,9 @@
   "mapstitch.config.maxAtlasItems": "Max items in atlas",
   "mapstitch.config.atlasPins": "Atlas pins",
   "mapstitch.config.atlasPins.item": "Atlas pin item",
+  "mapstitch.config.playerMarkers": "Player markers",
+  "mapstitch.config.playerMarkers.showOthers": "Show other player markers",
+  "mapstitch.config.playerMarkers.showOthers.desc": "Show the markers of other players on the world map and minimap. When on a team, only teammates are shown.",
   "mapstitch.config.itemRequirements": "Item requirement settings",
   "mapstitch.config.itemRequirements.compass": "Require compass for...",
   "mapstitch.config.itemRequirements.clock": "Require clock for...",
@@ -271,6 +274,11 @@
   "mapstitch.client_config.minimapInfo.coordinates": "Coordinates",
   "mapstitch.client_config.minimapInfo.biome": "Biome",
   "mapstitch.client_config.minimapInfo.weather": "Weather",
+  "mapstitch.client_config.playerMarkers": "Player markers",
+  "mapstitch.client_config.playerMarkers.colorOwn": "Color own player marker",
+  "mapstitch.client_config.playerMarkers.colorOwn.desc": "Color your own marker with the UUID-determined player color if you aren't on a team with a color.",
+  "mapstitch.client_config.playerMarkers.colorOthers": "Color other player markers",
+  "mapstitch.client_config.playerMarkers.colorOthers.desc": "Color other players' markers with their UUID-determined player color if they aren't on a team with a color.",
   "mapstitch.client_config.sounds": "Sounds",
   "mapstitch.client_config.sounds.atlasMapCreation": "On atlas map creation"
 }

@@ -25,6 +25,7 @@
 - Player markers in the minimap show the player name while the player list is open.
 - Player markers are now colored the same way the locator bar colors them (based on player UUID).
 - Player markers now move and rotate smoothly without any lag.
+- Showing other player markers and player marker colors can be configured.
 
 ### Copy and merge atlases
 

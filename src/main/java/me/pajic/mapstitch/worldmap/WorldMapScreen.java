@@ -110,6 +110,75 @@ public class WorldMapScreen extends Screen {
     private double pinPressX, pinPressY, pinDragDistance;
     private @Nullable Pin pressedPin;
 
+    private final Button zoomIn = Button.builder(
+            Component.translatable("mapstitch.gui.worldmap.button.zoom_in"),
+            b -> zoomLevel = Mth.clamp(zoomLevel + 1, -2, 1)
+    ).pos(width - 20, height / 2 - 72).size(16, 16).tooltip(
+            Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.zoom_in.tooltip"))
+    ).build();
+
+    private final Button zoomOut = Button.builder(
+            Component.translatable("mapstitch.gui.worldmap.button.zoom_out"),
+            b -> zoomLevel = Mth.clamp(zoomLevel - 1, -2, 1)
+    ).pos(width - 20, height / 2 - 54).size(16, 16).tooltip(
+            Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.zoom_out.tooltip"))
+    ).build();
+
+    private final Button nextDimension = Button.builder(
+            Component.translatable("mapstitch.gui.worldmap.button.dimension"), b -> {
+                int i = dimensionIds.indexOf(dimensionId);
+                dimensionId = i + 1 > dimensionIds.size() - 1 ? dimensionIds.getFirst() : dimensionIds.get(i + 1);
+                clearMaps();
+            }
+    ).pos(width - 20, height / 2 - 36).size(16, 16).tooltip(
+            Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.dimension.tooltip"))
+    ).build();
+
+    private final Button nextScale = Button.builder(
+            Component.translatable("mapstitch.gui.worldmap.button.scale"),
+            b -> {
+                if (scale < 4) scale++;
+                else scale = 0;
+            }
+    ).pos(width - 20, height / 2 - 18).size(16, 16).tooltip(
+            Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.scale.tooltip"))
+    ).build();
+
+    private final Button centerToPlayer = Button.builder(
+            Component.translatable("mapstitch.gui.worldmap.button.center"),
+            b -> centerMap()
+    ).pos(width - 20, height / 2).size(16, 16).tooltip(
+            Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.center.tooltip"))
+    ).build();
+
+    private final Button toggleGrid = Button.builder(
+            Component.translatable("mapstitch.gui.worldmap.button.grid"),
+            b -> grid = !grid
+    ).pos(width - 20, height / 2 + 18).size(16, 16).tooltip(
+            Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.grid.tooltip"))
+    ).build();
+
+    private final Button togglePlayerFollow = Button.builder(
+            Component.translatable("mapstitch.gui.worldmap.button.follow"),
+            b -> follow = !follow
+    ).pos(width - 20, height / 2 + 36).size(16, 16).tooltip(
+            Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.follow.tooltip"))
+    ).build();
+
+    private final Button toggleHelp = Button.builder(
+            Component.translatable("mapstitch.gui.worldmap.button.help"),
+            b -> help = !help
+    ).pos(width - 20, height / 2 + 54).size(16, 16).tooltip(
+            Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.help.tooltip"))
+    ).build();
+
+    private final Button togglePinPlacement = Button.builder(
+            Component.translatable("mapstitch.gui.worldmap.button.pin"),
+            b -> pinMode = !pinMode
+    ).pos(width - 20, height / 2 + 72).size(16, 16).tooltip(
+            Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.pin.tooltip"))
+    ).build();
+
     @SuppressWarnings("DataFlowIssue")
 	public WorldMapScreen(int scaleOverride) {
 		super(Component.translatable("mapstitch.gui.worldmap.title"));
@@ -128,74 +197,15 @@ public class WorldMapScreen extends Screen {
 	@Override
 	protected void init() {
 		if (MapStitchClient.CONFIG.worldMap.buttons.get()) {
-			addRenderableWidget(Button.builder(
-					Component.translatable("mapstitch.gui.worldmap.button.zoom_in"),
-					b -> zoomLevel = Mth.clamp(zoomLevel + 1, -2, 1)
-			).pos(width - 20, height / 2 - 72).size(16, 16).tooltip(
-					Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.zoom_in.tooltip"))
-			).build());
-
-			addRenderableWidget(Button.builder(
-					Component.translatable("mapstitch.gui.worldmap.button.zoom_out"),
-					b -> zoomLevel = Mth.clamp(zoomLevel - 1, -2, 1)
-			).pos(width - 20, height / 2 - 54).size(16, 16).tooltip(
-					Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.zoom_out.tooltip"))
-			).build());
-
-			addRenderableWidget(Button.builder(
-					Component.translatable("mapstitch.gui.worldmap.button.dimension"), b -> {
-						int i = dimensionIds.indexOf(dimensionId);
-						dimensionId = i + 1 > dimensionIds.size() - 1 ? dimensionIds.getFirst() : dimensionIds.get(i + 1);
-                        clearMaps();
-					}
-			).pos(width - 20, height / 2 - 36).size(16, 16).tooltip(
-					Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.dimension.tooltip"))
-			).build());
-
-			addRenderableWidget(Button.builder(
-					Component.translatable("mapstitch.gui.worldmap.button.scale"),
-					b -> {
-						if (scale < 4) scale++;
-						else scale = 0;
-					}
-			).pos(width - 20, height / 2 - 18).size(16, 16).tooltip(
-					Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.scale.tooltip"))
-			).build());
-
-			addRenderableWidget(Button.builder(
-					Component.translatable("mapstitch.gui.worldmap.button.center"),
-					b -> centerMap()
-			).pos(width - 20, height / 2).size(16, 16).tooltip(
-					Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.center.tooltip"))
-			).build());
-
-			addRenderableWidget(Button.builder(
-					Component.translatable("mapstitch.gui.worldmap.button.grid"),
-					b -> grid = !grid
-			).pos(width - 20, height / 2 + 18).size(16, 16).tooltip(
-					Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.grid.tooltip"))
-			).build());
-
-			addRenderableWidget(Button.builder(
-					Component.translatable("mapstitch.gui.worldmap.button.follow"),
-					b -> follow = !follow
-			).pos(width - 20, height / 2 + 36).size(16, 16).tooltip(
-					Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.follow.tooltip"))
-			).build());
-
-			addRenderableWidget(Button.builder(
-					Component.translatable("mapstitch.gui.worldmap.button.help"),
-					b -> help = !help
-			).pos(width - 20, height / 2 + 54).size(16, 16).tooltip(
-					Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.help.tooltip"))
-			).build());
-
-            addRenderableWidget(Button.builder(
-                    Component.translatable("mapstitch.gui.worldmap.button.pin"),
-                    b -> pinMode = !pinMode
-            ).pos(width - 20, height / 2 + 72).size(16, 16).tooltip(
-                    Tooltip.create(Component.translatable("mapstitch.gui.worldmap.button.pin.tooltip"))
-            ).build());
+            addRenderableWidget(zoomIn);
+            addRenderableWidget(zoomOut);
+            addRenderableWidget(nextDimension);
+            addRenderableWidget(nextScale);
+            addRenderableWidget(centerToPlayer);
+            addRenderableWidget(toggleGrid);
+            addRenderableWidget(togglePlayerFollow);
+            addRenderableWidget(toggleHelp);
+            addRenderableWidget(togglePinPlacement);
 		}
 	}
 
@@ -296,6 +306,8 @@ public class WorldMapScreen extends Screen {
 		hasCompass = ModClientUtil.hasCompass(MC, "playerMarker");
         coordinatesAllowed = ModClientUtil.hasCompass(MC, "coordinates") && !MC.showOnlyReducedInfo();
         gridAllowed = ModClientUtil.hasCompass(MC, "grid") && coordinatesAllowed;
+        togglePlayerFollow.active = centerToPlayer.active = hasCompass;
+        toggleGrid.active = gridAllowed;
 		if (hasCompass) {
 			posX = MC.player.blockPosition().getX();
 			posY = MC.player.blockPosition().getY();

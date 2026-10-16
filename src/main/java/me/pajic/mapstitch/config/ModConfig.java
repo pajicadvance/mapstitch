@@ -44,6 +44,7 @@ public class ModConfig extends Config {
 
     public ValidatedInt maxAtlasItems = new ValidatedInt(16384, 32767, 1, ValidatedNumber.WidgetType.TEXTBOX);
     public AtlasPins atlasPins = new AtlasPins();
+    public PlayerMarkers playerMarkers = new PlayerMarkers();
     public MapRecipe mapRecipe = new MapRecipe();
     public NetherMap netherMap = new NetherMap();
     public Globetrotter globetrotter = new Globetrotter();
@@ -61,6 +62,10 @@ public class ModConfig extends Config {
     public static class MapRecipe extends ConfigSection {
         public ValidatedBoolean cheaperRecipe = new ValidatedBoolean();
         public ValidatedBoolean replaceVanillaRecipe = new ValidatedBoolean();
+    }
+
+    public static class PlayerMarkers extends ConfigSection {
+        public ValidatedBoolean showOthers = new ValidatedBoolean(true);
     }
 
     public static class NetherMap extends ConfigSection {
