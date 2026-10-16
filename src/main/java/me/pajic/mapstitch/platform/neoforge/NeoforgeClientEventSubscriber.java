@@ -94,7 +94,7 @@ public class NeoforgeClientEventSubscriber {
     /^@SubscribeEvent
     public static void initItemColors(RegisterColorHandlersEvent.Item event) {
         event.register(
-                (stack, tintIndex) -> tintIndex == 0 ? 0xFF000000 | PinUtil.colorOf(stack) : PinUtil.DEFAULT_COLOR,
+                (stack, tintIndex) -> 0xFF000000 | (tintIndex == 0 ? PinUtil.colorOf(stack) : PinUtil.DEFAULT_COLOR),
                 ModItems.ATLAS_PIN
         );
     }

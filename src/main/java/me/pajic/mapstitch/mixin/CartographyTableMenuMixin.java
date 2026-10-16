@@ -9,7 +9,6 @@ import me.pajic.mapstitch.extension.CartographyTableMenuExtension;
 import me.pajic.mapstitch.item.ModItems;
 import me.pajic.mapstitch.recipe.AtlasCartographyHandler;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
@@ -19,6 +18,12 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+//? <26.1 {
+/*import net.minecraft.world.item.Item;
+*///?} else {
+import net.minecraft.core.component.DataComponentType;
+//?}
 
 @Mixin(CartographyTableMenu.class)
 public abstract class CartographyTableMenuMixin extends AbstractContainerMenu implements CartographyTableMenuExtension {
@@ -78,7 +83,7 @@ public abstract class CartographyTableMenuMixin extends AbstractContainerMenu im
 
     @Mixin(targets = "net/minecraft/world/inventory/CartographyTableMenu$5")
     public static class CartographyTableMenuResultSlotMixin {
-
+        //~ if <26.1 && fabric 'this$0' -> 'field_17303' {
         @Shadow @Final private CartographyTableMenu this$0;
 
         @WrapOperation(
@@ -96,17 +101,24 @@ public abstract class CartographyTableMenuMixin extends AbstractContainerMenu im
             ) && ((CartographyTableMenuExtension) this$0).mapstitch$getAtlasMode() == AtlasCartographyHandler.MODE_COPY;
             return copy ? ItemStack.EMPTY : original.call(instance, i);
         }
+        //~}
     }
 
     @WrapOperation(
             method = "quickMoveStack",
             at = @At(
                     value = "INVOKE",
+                    //? <26.1 {
+                    /*target = "Lnet/minecraft/world/item/ItemStack;is(Lnet/minecraft/world/item/Item;)Z",
+                    ordinal = 0
+                    *///?} else {
                     target = "Lnet/minecraft/world/item/ItemStack;has(Lnet/minecraft/core/component/DataComponentType;)Z"
+                    //?}
             )
     )
-    private boolean allowAtlasQuickMove(ItemStack instance, DataComponentType<?> dataComponentType, Operation<Boolean> original) {
-        return original.call(instance, dataComponentType) || instance.is(ModItems.ATLAS);
+    //~ if <26.1 'DataComponentType<?> p2' -> 'Item p2'
+    private boolean allowAtlasQuickMove(ItemStack instance, DataComponentType<?> p2, Operation<Boolean> original) {
+        return original.call(instance, p2) || instance.is(ModItems.ATLAS);
     }
 
     @WrapOperation(
