@@ -1,3 +1,15 @@
+## Summary
+
+I heard complaints that my mod is too singleplayer oriented.
+
+- **Atlas pins** - Craft them with wool and iron nuggets, dye them, pin locations in the world map with them, and share pinned locations with your friends.
+- **Player marker improvements** - See your friends in the world map and minimap with new colored, smoothly animated player markers, with unique colors for each player, and team support.
+- **Copy and merge atlases** - In the cartography table, make copies of your atlas to share with your friends, and merge your atlas with atlases from your friends to share progress.
+- **Centered minimap mode** - This incredible, never-before-seen technology keeps your player marker in the center and moves the minimap contents around it.
+- A bunch of bug fixes.
+
+## Full changelog
+
 ### Atlas pins
 
 - New Atlas Pin item:
