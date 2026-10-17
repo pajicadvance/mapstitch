@@ -38,6 +38,8 @@ Maps from the atlas will be used to create the world map, and the atlas will aut
 
 Atlas pins can be used in the world map to place location pins. They are crafted with wool and an iron nugget, and can be dyed the same way leather armor is dyed, supporting millions of color combinations. Atlas pins carried in your inventory, bundles, and shulker boxes will be available for use in the world map. Placed pins can be shared with other players on multiplayer servers.
 
+![pincraft](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/multicutter-v3/images/pincraft.png) ![pinmap](https://raw.githubusercontent.com/pajicadvance/mapstitch/refs/heads/multicutter-v3/images/pinmap.png)
+
 Pin placement:
 - In the world map screen, press P to turn on pin placement mode.
 - Click anywhere on the world map to open the pin placement menu.

@@ -57,6 +57,7 @@
 - Added a checkerboard background to fill out the empty space in the world map screen, toggleable in the config.
 - All item requirements are now disabled by default.
 - All minimap info entries are now allowed by default.
+- If a required item for some action is missing, the button of that action will now be greyed out in the world map screen.
 - Added config option "Globetrotter" → "Loot locations", which allows specifying loot tables where Globetrotter can be found, with defaults being:
   - Vanilla stronghold library chest
   - Enderscape stronghold library chest
