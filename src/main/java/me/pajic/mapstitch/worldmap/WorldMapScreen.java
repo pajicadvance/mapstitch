@@ -208,15 +208,6 @@ public class WorldMapScreen extends Screen {
                 addRenderableWidget(button);
                 y += 18;
             }
-            addRenderableWidget(zoomIn);
-            addRenderableWidget(zoomOut);
-            addRenderableWidget(nextDimension);
-            addRenderableWidget(nextScale);
-            addRenderableWidget(centerToPlayer);
-            addRenderableWidget(toggleGrid);
-            addRenderableWidget(togglePlayerFollow);
-            addRenderableWidget(togglePinPlacement);
-            addRenderableWidget(toggleHelp);
 		}
 	}
 

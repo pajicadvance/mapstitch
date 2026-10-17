@@ -6,7 +6,10 @@ I heard complaints that my mod is too singleplayer oriented.
 - **Player marker improvements** - See your friends in the world map and minimap with new colored, smoothly animated player markers, with unique colors for each player, and team support.
 - **Copy and merge atlases** - In the cartography table, make copies of your atlas to share with your friends, and merge your atlas with atlases from your friends to share progress.
 - **Centered minimap mode** - This incredible, never-before-seen technology keeps your player marker in the center and moves the minimap contents around it.
+- All item requirements are now disabled by default, because no one is reading the mod description, apparently.
 - A bunch of bug fixes.
+- Updated Russian translation ([#39](https://github.com/pajicadvance/mapstitch/pull/39) by ShallIMove).
+- Added Polish translation ([#41](https://github.com/pajicadvance/mapstitch/pull/41) by MisterFossil).
 
 ## Full changelog
 
@@ -62,6 +65,11 @@ I heard complaints that my mod is too singleplayer oriented.
   - The resulting atlas will contain the contents of both atlases combined, and must fit within the atlas capacity.
 - If both atlases contain maps of the same area, the more explored map is kept and the other is turned back into an empty map/paper.
 - Atlases holding filled maps of different scales can't be copied or merged.
+
+### Translations
+
+- Updated Russian translation ([#39](https://github.com/pajicadvance/mapstitch/pull/39) by ShallIMove).
+- Added Polish translation ([#41](https://github.com/pajicadvance/mapstitch/pull/41) by MisterFossil).
   
 ### Other changes
 
