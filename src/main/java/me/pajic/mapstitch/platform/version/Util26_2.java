@@ -2,9 +2,7 @@ package me.pajic.mapstitch.platform.version;
 
 //? 26.2 {
 
-/*import me.pajic.mapstitch.extension.MapDecorationRenderStateExtension;
-import me.pajic.mapstitch.platform.MultiVersionUtil;
-import me.pajic.mapstitch.util.ModClientUtil;
+/*import me.pajic.mapstitch.platform.MultiVersionUtil;
 import me.pajic.mapstitch.worldmap.WorldMapScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -21,8 +19,6 @@ import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import org.jetbrains.annotations.Nullable;
 
 public class Util26_2 implements MultiVersionUtil {
-
-    private static final MapRenderState STATE = new MapRenderState();
 
     @Override
     public void pushPose(GuiGraphicsExtractor graphics) {
@@ -71,15 +67,10 @@ public class Util26_2 implements MultiVersionUtil {
 
     @Override
     public void renderMap(Minecraft mc, GuiGraphicsExtractor graphics, MapId id, MapItemSavedData data, @Nullable WorldMapScreen.GridPos gridPos, boolean minimap) {
-        MapRenderState state = minimap ? STATE : new MapRenderState();
+        MapRenderState state = new MapRenderState();
         mc.getMapRenderer().extractRenderState(id, data, state);
-        if (minimap) state.decorations.removeIf(decor -> ModClientUtil.DECORS_REQUIRING_COMPASS.contains(
-                ((MapDecorationRenderStateExtension) decor).mapstitch$getDecorationType()
-        ));
-        state.decorations.forEach(decor -> {
-            if (minimap) decor.renderOnFrame = true;
-            else if (gridPos != null) WorldMapScreen.prepareDecoration(decor, gridPos);
-        });
+        if (minimap) state.decorations.clear();
+        else if (gridPos != null) state.decorations.forEach(decor -> WorldMapScreen.prepareDecoration(decor, gridPos));
         graphics.map(state);
     }
 

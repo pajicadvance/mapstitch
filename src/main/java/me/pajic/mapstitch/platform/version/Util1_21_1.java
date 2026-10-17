@@ -73,7 +73,7 @@ public class Util1_21_1 implements MultiVersionUtil {
     }
 
     @Override
-    public void renderMap(Minecraft mc, GuiGraphicsExtractor graphics, MapId id, MapItemSavedData data, @Nullable WorldMapScreen.GridPos gp, boolean minimap)  {
+    public void renderMap(Minecraft mc, GuiGraphicsExtractor graphics, MapId id, MapItemSavedData data, @Nullable WorldMapScreen.GridPos gp, boolean minimap) {
         if (!minimap) data.getDecorations().forEach(decor -> WorldMapScreen.prepareDecoration(decor, gp));
         ModClientUtil.renderingMinimap = minimap;
         try {

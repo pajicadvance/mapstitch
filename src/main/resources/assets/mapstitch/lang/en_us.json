@@ -218,6 +218,13 @@
 
   "mapstitch.client_config": "MapStitch Client Configuration",
   "mapstitch.client_config.minimap": "Minimap",
+  "mapstitch.client_config.minimap.mode": "Mode",
+  "mapstitch.client_config.minimap.mode.STATIC": "Static",
+  "mapstitch.client_config.minimap.mode.CENTERED": "Centered",
+  "mapstitch.client_config.minimap.mode.STATIC.desc": "Shows the current map and moves the player marker across it.",
+  "mapstitch.client_config.minimap.mode.CENTERED.desc": "Keeps the player marker in the center and moves the maps around it.",
+  "mapstitch.client_config.minimap.lockMarkerNorth": "Lock player marker north",
+  "mapstitch.client_config.minimap.lockMarkerNorth.desc": "Centered mode only: the player marker always points up and the maps rotate around it.",
   "mapstitch.client_config.minimap.position": "Position",
   "mapstitch.client_config.minimap.position.desc": "The corner of the screen where the minimap will be displayed.",
   "mapstitch.client_config.minimap.position.TOP_LEFT": "Top left",

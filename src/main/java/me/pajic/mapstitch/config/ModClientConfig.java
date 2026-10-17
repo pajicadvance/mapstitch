@@ -8,6 +8,7 @@ import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedEnum;
 import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedInt;
 import me.pajic.mapstitch.MapStitch;
 import me.pajic.mapstitch.minimap.MinimapBackground;
+import me.pajic.mapstitch.minimap.MinimapMode;
 import me.pajic.mapstitch.minimap.MinimapPosition;
 import me.pajic.mapstitch.worldmap.TextHighlightColor;
 
@@ -25,6 +26,8 @@ public class ModClientConfig extends Config {
     public Sounds sounds = new Sounds();
 
     public static class Minimap extends ConfigSection {
+        public ValidatedEnum<MinimapMode> mode = new ValidatedEnum<>(MinimapMode.STATIC);
+        public ValidatedBoolean lockMarkerNorth = new ValidatedBoolean(false);
         public ValidatedEnum<MinimapPosition> position = new ValidatedEnum<>(MinimapPosition.TOP_RIGHT);
         public ValidatedInt size = new ValidatedInt(19, 39, 1);
         public ValidatedEnum<MinimapBackground> background = new ValidatedEnum<>(MinimapBackground.CLEAR);

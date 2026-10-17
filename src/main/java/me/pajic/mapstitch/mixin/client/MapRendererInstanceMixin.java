@@ -37,9 +37,8 @@ public class MapRendererInstanceMixin {
             )
     )
     private boolean modifyRenderCondition(boolean original, @Local MapDecoration decor) {
-        if (ModClientUtil.worldMapOpen) return false;
+        if (ModClientUtil.worldMapOpen || ModClientUtil.renderingMinimap) return false;
         if (ModClientUtil.DECORS_REQUIRING_COMPASS.contains(decor.type())) {
-            if (ModClientUtil.renderingMinimap) return false;
             return ModClientUtil.hasCompass(Minecraft.getInstance(), "playerMarker");
         }
         return original;

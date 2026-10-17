@@ -960,19 +960,29 @@ public class WorldMapScreen extends Screen {
 	}
     //?}
 
+    private void cleanup() {
+        WorldMapState state = WorldMapStateHolder.state();
+        state.scale = scale;
+        state.zoom = zoomLevel;
+        state.x = camX;
+        state.z = camZ;
+        state.help = help;
+        state.grid = grid;
+        state.follow = follow;
+        state.writeChanges();
+        ModClientUtil.worldMapOpen = false;
+        clearMaps();
+    }
+
 	@Override
 	public void onClose() {
-		WorldMapState state = WorldMapStateHolder.state();
-		state.scale = scale;
-		state.zoom = zoomLevel;
-		state.x = camX;
-		state.z = camZ;
-		state.help = help;
-		state.grid = grid;
-		state.follow = follow;
-		state.writeChanges();
-		ModClientUtil.worldMapOpen = false;
-        clearMaps();
+		cleanup();
 		super.onClose();
 	}
+
+    @Override
+    public void removed() {
+        cleanup();
+        super.removed();
+    }
 }
