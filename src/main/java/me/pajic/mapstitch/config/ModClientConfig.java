@@ -26,7 +26,7 @@ public class ModClientConfig extends Config {
     public Sounds sounds = new Sounds();
 
     public static class Minimap extends ConfigSection {
-        public ValidatedEnum<MinimapMode> mode = new ValidatedEnum<>(MinimapMode.STATIC);
+        public ValidatedEnum<MinimapMode> mode = new ValidatedEnum<>(MinimapMode.CENTERED);
         public ValidatedBoolean lockMarkerNorth = new ValidatedBoolean(false);
         public ValidatedEnum<MinimapPosition> position = new ValidatedEnum<>(MinimapPosition.TOP_RIGHT);
         public ValidatedInt size = new ValidatedInt(19, 39, 1);

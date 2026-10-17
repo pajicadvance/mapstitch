@@ -18,6 +18,12 @@
   - If the request isn't accepted within 60 seconds (configurable), the atlas pin is refunded.
 - The atlas pin item can be disabled in the config. When disabled, pins can be placed and shared without atlas pins, choosing from the 16 base dye colors and the colors of existing pins.
 
+### Centered minimap mode
+
+- Added a new "Centered" minimap mode, which locks your player marker to the center and moves maps around it.
+- Added a "Lock player marker north" option that locks your player marker north in Centered mode, which makes maps rotate around your player marker. Off by default.
+- The old minimap mode is now called "Static". Centered is the new default mode.
+
 ### Player marker improvements
 
 - Player markers of other players can now be seen in the world map and minimap.
@@ -47,6 +53,7 @@
   
 ### Other changes
 
+- Improved map rendering precision, which gets rid of seams that sometimes appear between maps in the world map screen.
 - Added a checkerboard background to fill out the empty space in the world map screen, toggleable in the config.
 - All item requirements are now disabled by default.
 - All minimap info entries are now allowed by default.
