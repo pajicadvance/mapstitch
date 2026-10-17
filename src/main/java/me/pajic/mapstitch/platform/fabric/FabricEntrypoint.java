@@ -109,7 +109,7 @@ public class FabricEntrypoint implements ModInitializer {
             }
         });
         LootTableEvents.MODIFY.register((key, tableBuilder, s, registries) -> {
-            if (ModUtil.isGlobetrotterLootTable(key)) tableBuilder.withPool(ModUtil.getGlobetrotterLootPool(registries));
+            if (ModUtil.isGlobetrotterLootTable(key)) tableBuilder.withPool(ModUtil.getGlobetrotterLootPool(registries/*? <26.1 {*//*.asGetterLookup()*//*?}*/));
         });
         FabricLoader.getInstance().getModContainer(MapStitch.MOD_ID).ifPresent(container ->
                 //~ if <26.1 'ResourceLoader.registerBuiltinPack' -> 'ResourceManagerHelper.registerBuiltinResourcePack'

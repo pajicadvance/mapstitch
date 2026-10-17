@@ -3,7 +3,7 @@ package me.pajic.mapstitch.util;
 import me.pajic.mapstitch.MapStitch;
 import me.pajic.mapstitch.enchantment.ModEnchantments;
 import me.pajic.mapstitch.extension.MapItemSavedDataExtension;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.Packet;
@@ -44,7 +44,7 @@ public class ModUtil {
         if (packet != null) player.connection.send(packet);
     }
 
-    public static LootPool.Builder getGlobetrotterLootPool(HolderLookup.Provider registry) {
+    public static LootPool.Builder getGlobetrotterLootPool(HolderGetter.Provider registry) {
         return MapStitch.CONFIG.globetrotter.enabled.get() ? LootPool.lootPool()
                 .add(LootItem.lootTableItem(Items.BOOK).setWeight(MapStitch.CONFIG.globetrotter.chance.get())
                         .apply(new SetEnchantmentsFunction.Builder().withEnchantment(

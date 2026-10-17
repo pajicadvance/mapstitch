@@ -23,7 +23,7 @@ publish.env.cf.server = true
 publish.dry_run = false
 
 # loom
-loomx.loom_version = "1.17-SNAPSHOT"
+loomx.loom_version = "1.18-SNAPSHOT"
 
 # dependencies
 loader.fabric = "0.19.5"
@@ -52,7 +52,7 @@ dev.runtime_optionals = ["curios", "emi"]
 
 ["1.21.1"]
 mod.mc_releases = ["1.21", "1.21.1"]
-loader.neo = "21.1.244"
+loader.neo = "21.1.262"
 dep.trinkets.coords = "dev.emi:$id:$version"
 optional.sodium = "0.8.12+mc1.21.1"
 runtime.sodium_runtime = "0.8.12+mc1.21.1"
@@ -74,7 +74,7 @@ optional.curios = "9.5.1+1.21.1"
 
 ["26.1.2"]
 mod.mc_releases = ["26.1", "26.1.1", "26.1.2"]
-loader.neo = "26.1.2.87"
+loader.neo = "26.1.2.122"
 optional.sodium = "0.9.1+mc26.1.2"
 runtime.sodium_runtime = "0.9.1+mc26.1.2"
 optional.trinkets = "4.0.0-beta.3+26.1"
@@ -95,7 +95,7 @@ optional.curios = "15.0.0+26.1.2"
 
 ["26.2"]
 mod.mc_releases = ["26.2"]
-loader.neo = "26.2.0.59"
+loader.neo = "26.2.0.93"
 optional.sodium = "0.9.1+mc26.2"
 runtime.sodium_runtime = "0.9.1+mc26.2"
 optional.trinkets = "4.1.0-beta.2+26.2"
@@ -116,7 +116,7 @@ optional.curios = "16.0.0+26.2"
 
 ["26.3"]
 mod.mc_releases = ["26.3"]
-#loader.neo = "26.2.0.59"
+loader.neo = "26.3.0.88"
 optional.sodium = "0.9.2+mc26.3"
 runtime.sodium_runtime = "0.9.2+mc26.3"
 optional.trinkets = "4.2.0+26.3"
@@ -124,12 +124,12 @@ optional.ohmega = "1.5.21"
 
 [fabric."26.3"]
 mod.mc_compat = "~26.3"
-required.fabric-api = "0.160.5+26.3"
-required.fzzy_config = "0.7.7+26.3"
-optional.modmenu = "21.0.0-beta.1"
+required.fabric-api = "0.163.0+26.3"
+required.fzzy_config = "0.7.7+fix3+26.3"
+optional.modmenu = "21.0.0"
 optional.remapped = "2.0.2"
 
-#[neoforge."26.3"]
-#mod.mc_compat = "[26.3, 26.4)"
-#required.fzzy_config = "0.7.7+26.3+neoforge"
-#optional.curios = "16.0.0+26.2"
+[neoforge."26.3"]
+mod.mc_compat = "[26.3, 26.4)"
+required.fzzy_config = "0.7.7+fix3+26.3+neoforge"
+optional.curios = "17.0.0-beta.3+26.3"
