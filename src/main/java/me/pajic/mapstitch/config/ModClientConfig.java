@@ -40,6 +40,7 @@ public class ModClientConfig extends Config {
     public static class WorldMap extends ConfigSection {
         public ValidatedEnum<TextHighlightColor> textHighlightColor = new ValidatedEnum<>(TextHighlightColor.YELLOW);
         public ValidatedInt textBackgroundOpacity = new ValidatedInt(50, 100, 0);
+        public ValidatedBoolean checkerboard = new ValidatedBoolean();
         public ValidatedBoolean buttons = new ValidatedBoolean();
         public ValidatedBoolean help = new ValidatedBoolean();
     }

@@ -237,13 +237,19 @@ public class WorldMapScreen extends Screen {
     private int originX(int gx, int scale) { return gx * (128 << scale) - 64; }
     private int originZ(int gy, int scale) { return gy * (128 << scale) - 64; }
 
-    public double worldToScreenX(double worldX) { return (worldX - camX) * zoom + screenW / 2.0; }
-    public double worldToScreenZ(double worldZ) { return (worldZ - camZ) * zoom + screenH / 2.0; }
-    public double screenToWorldX(double screenX) { return (screenX - screenW / 2.0) / zoom + camX; }
-    public double screenToWorldZ(double screenY) { return (screenY - screenH / 2.0) / zoom + camZ; }
+    private double screenOffsetX() { return Math.round(screenW / 2.0 - camX * zoom); }
+    private double screenOffsetZ() { return Math.round(screenH / 2.0 - camZ * zoom); }
+
+    public double worldToScreenX(double worldX) { return worldX * zoom + screenOffsetX(); }
+    public double worldToScreenZ(double worldZ) { return worldZ * zoom + screenOffsetZ(); }
+    public double screenToWorldX(double screenX) { return (screenX - screenOffsetX()) / zoom; }
+    public double screenToWorldZ(double screenY) { return (screenY - screenOffsetZ()) / zoom; }
 
     private int pinScreenX(Pin pin) { return (int) Math.round(worldToScreenX(pin.x() + 0.5)); }
     private int pinScreenY(Pin pin) { return (int) Math.round(worldToScreenZ(pin.z() + 0.5)); }
+
+    private int cellEdgeX(int gx) { return (int) Math.round(worldToScreenX(gridOriginX(gx))); }
+    private int cellEdgeY(int gy) { return (int) Math.round(worldToScreenZ(gridOriginZ(gy))); }
 
 	@SuppressWarnings("DataFlowIssue")
 	@Override
@@ -337,23 +343,27 @@ public class WorldMapScreen extends Screen {
                 gridAllowed = false;
 				Component text = Component.translatable("mapstitch.gui.worldmap.no_maps_rendered");
 				graphics.text(MC.font, text, width / 2 - font.width(text) / 2, height / 2, -1);
-			}
-			else for (int gy = zBoundMin; gy <= zBoundMax; gy++) {
-				for (int gx = xBoundMin; gx <= xBoundMax; gx++) {
-					GridPos gp = new GridPos(gx, gy, scale);
-                    MapDataWithId map = MAPS.get(gp);
-                    double px = worldToScreenX(gridOriginX(gx));
-                    double py = worldToScreenZ(gridOriginZ(gy));
-                    MultiVersionUtil.INSTANCE.pushPose(graphics);
-                    MultiVersionUtil.INSTANCE.translatePose(graphics, (float) px, (float) py, 0);
-                    MultiVersionUtil.INSTANCE.scalePose(graphics, (float) (mapPixels / 128), (float) (mapPixels / 128), 0);
-                    if (map != null && map.data.scale == scale) {
-                        MultiVersionUtil.INSTANCE.renderMap(MC, graphics, map.id, map.data, gp, false);
-                        mapsRendered++;
+			} else {
+                if (MapStitchClient.CONFIG.worldMap.checkerboard.get()) {
+                    renderCheckerboard(graphics, xBoundMin, xBoundMax, zBoundMin, zBoundMax);
+                }
+                for (int gy = zBoundMin; gy <= zBoundMax; gy++) {
+                    for (int gx = xBoundMin; gx <= xBoundMax; gx++) {
+                        GridPos gp = new GridPos(gx, gy, scale);
+                        MapDataWithId map = MAPS.get(gp);
+                        double px = worldToScreenX(gridOriginX(gx));
+                        double py = worldToScreenZ(gridOriginZ(gy));
+                        MultiVersionUtil.INSTANCE.pushPose(graphics);
+                        MultiVersionUtil.INSTANCE.translatePose(graphics, (float) px, (float) py, 0);
+                        MultiVersionUtil.INSTANCE.scalePose(graphics, (float) (mapPixels / 128), (float) (mapPixels / 128), 0);
+                        if (map != null && map.data.scale == scale) {
+                            MultiVersionUtil.INSTANCE.renderMap(MC, graphics, map.id, map.data, gp, false);
+                            mapsRendered++;
+                        }
+                        MultiVersionUtil.INSTANCE.popPose(graphics);
                     }
-                    MultiVersionUtil.INSTANCE.popPose(graphics);
-				}
-			}
+                }
+            }
 		} else {
 			hasCompass = false;
             gridAllowed = false;
@@ -375,6 +385,20 @@ public class WorldMapScreen extends Screen {
 		}
         mapSourcesPresent = hasAnyMapSources;
 	}
+
+    private void renderCheckerboard(GuiGraphicsExtractor graphics, int xBoundMin, int xBoundMax, int zBoundMin, int zBoundMax) {
+        for (int gy = zBoundMin; gy <= zBoundMax; gy++) {
+            int y0 = Math.max(0, cellEdgeY(gy));
+            int y1 = Math.min(screenH, cellEdgeY(gy + 1));
+            if (y0 >= y1) continue;
+            for (int gx = xBoundMin + ((xBoundMin + gy) & 1); gx <= xBoundMax; gx += 2) {
+                int x0 = Math.max(0, cellEdgeX(gx));
+                int x1 = Math.min(screenW, cellEdgeX(gx + 1));
+                if (x0 >= x1) continue;
+                graphics.fill(x0, y0, x1, y1, 0x10FFFFFF);
+            }
+        }
+    }
 
 	private void renderDecorations(GuiGraphicsExtractor graphics) {
 		DECORATIONS.forEach((gp, decors) -> {

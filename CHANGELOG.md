@@ -45,8 +45,9 @@
 - If both atlases contain maps of the same area, the more explored map is kept and the other is turned back into an empty map/paper.
 - Atlases holding filled maps of different scales can't be copied or merged.
   
-### Configuration
+### Other changes
 
+- Added a checkerboard background to fill out the empty space in the world map screen, toggleable in the config.
 - All item requirements are now disabled by default.
 - All minimap info entries are now allowed by default.
 - Added config option "Globetrotter" → "Loot locations", which allows specifying loot tables where Globetrotter can be found, with defaults being:

@@ -267,6 +267,7 @@
   "mapstitch.client_config.worldMap.textHighlightColor.WHITE": "White",
   "mapstitch.client_config.worldMap.textBackgroundOpacity": "Text background opacity",
   "mapstitch.client_config.worldMap.textBackgroundOpacity.desc": "Controls the opacity of the background behind the text in the world map.",
+  "mapstitch.client_config.worldMap.checkerboard": "Checkerboard background",
   "mapstitch.client_config.worldMap.buttons": "Show buttons",
   "mapstitch.client_config.worldMap.buttons.desc": "Controls whether to show the row of buttons on the right or not.",
   "mapstitch.client_config.worldMap.help": "Show help toggle",
