@@ -335,8 +335,11 @@ public class MinimapOverlay {
         int x = Mth.clamp(Math.round(label.x()) - w / 2, 0, Math.max(0, 128 - w));
         int y = Math.round(label.z()) - 15;
         if (y < 0) y = Math.round(label.z()) + 6;
+        MultiVersionUtil.INSTANCE.pushPose(graphics);
+        MultiVersionUtil.INSTANCE.scalePose(graphics, 0.5F, 0.5F, 1);
         graphics.fill(x - 2, y - 2, x + w + 1, y + 9, 0x80000000);
         graphics.text(MC.font, label.name(), x, y, -1);
+        MultiVersionUtil.INSTANCE.popPose(graphics);
     }
 
     private static void renderPins(GuiGraphicsExtractor graphics, MinimapView view, ResourceKey<Level> dimension) {
