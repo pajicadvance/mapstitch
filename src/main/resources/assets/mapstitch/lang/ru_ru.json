@@ -158,6 +158,7 @@
   "mapstitch.config.maxAtlasItems": "Макс. предметов в атласе",
   "mapstitch.config.atlasPins": "Метки для атласа",
   "mapstitch.config.atlasPins.item": "Предмет «Метка для атласа»",
+  "mapstitch.config.atlasPins.shareRequestTimeout": "Время ожидания запроса на передачу",
   "mapstitch.config.playerMarkers": "Маркеры игроков",
   "mapstitch.config.playerMarkers.showOthers": "Показывать маркеры других игроков",
   "mapstitch.config.playerMarkers.showOthers.desc": "Показывает маркеры других игроков на карте мира и мини-карте. В команде показываются только союзники.",
