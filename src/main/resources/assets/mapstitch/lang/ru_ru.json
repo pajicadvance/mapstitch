@@ -287,7 +287,7 @@
   "mapstitch.client_config.playerMarkers": "Маркеры игроков",
   "mapstitch.client_config.playerMarkers.colorOwn": "Цвет своего маркера",
   "mapstitch.client_config.playerMarkers.colorOwn.desc": "Окрашивает свой маркер в цвет игрока, определяемый по UUID, если вы не состоите в команде с цветом.",
-  "mapstitch.client_config.playerMarkers.colorOthers": "Цвет маркеров других игроков",
+  "mapstitch.client_config.playerMarkers.colorOthers": "Цвет маркеров игроков",
   "mapstitch.client_config.playerMarkers.colorOthers.desc": "Окрашивает маркеры других игроков в их цвет, определяемый по UUID, если они не состоят в команде с цветом.",
   "mapstitch.client_config.sounds": "Звуки",
   "mapstitch.client_config.sounds.atlasMapCreation": "При создании карт в атласе"
