@@ -158,6 +158,7 @@
   "mapstitch.config.maxAtlasItems": "Max items in atlas",
   "mapstitch.config.atlasPins": "Atlas pins",
   "mapstitch.config.atlasPins.item": "Atlas pin item",
+  "mapstitch.config.atlasPins.shareRequestTimeout": "Share request timeout",
   "mapstitch.config.playerMarkers": "Player markers",
   "mapstitch.config.playerMarkers.showOthers": "Show other player markers",
   "mapstitch.config.playerMarkers.showOthers.desc": "Show the markers of other players on the world map and minimap. When on a team, only teammates are shown.",
