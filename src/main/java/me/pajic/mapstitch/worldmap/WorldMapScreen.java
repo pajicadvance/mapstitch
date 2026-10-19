@@ -984,7 +984,8 @@ public class WorldMapScreen extends Screen {
 	}
     //?}
 
-    private void cleanup() {
+	@Override
+	public void onClose() {
         WorldMapState state = WorldMapStateHolder.state();
         state.scale = scale;
         state.zoom = zoomLevel;
@@ -996,17 +997,6 @@ public class WorldMapScreen extends Screen {
         state.writeChanges();
         ModClientUtil.worldMapOpen = false;
         clearMaps();
-    }
-
-	@Override
-	public void onClose() {
-		cleanup();
 		super.onClose();
 	}
-
-    @Override
-    public void removed() {
-        cleanup();
-        super.removed();
-    }
 }
