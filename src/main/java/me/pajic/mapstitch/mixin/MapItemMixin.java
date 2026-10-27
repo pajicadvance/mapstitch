@@ -68,7 +68,8 @@ public abstract class MapItemMixin {
             )
     )
     private void addMapOriginData(ItemStack stack, Level level, Player player, CallbackInfoReturnable<Packet<?>> cir, @Local MapItemSavedData data) {
-        if (!stack.has(ModDataComponents.MAP_CENTER)) {
+        Vector2i center = stack.get(ModDataComponents.MAP_CENTER);
+        if (center == null || center.x != data.centerX || center.y != data.centerZ) {
             stack.set(ModDataComponents.MAP_CENTER, new Vector2i(data.centerX, data.centerZ));
         }
     }

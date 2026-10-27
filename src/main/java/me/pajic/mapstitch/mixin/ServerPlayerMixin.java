@@ -46,7 +46,8 @@ public abstract class ServerPlayerMixin extends Player {
 			)
 	)
 	private void addMapOriginData(ItemStack itemStack, CallbackInfo ci, @Local MapItemSavedData data) {
-		if (!itemStack.has(ModDataComponents.MAP_CENTER)) {
+		Vector2i center = itemStack.get(ModDataComponents.MAP_CENTER);
+		if (center == null || center.x != data.centerX || center.y != data.centerZ) {
 			itemStack.set(ModDataComponents.MAP_CENTER, new Vector2i(data.centerX, data.centerZ));
 		}
 	}

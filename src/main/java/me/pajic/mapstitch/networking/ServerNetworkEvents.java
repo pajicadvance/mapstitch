@@ -28,6 +28,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.level.saveddata.maps.MapId;
@@ -52,8 +53,9 @@ public class ServerNetworkEvents {
 		AbstractContainerMenu menu = player.containerMenu;
 		int slotIndex = payload.slotId();
 		if (slotIndex >= 0 && slotIndex < menu.slots.size()) {
-		    ItemStack stack = player.containerMenu.getSlot(slotIndex).getItem();
-			if (stack.is(ModItems.ATLAS)) {
+			Slot slot = menu.getSlot(slotIndex);
+		    ItemStack stack = slot.getItem();
+			if (stack.is(ModItems.ATLAS) && slot.allowModification(player)) {
 				stack.set(
 						ModDataComponents.ATLAS_EJECT_FILLED_MAPS_FIRST,
 						!stack.getOrDefault(ModDataComponents.ATLAS_EJECT_FILLED_MAPS_FIRST, true)

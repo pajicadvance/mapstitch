@@ -9,6 +9,7 @@ import me.pajic.mapstitch.pin.ClientPins;
 import me.pajic.mapstitch.pin.Pin;
 import me.pajic.mapstitch.platform.MultiVersionUtil;
 import me.pajic.mapstitch.util.ModClientUtil;
+import me.pajic.mapstitch.util.ModUtil;
 import me.pajic.mapstitch.util.PinMarkers;
 import me.pajic.mapstitch.util.PlayerMarkers;
 import me.pajic.mapstitch.worldmap.WorldMapScreen;
@@ -133,6 +134,7 @@ public class MinimapOverlay {
                         }
                     }
                     if (mapData != null && activeMapCenter != null) {
+                        activeMapCenter = ModUtil.alignMapCenter(activeMapCenter, mapData.scale);
                         int s = 1 << mapData.scale;
                         boolean sameDimension = mapData.dimension.equals(MC.level.dimension());
                         boolean centered = sameDimension && MapStitchClient.CONFIG.minimap.mode.get() == MinimapMode.CENTERED;
@@ -240,11 +242,12 @@ public class MinimapOverlay {
     private static void renderCenteredMaps(GuiGraphicsExtractor graphics, MinimapView view, MapItemSavedData active) {
         int s = view.blocksPerPixel();
         for (AtlasMap map : ATLAS_MAPS) {
-            double dx = (map.center().x - view.centerX()) / s;
-            double dz = (map.center().y - view.centerZ()) / s;
-            if (Math.abs(dx) > MAP_REACH || Math.abs(dz) > MAP_REACH) continue;
             MapItemSavedData data = MapItem.getSavedData(map.id(), MC.level);
             if (data == null || data.scale != active.scale || !data.dimension.equals(active.dimension)) continue;
+            Vector2i center = ModUtil.alignMapCenter(map.center(), data.scale);
+            double dx = (center.x - view.centerX()) / s;
+            double dz = (center.y - view.centerZ()) / s;
+            if (Math.abs(dx) > MAP_REACH || Math.abs(dz) > MAP_REACH) continue;
             MultiVersionUtil.INSTANCE.pushPose(graphics);
             MultiVersionUtil.INSTANCE.translatePose(graphics, 64.0F, 64.0F, 0);
             if (view.rotation() != 0.0F) MultiVersionUtil.INSTANCE.rotateDegrees(graphics, view.rotation());
@@ -261,11 +264,12 @@ public class MinimapOverlay {
         List<MapRenderState.MapDecorationRenderState> visible = new ArrayList<>();
         Set<Long> seen = new HashSet<>();
         for (AtlasMap map : maps) {
-            double dx = (map.center().x - view.centerX()) / s;
-            double dz = (map.center().y - view.centerZ()) / s;
-            if (Math.abs(dx) > MAP_REACH || Math.abs(dz) > MAP_REACH) continue;
             MapItemSavedData data = MapItem.getSavedData(map.id(), MC.level);
             if (data == null || data.scale != active.scale || !data.dimension.equals(active.dimension)) continue;
+            Vector2i center = ModUtil.alignMapCenter(map.center(), data.scale);
+            double dx = (center.x - view.centerX()) / s;
+            double dz = (center.y - view.centerZ()) / s;
+            if (Math.abs(dx) > MAP_REACH || Math.abs(dz) > MAP_REACH) continue;
 
             //~ if <26.1 'MapRenderState.MapDecorationRenderState' -> 'MapDecoration'
             for (MapRenderState.MapDecorationRenderState decor : ModClientUtil.extractDecors(data, map.id(), MC)) {
@@ -278,8 +282,8 @@ public class MinimapOverlay {
                 *///?}
                 if (ModClientUtil.DECORS_REQUIRING_COMPASS.contains(type)) continue;
 
-                double worldX = map.center().x + (mapX / 2.0) * s;
-                double worldZ = map.center().y + (mapY / 2.0) * s;
+                double worldX = center.x + (mapX / 2.0) * s;
+                double worldZ = center.y + (mapY / 2.0) * s;
                 float xd = view.x(worldX, worldZ) - 64.0F;
                 float yd = view.z(worldX, worldZ) - 64.0F;
                 if (xd < -63.0F || yd < -63.0F || xd > 63.0F || yd > 63.0F) continue;

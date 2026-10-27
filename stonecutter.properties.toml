@@ -2,7 +2,7 @@
 mod.id = "mapstitch"
 mod.name = "MapStitch"
 mod.group = "me.pajic"
-mod.version = "1.2.0"
+mod.version = "1.2.1"
 mod.description = "World map and minimap using vanilla maps"
 mod.authors = "pajic"
 mod.contributors = "Luth, MerryDreambound"

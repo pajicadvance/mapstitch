@@ -106,6 +106,7 @@
   "mapstitch.chat.pin_share.invalid": "This pin share request has expired or was already accepted.",
   "mapstitch.chat.pin_share.full": "You can't have more than %s pins.",
   "mapstitch.chat.pin_share.offline": "That player is no longer online.",
+  "mapstitch.chat.pin_share.not_teammate": "That player is no longer on your team.",
   "mapstitch.chat.pin_share.no_pin": "You need an atlas pin of a similar color to share this pin.",
   "mapstitch.chat.pin_share.too_many": "You have too many pending pin share requests.",
   "mapstitch.chat.pin_share.duplicate": "You already sent this pin to that player.",

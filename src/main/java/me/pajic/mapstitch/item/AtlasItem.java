@@ -71,7 +71,6 @@ public class AtlasItem extends Item {
 
 	private static final Map<UUID, Set<MapId>> INITIALIZED = new HashMap<>();
 	private static final Semaphore MUTEX = new Semaphore(1);
-    private boolean initialLoadComplete = false;
 
 	public AtlasItem(Properties properties) {
 		super(properties);
@@ -242,14 +241,16 @@ public class AtlasItem extends Item {
             BundleContents contents = atlas.get(DataComponents.BUNDLE_CONTENTS);
             if (contents != null && !contents.isEmpty()) {
                 int activeMapId = atlas.getOrDefault(ModDataComponents.ATLAS_ACTIVE_MAP_ID, -1);
-                if (!initialLoadComplete) {
+                UUID ownerId = owner.getUUID();
+                if (!INITIALIZED.containsKey(ownerId)) {
+                    INITIALIZED.put(ownerId, new HashSet<>());
                     atlas.set(ModDataComponents.ATLAS_ACTIVE_MAP_ID, -1);
+                    activeMapId = -1;
                     //~ if <26.1 'ItemStackTemplate' -> 'ItemStack'
                     for (ItemStackTemplate stack : contents.items()) {
                         if (stack.get(DataComponents.MAP_ID) != null) {
                             MapId mapId = stack.get(DataComponents.MAP_ID);
                             UUID uuid = owner.getUUID();
-                            INITIALIZED.putIfAbsent(uuid, new HashSet<>());
                             if (mapId != null) {
                                 MapItemSavedData data = MapItem.getSavedData(mapId, level);
                                 if (data != null && data.dimension.identifier().equals(level.dimension().identifier())) {
@@ -258,7 +259,6 @@ public class AtlasItem extends Item {
                             }
                         }
                     }
-                    initialLoadComplete = true;
                 }
                 int posX = owner.getBlockX();
                 int posZ = owner.getBlockZ();
@@ -274,8 +274,8 @@ public class AtlasItem extends Item {
                                 updateMap(owner, stack, level, data, atlas, mapId, uuid, false);
                                 int distX = Math.abs(data.centerX - posX);
                                 int distZ = Math.abs(data.centerZ - posZ);
-                                int scale = data.scale + 1;
-                                if (distX > 64 * scale || distZ > 64 * scale) {
+                                int halfSize = 64 << data.scale;
+                                if (distX > halfSize || distZ > halfSize) {
                                     updateActiveMap(atlas, contents, posX, posZ, level, owner);
                                 }
                             }
@@ -380,12 +380,15 @@ public class AtlasItem extends Item {
 			} else if (emptyMapIndex == -1 && (map.is(Items.PAPER) || map.is(Items.MAP))) emptyMapIndex = i;
 		}
 		atlas.set(ModDataComponents.ATLAS_ACTIVE_MAP_ID, -1);
+		byte atlasScale = atlas.getOrDefault(ModDataComponents.ATLAS_SCALE, 0).byteValue();
+		Vector2i expectedCenter = ModUtil.alignMapCenter(new Vector2i(posX, posZ), atlasScale);
+		if (cachedCenters.contains(Pair.of(expectedCenter, level.dimension().identifier()))) return;
 		if (MUTEX.availablePermits() > 0 && emptyMapIndex != -1) {
 			try {
 				MUTEX.acquire();
 				ItemStack newMap = MapItem.create(
                         /*? >=26.1 {*/(ServerLevel) /*?}*/level, posX, posZ,
-						atlas.getOrDefault(ModDataComponents.ATLAS_SCALE, 0).byteValue(),
+						atlasScale,
 						true, false
 				);
 				MapItemSavedData mapData = MapItem.getSavedData(newMap.get(DataComponents.MAP_ID), level);

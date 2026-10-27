@@ -22,6 +22,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.EmptyLootItem;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.SetEnchantmentsFunction;
+import org.joml.Vector2i;
 
 //? <26.3 {
 /*import net.minecraft.world.level.saveddata.maps.MapDecoration;
@@ -42,6 +43,14 @@ public class ModUtil {
     public static void sendVanillaMapPacket(MapId id, MapItemSavedData data, ServerPlayer player, boolean force) {
         Packet<?> packet = force ? ((MapItemSavedDataExtension) data).mapstitch$forceUpdatePacket(id, player) : data.getUpdatePacket(id, player);
         if (packet != null) player.connection.send(packet);
+    }
+
+    public static Vector2i alignMapCenter(Vector2i center, int scale) {
+        int size = 128 << scale;
+        return new Vector2i(
+                Math.floorDiv(center.x + 64, size) * size + size / 2 - 64,
+                Math.floorDiv(center.y + 64, size) * size + size / 2 - 64
+        );
     }
 
     public static LootPool.Builder getGlobetrotterLootPool(HolderGetter.Provider registry) {
